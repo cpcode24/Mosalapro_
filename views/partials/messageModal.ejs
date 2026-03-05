@@ -1,0 +1,46 @@
+<div class="modal fade" id="messageModalCta" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-md modal-dialog-centered" role="document">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content pt-1 mb-1">
+        <div class="modal-header mt-1">
+          <h6 class="mt-1 mb-1 text-center"> <%= t('SendingAMessageTo') %> <%= pro.firstName %></h6>
+          <button type="button" class="close pr-1" data-dismiss="modal" aria-label="<%= t('Close') %>"><span aria-hidden="true">&times;</span></button>
+          </div>
+      <div class="form-container">
+            <!--form action="#" class="contact-form form-validate" novalidate="novalidate"-->
+                  
+                  <span class="d-none" name="error" id="err"></span>
+                  <div class="row mt-1">
+                  <div class="col-lg-12 col-md-12 col-12">
+                  <div class="form-group">
+                  <label class="required-field" for="firstName"><%= t('FullName') %></label>
+                  <% if(usr) {%>
+                      <input type="text" class="form-control" id="contactFirstName" name="contactFirstName" value="<%=usr.firstName%> <%=usr.lastName%>" readonly>
+                  <% } %>
+                  </div>
+                  </div>
+                  
+                  <div class="col-lg-12 col-md-12 col-12 ">
+                  <div class="form-group">
+                  <label class="required-field" for="email"><%= t('Title') %></label>
+                    <input type="text" class="form-control" id="messageTitle" name="messageTitle" oninput="this.className = 'form-control'" placeholder="<%= t('MessageTitlePlaceholder') %>" required>
+                  </div>
+                  </div>
+                  <div class="col-lg-12 col-md-12 col-12  ">
+                  <div class="form-group">
+                  <label class="required-field" for="message"><%= t('Message') %></label>
+                  <textarea class="form-control" id="messageContent" name="messageContent" rows="4" oninput="this.className = 'form-control'" placeholder="<%= t('ContactMessagePlaceholder') %>"></textarea>
+                  </div>
+                  </div>
+                  <div class="col mb-2">
+                  <input type="submit" onClick="sendMessage('<%=pro._id %>')" name="submit" class="btn button-primary btn-lg w-100 hover-lift-light mt-4-ver" value="<%= t('Send') %>">
+                  </div>
+                  </div>
+              <!--/form-->
+            </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+  

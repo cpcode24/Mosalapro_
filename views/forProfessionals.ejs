@@ -1,0 +1,55 @@
+<%- include('partials/header') %>
+
+<section class="parallax-container for-pro-banner" data-parallax-img="images/bg5.jpg">
+    <div class="parallax-content section-xl context-dark text-center">
+      <div class="container pad-4 mb-0">
+        <h2><span class="text-light" data-caption-animate="fadeInDown" data-caption-delay="100"><%= t('proConnectTitle') %></span> <span class="title" data-caption-animate="fadeInUp" data-caption-delay="200"><%= t('proConnectSubtitle') %></span></h2>
+            <p class="big"><%= t('proHelpingProviders') %></p>
+            <% if(usr){ 
+                    if(usr.registeredAsPro){ %>
+                    <a class="button button-secondary-text " href="/switch-account" ><%= t('proSwitchToProvider') %></a>
+                  <% } else{ %>
+                    <a class="button button-secondary-text" href="/join-as-pro" ><%= t('proJoinAsProvider') %></a>
+                    <% } %>
+                <% } else { %>
+                  <button class="button button-secondary-text" onclick="showModal()"><%= t('proJoinAsProvider') %></button>
+                <% } %>
+      </div>
+    </div>
+  </section>
+  <%- include('partials/jobCategories') %>
+  <%- include('partials/proSample') %>
+  <%- include('partials/proTestimonials') %>
+  <%- include('partials/packages') %>
+  
+  <section class="section box-image-left for-pro">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-6 col-md-6 col-sm-12 col-12 wow fadeInLeft">
+          <div class="section-lg section-lg-top-100 mx-3">
+            <h2 class="title-icon title-icon-2"><span class="icon icon-default mercury-icon-post"></span><span><br><%= t('proEasierWayTitle') %><br><span class="text-light"><%= t('proManageCustomers') %></span></span></h2>
+            <p class="big text-secondary "><%= t('proExperienceDescription') %></p>
+                <% if(usr){ 
+                    if(usr.registeredAsPro){ %>
+                    <a class="button button-secondary-text d-flex justify-content-center align-items-center mx-4" href="/switch-account" ><%= t('proSwitchToProvider') %></a>
+                  <% } else{ %>
+                    <a class="button button-secondary-text d-flex justify-content-center align-items-center mx-4" href="/join-as-pro" ><%= t('proJoinAsProvider') %></a>
+                    <% } %>
+                <% } else { %>
+                  <button class="button button-secondary-text d-flex justify-content-center align-items-center mx-4" onclick="showModal()"><%= t('proJoinAsProvider') %></button>
+                <% } %>
+                </div>
+        </div>
+      </div>
+    </div>
+    <div class="box-image-item box-image-video novi-background bg-image" style="background-image: url(images/people-with-customer-service-concept-illustration-vector.png)"></div>
+  </section>
+  <script>
+    function showModal() {
+      const tabTrigger = new bootstrap.Tab(document.getElementById('tab-provider'));
+      tabTrigger.show();
+      $('#regModalCta').modal('show');
+    }
+  </script>
+  <%- include('partials/footer') %>
+  

@@ -1,0 +1,181 @@
+/* Tr Job Post */
+.shadow-job {
+    box-shadow: 0 0 3px rgb(53 64 78 / 20%) !important;
+}
+.rounded-job {
+    border-radius: 5px !important;
+}
+.bg-light-job {
+    background-color: #ffffff !important;
+}
+.cat-job{
+    color: darkslategrey;
+}
+.badge-job {
+    padding: 5px 8px;
+    border-radius: 3px;
+    letter-spacing: 0.5px;
+    font-size: 12px;
+}
+.file-icon{
+	color: #5A9E2F;
+    width: 10px;
+    height: 10px;
+}
+.job-details{
+	color: rgb(92, 91, 91);
+	font-size: small;
+}
+
+.post-modern-figure {
+	position: relative;
+	overflow: hidden;
+	display: block;
+}
+
+.post-modern-figure img {
+	width: 100%;
+	transition: all .3s ease;
+}
+
+.post-modern-time {
+	display: inline-block;
+	padding-left: 3em;
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	color: #9b9b9b;
+	font-size: 12px;
+	letter-spacing: .025em;
+	font-family: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+.post-modern-time::before {
+	content: '';
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 15px;
+	background: inherit;
+	transform: translate3d(0, -100%, 0) skewX(30deg);
+	transform-origin: 50% 100%;
+	will-change: transform;
+}
+
+.post-modern-time .post-modern-time-month {
+	font-size: 32px;
+}
+
+.post-modern-time .post-modern-time-month::after {
+	content: '/';
+	position: relative;
+	display: inline-block;
+	font-size: inherit;
+	color: inherit;
+	margin-left: 3px;
+}
+
+.post-modern-time * + .post-modern-time-number {
+	margin-left: 2px;
+}
+
+.post-modern-text {
+	letter-spacing: .025em;
+	color: #9b9b9b;
+}
+.btn-job{
+    padding: 5px 14px;
+    outline: none;
+    text-decoration: none;
+    font-size: 16px;
+    letter-spacing: 0.5px;
+    transition: all 0.3s;
+    font-weight: 600;
+    border-radius: 5px;
+	cursor: pointer;
+}
+.btn-primary-job {
+    background-color: #5A9E2F !important;
+    border: 1px solid #5A9E2F !important;
+    color: #fff !important;
+    /*box-shadow: 0 3px 7px rgb(109 199 122 / 50%);*/
+}
+
+.btn-primary-job-inv {
+    color: #5A9E2F !important;
+    border: 1px solid #5A9E2F !important;
+    background-color: #fff !important;
+    /*box-shadow: 0 3px 7px rgb(109 199 122 / 50%);*/
+}
+.btn-primary-job-inv:hover {
+    color: #fff !important;
+    border: 1px solid #5A9E2F !important;
+    background-color: #5A9E2F !important;
+    /*box-shadow: 0 3px 7px rgb(109 199 122 / 50%);*/
+}
+
+.btn-primary-job-inv-blue {
+    color: #5197e7 !important;
+    border: 1px solid #5197e7 !important;
+    background-color: #fff !important;
+}
+
+.btn-primary-job-inv-blue:hover {
+    color: #fff !important;
+    border: 1px solid #5197e7 !important;
+    background-color: #5197e7 !important;
+}
+
+.btn-primary-job-inv-dgr {
+    color: #e7515e !important;
+    border: 1px solid #e7515e !important;
+    background-color: #fff !important;
+}
+.btn-primary-job-inv-dgr:hover {
+    color: #fff !important;
+    border: 1px solid #e7515e !important;
+    background-color: #e7515e !important;
+}
+
+@media (max-width: 900px) {
+    .btn-job{
+        padding: 5px 8px;
+        outline: none;
+        text-decoration: none;
+        font-size: 12px;
+        letter-spacing: 0.2px;
+        transition: all 0.3s;
+        font-weight: 300;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    .custom-container{
+        padding-top: 2em;
+        padding-left: 0.5em !important;
+        padding-right: 0.5em !important;
+    }
+    .mar-4{
+        margin-top: 0.5rem !important;
+    }
+}
+.mar-4{
+    margin-top: 1.5rem !important;
+}
+.custom-container{
+	padding: 0em 1em;
+}
+.applicant{
+    cursor: pointer;
+    padding: 0 0.2em 0 0.2em;
+}
+
+.applicant:hover{
+    background-color: honeydew;
+}
+.nolinkdeco{
+    text-decoration: none;
+    color: #5A9E2F;
+}
+.nolinkdeco:hover{
+    color: #fff;
+}

@@ -1,0 +1,849 @@
+<%- include('partials/header') %>
+<% if(usr) { 
+    const usrFullName = usr.firstName +" " + usr.lastName;
+    let usrLocation = "";
+    if(usr.country){
+        usrLocation = usr.country+", "+usr.city;
+    }
+
+    %>
+<section class="<%=bg%> padt-8">
+    <div class="container pb-4">
+        <div class="container-profile ">
+            <nav aria-label="breadcrumb" class="main-breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/"><%= t('Home') %></a></li>
+                    <% if(usr.accountType == "user") { %> 
+                        <li class="breadcrumb-item"><a href="javascript:void(0)"><%= t('User') %></a></li>
+                      <% } else { %>
+                        <li class="breadcrumb-item"><a href="javascript:void(0)"><%= t('Provider') %></a></li>
+                      <% } %>
+                    <li class="breadcrumb-item active" aria-current="page"><%= t('ProfileSettings') %></li>
+                </ol>
+            </nav>
+
+            <div class="row mt-1 gutters-sm-u-pro-set">
+                <div class="col-md-6 col-lg-4 col-12  d-md-block">
+                    <div class="card">
+                        <div class="card-body">
+                            <nav class="nav flex-column nav-pills nav-gap-y-1">
+                                <a href="#profile" data-toggle="tab" class="nav-item nav-link has-icon nav-link-faded  active">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-user mr-2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg><%= t('ProfileInformation') %>
+                                    </a>
+                                <a href="#account" data-toggle="tab" class="nav-item nav-link has-icon nav-link-faded">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-settings mr-2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg><%= t('AccountSettings') %>
+                                </a>
+                                <a href="#security" data-toggle="tab" class="nav-item nav-link has-icon nav-link-faded ">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-shield mr-2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg><%= t('Security') %>
+                                </a>
+                                <a href="#notification" data-toggle="tab" class="nav-item nav-link has-icon nav-link-faded ">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-bell mr-2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg><%= t('Notification') %>
+                                </a>
+                                <a href="#billing" data-toggle="tab" class="nav-item nav-link has-icon nav-link-faded">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-credit-card mr-2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg><%= t('Billing') %>
+                                </a>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-8 col-12 ">
+                    <div class="card-u-pro-set">
+                        <!--div class="card-header border-bottom mb-3 d-flex d-md-none">
+                            <ul class="nav nav-tabs card-header-tabs nav-gap-x-1" role="tablist">
+                                <li class="nav-item">
+                                    <a href="#profile" data-toggle="tab" class="nav-link has-icon active"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-user"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="#account" data-toggle="tab" class="nav-link has-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-settings"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg></a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="#security" data-toggle="tab" class="nav-link has-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-shield"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg></a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="#notification" data-toggle="tab" class="nav-link has-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-bell"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg></a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="#billing" data-toggle="tab" class="nav-link has-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-credit-card"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg></a>
+                                </li>
+                            </ul>
+                        </div-->
+                        <div class="card-body-u-pro-set tab-content">
+                            <div class="tab-pane active" id="profile">
+                                <h6><%= t('ProfileInformation').toUpperCase() %></h6>
+                                <hr>
+                                <form action="/profile" enctype="multipart/form-data" method="POST" id="profileInfo">
+                                    <div class="row"> 
+                                        <div class="col bg-profile-img py-3 d-flex justify-content-center">
+                                            <div
+                                              id="photoBox"
+                                              class="bg-image-profile rounded-circle d-flex justify-content-center"
+                                              style="
+                                                background-image: url('<%=usr.photo %>');
+                                                height: 25em;
+                                              "
+                                            ></div>
+                                        </div>
+                                    </div>
+                                            <div class=" row mt-0 d-flex bg-profile-img pb-3 justify-content-center ">
+                                              <label for="photoInput" class="custom-file-upload mx-3 simple-btn ">
+                                                <%= t('UploadProfilePicture') %>
+                                              </label>
+                                              <input type="file" accept="image/png, image/gif, image/jpeg" id="photoInput" name="photo" style="display: none;" onchange="onPhotoChange()"/>
+                                            </div>
+                        
+                                    <div class="form-group mt-2">
+                                        <label for="fullName"><%= t('FullName') %></label>
+                                        <input type="text" class="form-control" id="fullName" aria-describedby="fullNameHelp" placeholder="<%= t('EnterYourFullName') %>" value="<%=usrFullName%>" readonly>
+                                        <small id="fullNameHelp" class="form-text text-muted"><%= t('YourNameMayAppear') %></small>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="profileEmail"><%= t('EmailAddress') %></label>
+                                        <% if(usr.email) { %>
+                                            <input type="text" class="form-control" id="profileEmail" name="email" aria-describedby="fullNameHelp" placeholder="<%= t('EnterYourEmail') %>" value="<%=usr.email%>" readonly>
+                                            <small id="fullNameHelp" class="form-text text-muted"><%= t('EmailVerifiedContactSupport') %></small>
+                                        <% } else { %>
+                                            <input type="text" class="form-control" id="profileEmail" name="email" aria-describedby="fullNameHelp" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" placeholder="<%= t('EnterYourEmail') %>" required>
+                                        <% }%>
+                                        
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="profilePhone"><%= t('PhoneNumber') %></label>
+                                        <input type="tel" class="form-control" id="profilePhone" name="phone" placeholder="<%= t('EnterYourPhoneNumber') %>" value="<%=usr.phone%>">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="profilePhone"><%= t('LinkedInProfile') %> Link</label>
+                                        
+                                        <% if(usr.linkedinProfileLink) { %>
+                                            <input type="url" class="form-control" id="linkedinProfileLink" name="linkedinProfileLink" placeholder="<%=usr.linkedinProfileLink%>" value="<%=usr.linkedinProfileLink%>">
+                                        <% } else { %>
+                                            <input type="url" class="form-control" id="linkedinProfileLink" name="linkedinProfileLink" placeholder="<%= t('EnterLinkedInProfileLink') %>" >
+                                        <% } %>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="location"><%= t('Location') %></label>
+                                        <!--% if(usrLocation) { % >
+                                            <input type="text" class="form-control" id="location" placeholder="Enter your location" value="<%=usrLocation%>" readonly>
+                                        < % } else { %-->
+                                            <div class="row mt-1">
+                                                <div class="col mb-2">
+                                                    <div class="form-outline  ">
+                                                        <input type="text" id="updateAddress" class="form-control" placeholder="<%=usr.address%>" value="<%=usr.address%>" name="address" required/>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row mt-1">
+                                              <div class="col-lg-6 col-md-6 col-sm-12 col-12 mb-2">
+                                                  <!-- Country input -->
+                                                  <div class="form-outline  ">
+                                                    <select name="country" id="updateCountry" class="form-control" aria-label="Select Country" style="display: inline;" required/>
+                                                        <option value="<%= usr.country %>"><%= usr.country %></option>
+                                                        <% countries.forEach(country => { %> 
+                                                          <option value="<%= country.name %>"> <%= country.name %></option>
+                                                          <% }); %>
+                                                      </select>
+                                                    </div>
+                                              </div>
+                                              <div class="col-lg-6 col-md-6 col-sm-12 col-12 ">
+                                                  <!-- City input -->
+                                                  <div class="form-outline  ">
+                                                    <select class="form-control" aria-label="Select City"  style="display: inline;" id="updateCity" name="city" required>
+                                                        <option value="<%= usr.city %>"><%= usr.city %></option>
+                                                      </select>
+                                                  </div>
+                                              </div>
+                                          </div>
+                                          <!--% } %-->
+                                    </div>
+                                    <div class="form-group small text-muted">
+                                        <%= t('ProfileFieldsEditableConsent') %>
+                                    </div>
+                                    <div class="not-small-screen">
+                                        <div class="justify-content-center mx-auto not-small-screen">
+                                            <button type="submit" class="simple-btn"><%= t('UpdateProfile') %></button>
+                                            <button onClick="reset()" type="reset" class="simple-btn ml-3"><%= t('ResetChanges') %></button>
+
+                                        </div>
+                                    </div>
+                                    <div class="justify-content-center small-screen">
+                                        <button type="submit" class="simple-btn">Update Profile</button>
+                                        <button onClick="reset()" type="reset" class="simple-btn"><%= t('ResetChanges') %></button>
+
+                                    </div>
+                                    
+                                </form>
+                            </div>
+                            <div class="tab-pane" id="account">
+                                <h6><%= t('AccountSettings').toUpperCase() %></h6>
+                                <hr>
+                                <form>
+                                    <div class="form-group">
+                                    <label for="username"><%= t('Username') %></label>
+                                    <input type="text" class="form-control" id="username" aria-describedby="usernameHelp" placeholder="<%= t('EnterYourUsername') %>" value="<%=usr.username%>" readonly>
+                                    <!--small id="usernameHelp" class="form-text text-muted">After changing your username, your old username becomes available for anyone else to claim.</small>
+                                    <button type="button" class="simple-btn mt-2" onClick="" id="updateUsername">Update username</button-->
+                                    </div>
+                                    <div class="form-group ml-1">
+                                        <label for="account-type"><%= t('LoggedInAs') %>: </label>
+                                        <div class="row mt-0">
+                                            <div class="col-lg-6 col-md6 col-sm-12 col-12">
+                                                <input type="text" class="form-control" id="accountType" name="accountType" aria-describedby="usernameHelp" placeholder="<%= t('EnterYourUsername') %>" value="<%=usr.accountType%>" readonly>
+                                                
+                                            </div>
+                                            <div class="col-lg-6 col-md-6 col">
+                                                <% if(usr.registeredAsPro) { %>
+                                                    <button type="submit" class="btn-primary-job-inv cursor" onclick="window.open('/switch-account')" style="border-radius: 5px; padding: 6px;"><%= t('SwitchToUser') %></button>
+                                                <% } %>
+                                            </div>"
+                                            <!--div class="col-lg-6 col-md6 col-sm-12 col-12">
+                                                <a role="button" href="/join-as-pro" class="simple-btn btn" > Join as provider</a>
+                                            </div-->
+                                        </div>
+                                    </div>
+                                    <hr>
+                                    <div class="form-group">
+                                    <label class="d-block text-danger mt-3"><b><%= t('DeleteAccount') %></b></label>
+                                    <p class="text-muted font-size-sm mt-1"><%= t('DeleteAccountWarning') %></p>
+                                    </div>
+                                    <button class="btn btn-danger" type="button" onclick="showModal('#confirmAccountDeletionModalCta')" ><%= t('DeleteAccount') %></button>
+                                </form>
+                            </div>
+                            <div class="tab-pane" id="security">
+                            <h6><%= t('Security').toUpperCase() %> <%= t('Settings').toUpperCase() %></h6>
+                            <hr> 
+
+                            <div class="form-group">
+                            <span class="error_message" id="message"></span>
+                            <label class="d-block"><%= t('ChangePassword') %></label>
+                            <input type="password" id="currentPass" name="currentPass" class="form-control" placeholder="<%= t('EnterCurrentPassword') %>">
+                            <input type="password" id="newPass" class="form-control mt-1" placeholder="<%= t('NewPassword') %>">
+                            <input type="password" id="newPassConf" class="form-control mt-1" placeholder="<%= t('ConfirmNewPassword') %>">
+                            </div>
+                            <hr>
+                            <div class="form-group">
+                            <label class="d-block"><%= t('TwoFactorAuthentication') %></label>
+                            <div class="d-flex">
+                                <span class="dark-text big mr-4 "><%= t('SetTwoFactorAuthentication') %></span>
+                                <label class="switch">
+                                    <% if(usr.twoFactAuth) { %>
+                                    <input type="checkbox" id="two-fact-auth" onclick="setTwoFactAuth('<%=usr._id%>')" checked>
+                                    <% } else { %>
+                                    <input type="checkbox" id="two-fact-auth" onclick="setTwoFactAuth('<%=usr._id%>')">
+                                    <% } %>
+                                    <span class="slider round"></span>
+                                </label>
+                            </div>
+                            <p class="small text-muted mt-2"><%= t('TwoFactorAuthDescription') %></p>
+                            </div>
+                            <hr>
+                            <div class="form-group mb-0">
+                            <label class="d-block"><%= t('Sessions') %></label>
+                            <!--p class="font-size-sm text-secondary">This is a list of devices that have logged into your account. Revoke any sessions that you do not recognize.</p-->
+                            <p class="font-size-sm text-secondary" ><%= t('CurrentSessionInformation') %></p>
+                            <ul class="list-group list-group-sm">
+                            <li class="list-group-item has-icon">
+                            <div>
+                            <h6 class="mb-0"> <%= user_loc_data?.city%>, <%= user_loc_data?.region%> - <%= user_loc_data?.timezone%></h6>
+                            <small class="text-muted"><%= t('YourCurrentSessionSeen') %> <%= user_loc_data?.country_name%></small>
+                            </div>
+                            <button class="btn btn-light btn-sm ml-auto" type="button"><%= t('MoreInfo') %></button>
+                            </li>
+                            </ul>
+                            </div>
+                            <div class=" mt-2 mx-auto mb-2">
+                                <button type="button" class="simple-btn" onClick="changePassword()" ><%= t('SaveChanges') %></button>
+                            </div>
+                            </div>
+                            <div class="tab-pane" id="notification">
+                            <h6><%= t('Notification').toUpperCase() %> <%= t('Settings').toUpperCase() %></h6>
+                            <hr>
+                            <form>
+                            <div class="form-group">
+                            <b><label class="d-block mb-0"><%= t('EmailNotifications') %></label></b>
+                            <div class="small text-muted mb-3"><%= t('ReceiveAlertsEmails') %></div>
+                            <div class="custom-control custom-checkbox">
+                            <% if(usr.reqUpdateNotifs) { %>
+                                <input type="checkbox" class="custom-control-input" id="emailNotifsForReqs"  checked>
+                            <% } else { %>
+                                <input type="checkbox" class="custom-control-input" id="emailNotifsForReqs"  unchecked>
+                            <% } %>
+                            <label class="custom-control-label" for="emailNotifsForReqs"><%= t('ReceiveEmailNotificationsServiceRequests') %></label>
+                            </div>
+                            
+                            <div class="custom-control custom-checkbox">
+                                <% if(usr.msgUpdateNotifs) { %>
+                                    <input type="checkbox" class="custom-control-input" id="emailNotifsForMsgs" checked>
+                                <% }else { %>
+                                    <input type="checkbox" class="custom-control-input" id="emailNotifsForMsgs" unchecked>
+                                <% } %>
+                                <label class="custom-control-label" for="emailNotifsForMsgs"><%= t('ReceiveEmailNotificationsNewMessages') %></label>
+                            </div>
+                            </div>
+                            <div class="form-group">
+                                <b><label class="d-block mb-0"><%= t('SMSNotifications') %></label></b>
+                                <div class="small text-muted mb-3"><%= t('ReceiveAlertsSMS') %></div>
+                                <div class="custom-control custom-checkbox">
+                                    <% if(usr.SMSUpdateNotifs) { %>
+                                    <input type="checkbox" class="custom-control-input" id="requestUpdatesSMS" checked >
+                                    <% } else { %>
+                                    <input type="checkbox" class="custom-control-input" id="requestUpdatesSMS" unchecked >
+                                    <% } %>
+                                    <label class="custom-control-label" for="requestUpdatesSMS"><%= t('ReceiveSMSBookingAlerts') %></label>
+                                </div>
+                                <div class="custom-control custom-checkbox">
+                                    <% if(usr.oppSMSNotifs) { %>
+                                    <input type="checkbox" class="custom-control-input" id="opportunitiesSMS" checked >
+                                    <% } else { %>
+                                    <input type="checkbox" class="custom-control-input" id="opportunitiesSMS" unchecked >
+                                    <% } %>
+                                    <label class="custom-control-label" for="opportunitiesSMS"><%= t('ReceiveSMSOppAlerts') %></label>
+                                </div>
+                             
+                            </div>
+                            </form>
+                            </div>
+                            <div class="tab-pane justify-content-center" id="billing">
+                            <h6 class="mx-auto"><%= t('Billing').toUpperCase() %> <%= t('Settings').toUpperCase() %></h6>
+                            <hr>
+
+                            <!-- Payment Methods Section -->
+                            <div class="form-group">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <label class="d-block mb-0"><%= t('PaymentMethods') %></label>
+                                    <button class="btn btn-sm button-primary mt-2" type="button" data-toggle="modal" data-target="#paymentInfoModalCta">
+                                        <b class="fa fa-plus"></b>  <%= t('AddPaymentMethod') %>
+                                    </button>
+                                </div>
+
+                                <!-- Saved Payment Methods List -->
+                                <div id="userProfilePaymentMethods">
+                                    <div class="text-center py-4">
+                                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                        <div class="small text-muted mt-2"><%= t('LoadingPaymentMethods') %>...</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <hr>
+
+                            <!-- Payment History Section -->
+                            <div class="form-group mb-0">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <label class="d-block mb-0"><%= t('PaymentHistory') %></label>
+                                    <button class="btn btn-sm btn-outline-secondary mt-2" type="button" onclick="loadPaymentHistory()">
+                                        <b class="fa fa-refresh"></b> <%= t('Refresh') %>
+                                    </button>
+                                </div>
+
+                                <div id="userProfilePaymentHistory">
+                                    <div class="text-center py-4">
+                                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                        <div class="small text-muted mt-2"><%= t('LoadingPaymentHistory') %>...</div>
+                                    </div>
+                                </div>
+                            </div>
+                            </div>
+
+<script>
+// Load payment methods when billing tab is shown
+async function loadUserPaymentMethods() {
+    const container = document.getElementById('userProfilePaymentMethods');
+
+    try {
+        const response = await fetch('/api/payment/payment-methods');
+        const data = await response.json();
+
+        if (data.success && data.paymentMethods.length > 0) {
+            let html = '<div class="list-group">';
+
+            data.paymentMethods.forEach(method => {
+                const icon = method.provider === 'stripe' ? 'fa-credit-card' : 'fa-paypal';
+                const defaultBadge = method.isDefault
+                    ? '<span class="badge badge-primary ml-2"><%= t("Default") %></span>'
+                    : '';
+                const expiredBadge = method.isExpired
+                    ? '<span class="badge badge-danger ml-2"><%= t("Expired") %></span>'
+                    : '';
+
+                html += `
+                    <div class="list-group-item">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <b class="fa ${icon} mr-2"> </b>
+                                <strong>${method.displayName}</strong>
+                                ${defaultBadge}
+                                ${expiredBadge}
+                                ${method.lastUsedAt ? `<div class="small text-muted mt-1"><%= t("LastUsed") %>: ${new Date(method.lastUsedAt).toLocaleDateString()}</div>` : ''}
+                            </div>
+                            <div>
+                                ${!method.isDefault ? `
+                                    <button class="btn btn-sm btn-outline-primary mr-2" onclick="setDefaultPaymentMethod('${method.id}')">
+                                        <%= t("SetAsDefault") %>
+                                    </button>
+                                ` : ''}
+                                <button class="btn btn-sm btn-outline-danger" onclick="deleteUserPaymentMethod('${method.id}')">
+                                    <b class="fa fa-trash"> </b>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += '</div>';
+            container.innerHTML = html;
+        } else {
+            container.innerHTML = `
+                <div class="alert alert-info text-center">
+                    class="fa fa-info-circle"></b> <%= t('YouHaveNotAddedPaymentMethod') %>
+                </div>
+            `;
+        }
+    } catch (error) {
+        console.error('Error loading payment methods:', error);
+        container.innerHTML = `
+            <div class="alert alert-danger">
+                class="fa fa-exclamation-triangle"></b> <%= t('ErrorLoadingPaymentMethods') %>
+            </div>
+        `;
+    }
+}
+
+// Load payment history
+async function loadPaymentHistory() {
+    const container = document.getElementById('userProfilePaymentHistory');
+
+    try {
+        const response = await fetch('/api/payment/transactions?limit=10');
+        const data = await response.json();
+
+        if (data.success && data.transactions.length > 0) {
+            let html = '<div class="table-responsive"><table class="table table-sm">';
+            html += '<thead><tr><th><%= t("Date") %></th><th><%= t("Description") %></th><th><%= t("Amount") %></th><th><%= t("Status") %></th></tr></thead><tbody>';
+
+            data.transactions.forEach(tx => {
+                const statusBadge = {
+                    'pending': 'badge-warning',
+                    'held': 'badge-info',
+                    'released': 'badge-success',
+                    'refunded': 'badge-secondary',
+                    'failed': 'badge-danger'
+                }[tx.status] || 'badge-secondary';
+
+                const statusText = {
+                    'pending': '<%= t("Pending") %>',
+                    'held': '<%= t("Held") %>',
+                    'released': '<%= t("Released") %>',
+                    'refunded': '<%= t("Refunded") %>',
+                    'failed': '<%= t("Failed") %>'
+                }[tx.status] || tx.status;
+
+                html += `
+                    <tr>
+                        <td>${new Date(tx.createdAt).toLocaleDateString()}</td>
+                        <td>${tx.description}</td>
+                        <td>${tx.amount}</td>
+                        <td><span class="badge ${statusBadge}">${statusText}</span></td>
+                    </tr>
+                `;
+            });
+
+            html += '</tbody></table></div>';
+
+            if (data.totalPages > 1) {
+                html += `<div class="text-center mt-3">
+                    <small class="text-muted"><%= t("ShowingPage") %> ${data.currentPage} <%= t("of") %> ${data.totalPages}</small>
+                </div>`;
+            }
+
+            container.innerHTML = html;
+        } else {
+            container.innerHTML = `
+                <div class="alert alert-info text-center">
+                    class="fa fa-info-circle"></b> <%= t('YouHaveNotMadeAnyPayment') %>
+                </div>
+            `;
+        }
+    } catch (error) {
+        console.error('Error loading payment history:', error);
+        container.innerHTML = `
+            <div class="alert alert-danger">
+                class="fa fa-exclamation-triangle"></b> <%= t('ErrorLoadingPaymentHistory') %>
+            </div>
+        `;
+    }
+}
+
+// Delete payment method
+async function deleteUserPaymentMethod(paymentMethodId) {
+    if (!confirm('<%= t("AreYouSureDeletePaymentMethod") %>')) {
+        return;
+    }
+
+    try {
+        const response = await fetch(`/api/payment/payment-method/${paymentMethodId}`, {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' }
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            alert('<%= t("PaymentMethodDeleted") %>');
+            await loadUserPaymentMethods();
+        } else {
+            throw new Error(data.error);
+        }
+    } catch (error) {
+        alert('<%= t("ErrorDeletingPaymentMethod") %>: ' + error.message);
+    }
+}
+
+// Load data when billing tab is clicked
+$('a[href="#billing"]').on('shown.bs.tab', function() {
+    loadUserPaymentMethods();
+    loadPaymentHistory();
+});
+
+// Load immediately if billing tab is active
+if (window.location.hash === '#billing' || $('a[href="#billing"]').hasClass('active')) {
+    loadUserPaymentMethods();
+    loadPaymentHistory();
+}
+</script>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    document.getElementById('updateCountry').onchange = function(){
+      filename = "./data/cities/" + document.getElementById('updateCountry').value +".json";
+      $.getJSON(filename, function(data) {
+        var items = [];
+        items.push(`<option value=""><%- t('SelectCity') %></option>`);
+        $.each(data, function( key, val ) {
+              items.push('<option value="' + val.name + '">' + val.name+ '</option>');
+          });
+          items.sort();
+          document.getElementById('updateCity').innerHTML = items;
+      });
+    
+  }
+</script>
+
+<script>
+
+    function reset(){
+        $( "#profileInfo" ).load( "/profile #profileInfo" );
+    }
+    
+    const changePassword = async()=> {
+  
+    const oldPass = document.getElementById("currentPass").value;
+    const newPass = document.getElementById("newPass");
+    const newPassConf = document.getElementById("newPassConf");
+    const message = document.getElementById("message");
+
+    if (newPass.value != newPassConf.value) {
+        newPass.classList.add("invalid");
+        newPassConf.classList.add("invalid");
+        message.innerHTML = "<%= t('PasswordsDoNotMatch') %>";
+        return;
+    }
+    if (oldPass === newPass.value) {
+        newPass.classList.add("invalid");
+        newPassConf.classList.add("invalid");
+        message.innerHTML = "<%= t('NewPasswordSameAsCurrent') %>";
+        await new Promise(r => setTimeout(r, 5500));
+        message.innerHTML = "";
+        return;
+    }
+    if(newPass.value.length < 6){
+        newPass.classList.add("invalid");
+        newPassConf.classList.add("invalid");
+        message.innerHTML = "<%= t('PasswordTooShort') %>";
+        return;
+    }
+    else{
+        const specialChars = "!@#$%^&*()-_=+[{]}\\|;:'\",<.>/?`~";
+        let letterBoolean = newPass.value.match(/[a-z]/i);
+        let numBoolean = false;
+        for (let i = 0; i < newPass.value.length; i++) {
+            if(!isNaN(newPass.value[i]))
+            numBoolean = true;
+        }
+
+        let specialCharBoolean = false;
+            for (let i = 0; i < newPass.value.length; i++) {
+            for (let j = 0; j < specialChars.length; j++) {
+                if (newPass.value[i] == specialChars[j]) {
+                specialCharBoolean = true;
+                }
+            }
+        }
+        if(!letterBoolean){
+            newPass.classList.add("invalid");
+            newPassConf.classList.add("invalid");
+            message.innerHTML = "<%= t('IncludeAtLeastLetter') %>";
+            return;
+        }
+        if(!numBoolean){
+            newPass.classList.add("invalid");
+            newPassConf.classList.add("invalid");
+            message.innerHTML = "<%= t('IncludeAtLeastNumber') %>";
+            return;
+        }
+        if(!specialCharBoolean){
+            newPass.classList.add("invalid");
+            newPassConf.classList.add("invalid");
+            message.innerHTML = "<%= t('IncludeAtLeastSpecialChar') %>";
+            return;
+        }
+    }
+
+    requestData = {
+        accountPassword: oldPass,
+        newPassword: newPass.value
+    }
+
+    _postData('/update-password', requestData )
+        .then(async response => {
+        if(response.status == 200){
+            message.classList.remove('error_message');
+            message.classList.add('success_message');
+            message.innerHTML = "<%= t('PasswordUpdatedSuccessfully') %>";
+        }
+        else{
+            message.innerHTML = "<%= t('CurrentPasswordIncorrect') %>";
+        }
+        
+        }).catch(err => {
+        console.log(err) // Handle errors
+        message.innerHTML = "<%= t('CurrentPasswordIncorrect') %>";
+        });
+    }
+
+    async function _postData(url = '', data = {}) {
+    const response = await fetch(url, {
+        method: 'POST',
+        mode: 'cors',
+        cache: 'no-cache',
+        credentials: 'same-origin',
+        redirect: 'follow',
+        referrerPolicy: 'no-referrer',
+        headers: {
+            "Content-type": "application/json; charset=UTF-8"
+        },
+        body: JSON.stringify(data)
+    });
+    const contentType = response.headers.get("content-type");
+    if (contentType && contentType.indexOf("application/json") !== -1) {
+        return response.json();
+    }else{ return response;}
+    }
+
+    
+const onPhotoChange = () => {
+  const photoInput = document.getElementById('photoInput');
+  const photoBox = document.getElementById('photoBox');
+
+  const photoURL = URL.createObjectURL(photoInput.files[0]);
+
+  const reader = new FileReader();
+  reader.addEventListener('load', (event) => {
+    console.log(event.target);
+    photoBox.style.backgroundImage = `url(${event.target.result})`;
+  });
+
+  reader.readAsDataURL(photoInput.files[0]);
+}
+
+const showModal = (id)=>{
+    $(id).modal('show');
+}
+const hideModal = (id)=>{
+    $(id).modal('hide');
+}
+
+const setTwoFactAuth = async(id)=>{
+    requestData = {
+        id: id
+    }
+    _postData('/enable-two-fact-auth', requestData )
+        .then(async response => {
+        if(response.status == 200){
+            console.log("Two factors auth successfully set!");
+        }
+        else{
+            console.log("Error occured while setting two factors auth!");
+        }
+        
+        }).catch(err => {
+            console.log(err);
+        });
+}
+
+const deleteAccount = async (id) =>{
+    const delAccModalPass = document.getElementById('delAccModalPass');
+    const message = document.getElementById("errConfDelMessage");
+    requestData = {
+        accountPassword: delAccModalPass.value,
+        id: id
+    }
+
+    if(delAccModalPass.value === "" || delAccModalPass.value.length < 6){
+        delAccModalPass.classList.add("invalid");
+        message.classList.remove("success_message");
+        message.classList.add("error_message");
+        message.innerHTML = "<%= t('PasswordIncorrect') %>";
+        await new Promise(r => setTimeout(r, 2500));
+        message.innerHTML = "";
+        return;
+    }
+    _postData('/delete-user-account', requestData )
+        .then(async response => {
+        if(response.status == 210){
+            message.classList.remove('error_message');
+            message.classList.add('success_message');
+            message.innerHTML = "<%= t('AccountDeletedLoggingOut') %>";
+            await new Promise(r => setTimeout(r, 2500));
+            data = {id: id};
+            _postData('/remove-user-account', data ).then(
+                async response =>{
+                    if(response.status == 200)
+                        console.log("User account successfully deleted!");
+                    else console.log("Error occured while deleting user: "+response.message);
+                }
+            ).catch(err =>{ console.log("Error occured while deleting user: "+err);});
+            window.location = "/";
+        }
+        else if(response.status == 211){
+            message.classList.remove('error_message');
+            message.classList.add('success_message');
+            message.innerHTML = "<%= t('UserAccountDeletedProviderRedirect') %>";
+            await new Promise(r => setTimeout(r, 3500));
+            window.location = "/logout";
+        }else if(response.status == 411){
+            message.classList.remove('success_message');
+            message.classList.add('error_message');
+            message.innerHTML = "<%= t('ActiveRequestsPreventDeletion') %>";
+            await new Promise(r => setTimeout(r, 5200));
+            message.innerHTML = "";
+            $('#confirmAccountDeletionModalCta').modal('hide');
+        }
+        else{
+            delAccModalPass.classList.add("invalid");
+            message.classList.remove("success_message");
+            message.classList.add("error_message");
+            message.innerHTML = "<%= t('PasswordIncorrect') %>";
+        }
+        
+        }).catch(err => {
+            console.log(err) 
+            delAccModalPass.classList.add("invalid");
+            message.classList.remove("success_message");
+            message.classList.add("error_message");
+            message.innerHTML = "Password is incorrect. ";
+        });
+
+}
+</script>
+
+<script>
+
+const notifsReqsChbx = document.getElementById('emailNotifsForReqs');
+const notifsMsgsChbx = document.getElementById('emailNotifsForMsgs');
+const notifsSMSUpdChbx = document.getElementById('requestUpdatesSMS');
+const notifsSMSOppChbx = document.getElementById('opportunitiesSMS');
+const notifsUpdatesChbx = document.getElementById('emailNotifsForUpdates');
+const requestData = {};
+notifsReqsChbx.addEventListener('change', (event) => {
+  //if (event.currentTarget.checked) {
+        _postData('/set-req-update-notifs', requestData)
+            .then(async response => {
+            if(response.status == 200){
+                console.log("Request update email notifs successfully set!");
+            }else
+                console.log("Error occured while setting req update email notifs: ", response.message);
+
+        }).catch(err=>{
+            console.log("Error occured while setting req update email notifs: ", err);
+        });
+   
+  //}
+});
+
+notifsMsgsChbx.addEventListener('change', (event) => {
+  //if (event.currentTarget.checked) {
+        _postData('/set-msg-update-notifs', requestData)
+            .then(async response => {
+            if(response.status == 200){
+                console.log("Msg update email notifs successfully set!");
+            }else
+                console.log("Error occured while setting msg update email notifs: ", response.message);
+
+        }).catch(err=>{
+            console.log("Error occured while setting msg update email notifs: ", err);
+        });
+    //}
+});
+
+notifsSMSUpdChbx.addEventListener('change', (event) => {
+  //if (event.currentTarget.checked) {
+        _postData('/set-sms-update-notifs', requestData)
+            .then(async response => {
+            if(response.status == 200){
+                console.log("Msg update SMS notifs successfully set!");
+            }else
+                console.log("Error occured while setting msg update SMS notifs: ", response.message);
+
+        }).catch(err=>{
+            console.log("Error occured while setting msg update SMS notifs: ", err);
+        });
+    //}
+});
+
+notifsUpdatesChbx.addEventListener('change', (event) => {
+  //if (event.currentTarget.checked) {
+        _postData('/set-sms-update-notifs', requestData)
+            .then(async response => {
+            if(response.status == 200){
+                console.log("Msg update SMS notifs successfully set!");
+            }else
+                console.log("Error occured while setting msg update SMS notifs: ", response.message);
+
+        }).catch(err=>{
+            console.log("Error occured while setting msg update SMS notifs: ", err);
+        });
+    //}
+});
+
+notifsSMSOppChbx.addEventListener('change', (event) => {
+  //if (event.currentTarget.checked) {
+        _postData('/set-sms-opp-notifs', requestData)
+            .then(async response => {
+            if(response.status == 200){
+                console.log("Opportunities SMS notifs successfully set!");
+            }else
+                console.log("Error occured while setting Opportunities SMS notifs notifs: ", response.message);
+
+        }).catch(err=>{
+            console.log("Error occured while setting Opportunities SMS notifs notifs: ", err);
+        });
+    //}
+});
+</script>
+
+
+<% }%>
+<script src="js/paymentInfo.js"></script>
+<script src="https://js.stripe.com/v3/"></script>
+<%- include('partials/confirmAccountDeletionModal') %>
+<%- include('partials/paymentInfoModal') %>
+<%- include('partials/footer') %>
+
+
+

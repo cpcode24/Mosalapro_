@@ -1,0 +1,236 @@
+<%- include('partials/header') %>
+<section class="section swiper-container swiper-slider swiper-slider-1 context-dark" data-loop="true" data-autoplay="5000" data-simulate-touch="false">
+        <div class="swiper-wrapper">
+          <div class="swiper-slide" data-slide-bg="images/index-1-slider-1-1920x768.jpg">
+            <div class="swiper-slide-caption section-lg ">
+              <div class="container">
+                <div class="row mt-txt-slide">
+                  <div class="col-lg-12 col-md-12 col-12  offset-md-1 offset-xxl-0  txt mt-0">
+                    <h1 class="mt-0"><span  data-caption-animate="fadeInUp" data-caption-delay="100"><%= t('ConnectToExpertsHeading') %> </span><span class=" text-light" data-caption-animate="fadeInUp" data-caption-delay="200"> <%= t('ConnectToExpertsSubheading') %></span></h1>
+                    <p class="lead" data-caption-animate="fadeInUp" data-caption-delay="350"><%= t('ConnectToExpertsDescription') %></p>
+                    <div class="button-wrap-default" data-caption-animate="fadeInUp" data-caption-delay="450"><!--a class="button button-secondary-text" href="#">Get Started</a--></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="swiper-slide" data-slide-bg="images/index-1-slider-2-1920x768.jpg">
+            <div class="swiper-slide-caption section-lg">
+              <div class="container">
+                <div class="row mt-txt-slide">
+                  <div class="col offset-md-1 offset-xxl-0 txt">
+                    <h1><span data-caption-animate="fadeInUp" data-caption-delay="100"><%= t('SaveTimeHeading') %> </span><span class=" text-light" data-caption-animate="fadeInUp" data-caption-delay="200"> <%= t('SaveTimeSubheading') %></span></h1>
+                    <p class="lead" data-caption-animate="fadeInUp" data-caption-delay="350"><%= t('SaveTimeDescription') %></p>
+                    <div class="button-wrap-default" data-caption-animate="fadeInUp" data-caption-delay="450"><!--a class="button button-secondary-text" href="#">Get Started</a--></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="swiper-slide" data-slide-bg="images/index-1-slider-3-1920x768.jpg">
+            <div class="swiper-slide-caption section-lg">
+              <div class="container">
+                <div class="row mt-txt-slide">
+                  <div class="col offset-md-1 offset-xxl-0 txt">
+                    <h1><span  data-caption-animate="fadeInUp" data-caption-delay="100"> <%= t('RelaxHeading') %></span><span class=" text-light" data-caption-animate="fadeInUp" data-caption-delay="200"> <%= t('RelaxSubheading') %></span></h1>
+                    <p class="lead" data-caption-animate="fadeInUp" data-caption-delay="350"><%= t('RelaxDescription') %></p>
+                    <div class="button-wrap-default" data-caption-animate="fadeInUp" data-caption-delay="450"><!--a class="button button-secondary-text" href="#">Get Started</a--></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+        </div>
+        <!--Swiper Pagination-->
+        <div class="swiper-pagination-wrap">
+          <div class="container">
+            <div class="row">
+              <!--div class="col-md-2 col-lg-2 offset-md-1 offset-xxl-0">
+                <div class="swiper-pagination"></div>
+              </div-->
+
+              <div class="col">
+
+                <%- include('partials/searching_box') %>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!--Icon List 2-->
+      <section class="section section-sm ">
+        <div class="container">
+          <div class="row row-30">
+
+            <div class="caroussel">
+              <div class="slide-track">
+                <% for(let i = 1; i <= 42; i++) { %>
+                <div class="col-md-4  slide ">
+                  <div class="box-icon-2 text-center">
+                    <div class=" justify-content-center d-inline "><img class="caroussel-icon" src="/images/icons/<%= t('category'+i+'Icon') %>"></div>
+                     
+                    <h5 class="title"><%= t('category'+i) %></h5>
+                    <p class="text"><%= t('catdesc'+i) %></p>
+                  </div>
+                </div>
+                <% } %>
+              </div>
+            </div>
+            
+          </div>
+        </div>
+      </section>
+      <!--Searching box-->
+      
+      <!-- Post Your Service Requests-->
+      <section class="section box-image-left post-tasks">
+        <div class="container">
+          <div class="row px-2 ">
+            <div class="col-md-6 col-lg-6 col-sm-12 col-12 wow fadeInLeft ">
+              <div class="section-lg section-lg-top-100 mx-auto">
+                <h2 class="title-icon title-icon-2"><span>
+                <span><%= t('PostYour') %><br></span>
+                <span class="type">
+                  <span class="text-light">
+                    <span><%= t('ServiceRequests') %> </span>
+                    <span><%= t('ProjectIdeas') %> </span>
+                    <span><%= t('QuotationRequests') %> </span>
+                  </span>
+                </span></span></h2>
+
+                <p class="big dark-text"><%= t('GetProfessionalsToApply') %></p>
+                <div class="group-sm group-wrap-2 d-block-center-sm">
+                  <a class="button button-primary" href="/find-services"><%= t('FindProfessionals') %></a>
+                  <% if(usr){ %>
+                    <a class="button button-icon button-icon-right button-secondary" href="/service-request"><span><%= t('PostServiceRequest') %></span></a>
+                  <% } else { link = "/service-request"; %>
+                    <a class="button button-icon button-icon-right button-secondary" href="#logModalCta" data-toggle="modal" data-caption-animate="fadeInUp"><span><%= t('PostServiceRequest') %></span></a>
+
+                  <% } %>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="box-image-item box-image-video novi-background bg-image" style="background-image: url(images/index-874x534.jpg)"></div>
+      </section>
+      <!-- Trusted-->
+      <section class="section bg-default section-md">
+        <div class="container">
+          <div class="row row-30 px-2">
+            <div class="col-md-6 col-lg-6 col-sm-12 col-12 d-block-center-sm">
+              <h2 class="title-icon"><span class="icon icon-default mercury-icon-target-2"></span><span><%= t('Trusted') %> <span class="text-light"><%= t('ByThousandsOfPeople') %></span></span></h2>
+              <p class="big"><%= t('OurMission') %></p>
+              <ul class="list-marked-2">
+                <li><%= t('SafelyConductProjects') %></li>
+                <li><%= t('ProvidingProfessionalExperience') %></li>
+                <li><%= t('OfferingFullSupport') %></li>
+            </div>
+            <div class="col-md-6 col-lg-6 col-sm-12 col-12 d-block-center-sm ">
+              <div class="row">
+                <div class="col-6">
+                  <!--Box counter-->
+                  <div class="box-counter">
+                    <div class="box-counter-main">
+                      <div class="counter">750</div>
+                    </div>
+                    <p class="box-counter-title"><%= t('SatisfiedClients') %></p>
+                  </div>
+                </div>
+                <div class="col-6">
+                  <!--Box counter-->
+                  <div class="box-counter">
+                    <div class="box-counter-main">
+                      <div class="counter">68</div>
+                    </div>
+                    <p class="box-counter-title"><%= t('TeamMembers') %></p>
+                  </div>
+                </div>
+                <div class="col-6">
+                  <!--Box counter-->
+                  <div class="box-counter">
+                    <div class="box-counter-main">
+                      <div class="counter">243</div>
+                    </div>
+                    <p class="box-counter-title"><%= t('SuccessfulServices') %></p>
+                  </div>
+                </div>
+                <div class="col-6">
+                  <!--Box counter-->
+                  <div class="box-counter">
+                    <div class="box-counter-main">
+                      <div class="counter">99</div><span>%</span>
+                    </div>
+                    <p class="box-counter-title"><%= t('SatisfactionRate') %></p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- Our Professionals -->
+      <section class="parallax-container" data-parallax-img="images/parallax-1-1920x1026.jpg">
+        <div class="parallax-content section-xl context-dark text-center">
+          <div class="container">
+            <h2><span class="text-light"><%= t('Why') %> </span><span><%= t('ChooseUs') %> </span></h2>
+            <div class="row ">
+             
+              <div class="col-md-4 col-lg-4 col-sm-12 col-12 mb-3" data-wow-delay="0.4s">
+                <div class="box-icon-2 box-section">
+                  <div class="icon novi-icon mercury-icon-money-3"></div>
+                  <h5 class="title"><%= t('MinimizeProjectCosts') %></h5>
+                  <p class="text"><%= t('WeAnalyzedMillionsOfBids') %></p>
+                </div>
+              </div>
+              <div class="col-md-4 col-lg-4 col-sm-12 col-12 mb-3" data-wow-delay="0.4s">
+                <div class="box-icon-2 box-section">
+                  <div class="icon novi-icon mercury-icon-search-font"></div>
+                  <h5 class="title"><%= t('FindProfessionalInAfrica') %></h5>
+                  <p class="text "><%= t('NothingWorseThanGettingHopesUp') %></p>
+                </div>
+              </div>
+              <div class="col-md-4 col-lg-4 col-sm-12 col-12 mb-3" data-wow-delay="0.4s">
+                <div class="box-icon-2 box-section">
+                  <div class="icon novi-icon mercury-icon-target-2 "></div>
+                  <h5 class="title"><%= t('CustomizedAdvice') %></h5>
+                  <p class="text"><%= t('GettingStartedIsHardestPart') %></p>
+                </div>
+              </div>
+
+
+              </div>
+          </div>
+        </div>
+      </section>
+      <!-- How it works-->
+      <section class="section bg-default section-md ">
+        <div class="container ">
+          <h2 class="title-icon"><span class="icon icon-default mercury-icon-news"></span><span><%= t('HowItWorks') %>. <span class="text-light"><%= t('QuickAndEasy') %>.</span></span></h2>
+          <div class="box-image-small box-image-small-left">
+            <div class="item-image bg-image novi-nackground" style="background-image: url(images/index-1-2-586x334.jpg)"></div>
+            <div class="item-body wow fadeInRight d-block-center-sm">
+              <h4><%= t('FindYourTaskAndTalk') %></h4>
+              <p class="big"><%= t('FindExactlyWhatYoureLookingFor') %></p>
+            </div>
+          </div>
+          <div class="box-image-small box-image-small-right">
+            <div class="item-image bg-image novi-nackground" style="background-image: url(images/index-1-3-580x334.jpg)"></div>
+            <div class="item-body wow fadeInLeft d-block-center-sm">
+              <h4><%= t('HireAProfessional') %></h4>
+              <p class="big"><%= t('CheckAvailabilityAndBook') %></p>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+        <!-- Subscriptions options-->
+
+        <!-- TODO: Check if the user is subscribed to a plan, then add tag current plan-->
+        <%- include('partials/packages') %>
+        <%- include('partials/providerSignupModal') %>
+        
+<script src="js/autocomplete.js"></script>
+<%- include('partials/footer') %>

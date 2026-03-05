@@ -1,0 +1,61 @@
+.dropdown-list-image {
+    position: relative;
+    height: 2.5rem;
+    width: 2.5rem;
+}
+.dropdown-list-image img {
+    height: 2.5rem;
+    width: 2.5rem;
+}
+.btn-light {
+    color: #5A9E2F;
+    background-color: #fff;
+    border-color: #d8f7eb;
+    border-radius: 2px;
+    font-size: large;
+}
+.btn-outline-success{
+    color: #5A9E2F;
+}
+.unread {
+    background-color: #e5f7f0;
+    color: darkslategrey;
+}
+.dropdown-notif {
+	
+	min-width: 6rem;
+	padding: 0.5rem 0;
+	margin: 0.125rem 0 0;
+	font-size: 12px;
+	text-align: left;
+	list-style: none;
+	
+}
+.noti-lnk{
+    color:#5A9E2F;
+    cursor: pointer;
+    text-transform: none;
+}
+.delete-noti{
+    color: #e7515e;
+    cursor: pointer;
+}
+.read {
+    background-color: #fff;
+    color: darkslategrey;
+}
+
+.unread .btn-outline-success {
+    color: #5A9E2F;
+    background-color: #fff;
+}
+.rounded-pill-notification{
+    background-color: #ec0033;
+    border-radius: 1em;
+    padding: 0.5em;
+    color: #fff;
+    margin-right: 0.2em;
+    font-size: xx-small;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+
+}

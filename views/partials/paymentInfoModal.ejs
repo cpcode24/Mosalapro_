@@ -1,0 +1,715 @@
+
+<% if(usr) { %>
+<!-- Add Payment Method Modal -->
+<div class="modal fade" id="paymentInfoModalCta" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title"><%= t('AddPaymentMethod') %></h3>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="container">
+                <!-- Payment Method Tabs -->
+                <ul class="nav nav-tabs mb-4" id="paymentMethodTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link active" id="card-tab" data-toggle="tab" href="#cardPayment" role="tab" aria-controls="cardPayment" aria-selected="true">
+                            <b class="fa fa-credit-card"> </b> <%= t('CreditDebitCard') %>
+                        </a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link" id="paypal-tab" data-toggle="tab" href="#paypalPayment" role="tab" aria-controls="paypalPayment" aria-selected="false">
+                            <b class="fa fa-paypal"> </b> <%= t('PayPal') %>
+                        </a>
+                    </li>
+                </ul>
+
+                <!-- Alert Messages -->
+                <div id="paymentAlert" class="alert d-none" role="alert"></div>
+
+                <!-- Tab Content -->
+                <div class="tab-content" id="paymentMethodTabContent">
+                    <!-- Credit/Debit Card Tab -->
+                    <div class="tab-pane fade show active" id="cardPayment" role="tabpanel" aria-labelledby="card-tab">
+                        <form id="cardPaymentForm">
+                            <div class="form-group">
+                                <label for="cardholderName"><%= t('CardholderName') %></label>
+                                <input type="text" class="form-control" id="cardholderName" placeholder="John Doe" required>
+                            </div>
+
+                            <!-- Stripe Card Element -->
+                            <div class="form-group">
+                                <label for="card-element"><%= t('CardDetails') %></label>
+                                <div id="card-element" class="form-control" style="height: 40px; padding-top: 10px;">
+                                    <!-- Stripe Elements will insert the card input here -->
+                                </div>
+                                <div id="card-errors" class="text-danger mt-2" role="alert"></div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label for="billingZip"><%= t('BillingZipCode') %></label>
+                                    <input type="text" class="form-control" autocomplete="off" id="billingZip" placeholder="12345" required>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label for="billingCountry"><%= t('Country') %></label>
+                                    <input type="text" class="form-control" id="billingCountry" value="<%= usr.country || 'US' %>" required>
+                                </div>
+                            </div>
+
+                            <div class="form-check mb-3">
+                                <input type="checkbox" class="form-check-input" id="setAsDefaultCard" checked>
+                                <label class="form-check-label" for="setAsDefaultCard">
+                                    <%= t('SetAsDefaultPaymentMethod') %>
+                                </label>
+                            </div>
+
+                            <button type="submit" id="submitCardBtn" class="btn btn-block button-primary">
+                                <span id="cardButtonText"><%= t('SaveCard') %></span>
+                                <span id="cardSpinner" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                            </button>
+                        </form>
+
+                        <div class="mt-3 text-center">
+                            <small class="text-muted">
+                                <b class="fa fa-lock"> </b> <%= t('SecuredByStripe') %>
+                            </small>
+                        </div>
+                    </div>
+
+                    <!-- PayPal Tab -->
+                    <div class="tab-pane fade" id="paypalPayment" role="tabpanel" aria-labelledby="paypal-tab">
+                        <form id="paypalPaymentForm">
+                            <div class="alert alert-info">
+                                <b class="fa fa-info-circle"></b><%= t('PayPalRedirectInfo') %>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="paypalEmail"><%= t('PayPalEmail') %></label>
+                                <input type="email" class="form-control" id="paypalEmail" placeholder="your@email.com" value="<%= usr.email %>" required>
+                            </div>
+
+                            <div class="form-check mb-3">
+                                <input type="checkbox" class="form-check-input" id="setAsDefaultPaypal" checked>
+                                <label class="form-check-label" for="setAsDefaultPaypal">
+                                    <%= t('SetAsDefaultPaymentMethod') %>
+                                </label>
+                            </div>
+
+                            <!-- PayPal Button Container -->
+                            <div id="paypal-button-container"></div>
+
+                            <div class="mt-3 text-center">
+                                <small class="text-muted">
+                                    <b class="fa fa-lock"> </b> <%= t('SecuredByPayPal') %>
+                                </small>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Saved Payment Methods -->
+                <div class="mt-4">
+                    <h5><%= t('SavedPaymentMethods') %></h5>
+                    <div id="savedPaymentMethods" class="list-group">
+                        <div class="text-center py-3">
+                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                            <%= t('LoadingPaymentMethods') %>...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+  </div>
+</div>
+
+<!-- Payment Selection Modal (for booking confirmation) -->
+<div class="modal fade" id="paymentSelectionModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><%= t('SelectPaymentMethod') %></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p class="mb-3"><%= t('SelectPaymentMethodPrompt') %></p>
+                <div id="paymentMethodsList" class="list-group">
+                    <div class="text-center py-3">
+                        <span class="spinner-border spinner-border-sm" role="status"></span>
+                        <%= t('Loading') %>...
+                    </div>
+                </div>
+                <button type="button" class="btn btn-link btn-block mt-3" onclick="$('#paymentSelectionModal').modal('hide'); $('#paymentInfoModalCta').modal('show');">
+                    <b class="fa fa-plus"></b><%= t('AddNewPaymentMethod') %>
+                </button>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal"><%= t('Cancel') %></button>
+                <button type="button" class="btn button-primary" id="confirmBookingWithPayment" disabled>
+                    <%= t('ConfirmBookingPay') %>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Stripe.js -->
+<script src="https://js.stripe.com/v3/"></script>
+
+<!-- PayPal SDK -->
+<script src="https://www.paypal.com/sdk/js?client-id=<%= process.env.PAYPAL_CLIENT_ID %>&vault=true"></script>
+
+<style>
+.StripeElement {
+    box-sizing: border-box;
+    height: 40px;
+    padding: 10px 12px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    background-color: white;
+    box-shadow: 0 1px 3px 0 #e6ebf1;
+    transition: box-shadow 150ms ease;
+}
+
+.StripeElement--focus {
+    box-shadow: 0 1px 3px 0 #cfd7df;
+    border-color: #80bdff;
+}
+
+.StripeElement--invalid {
+    border-color: #fa755a;
+}
+
+.StripeElement--webkit-autofill {
+    background-color: #fefde5 !important;
+}
+
+.payment-method-item {
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.payment-method-item:hover {
+    background-color: #f8f9fa;
+}
+
+.payment-method-item.selected {
+    background-color: #e7f3ff;
+    border-color: #007bff;
+}
+
+.payment-method-badge {
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+}
+</style>
+
+<script>
+// Global variables
+let stripe;
+let elements;
+let cardElement;
+let selectedPaymentMethodId = null;
+let currentBookingId = null;
+
+// Initialize Stripe when DOM is ready
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Initializing Stripe...');
+
+    // Check if Stripe publishable key is set
+    const stripeKey = '<%= process.env.STRIPE_PUBLISHABLE_KEY || "" %>';
+    if (!stripeKey || stripeKey === 'pk_test_your_key') {
+        console.error('STRIPE_PUBLISHABLE_KEY not configured');
+        return;
+    }
+
+    try {
+        // Initialize Stripe
+        stripe = Stripe(stripeKey);
+        elements = stripe.elements();
+
+        // Create card element
+        cardElement = elements.create('card', {
+            style: {
+                base: {
+                    fontSize: '16px',
+                    color: '#32325d',
+                    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                    '::placeholder': {
+                        color: '#aab7c4'
+                    }
+                },
+                invalid: {
+                    color: '#fa755a',
+                    iconColor: '#fa755a'
+                }
+            }
+        });
+
+        // Wait for card-element to be in DOM then mount
+        const cardElementDiv = document.getElementById('card-element');
+        if (cardElementDiv) {
+            cardElement.mount('#card-element');
+            console.log('Stripe card element mounted successfully');
+
+            // Handle real-time validation errors
+            cardElement.on('change', function(event) {
+                const displayError = document.getElementById('card-errors');
+                if (event.error) {
+                    displayError.textContent = event.error.message;
+                } else {
+                    displayError.textContent = '';
+                }
+            });
+
+            // Initialize card form submission handler
+            initializeCardForm();
+        } else {
+            console.error('card-element div not found');
+        }
+    } catch (error) {
+        console.error('Error initializing Stripe:', error);
+    }
+});
+
+// Load saved payment methods
+async function loadPaymentMethods() {
+    try {
+        const response = await fetch('/api/payment/payment-methods', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            displayPaymentMethods(data.paymentMethods);
+        } else {
+            throw new Error(data.error || 'Failed to load payment methods');
+        }
+    } catch (error) {
+        console.error('Error loading payment methods:', error);
+        document.getElementById('savedPaymentMethods').innerHTML =
+            '<div class="alert alert-warning">Failed to load payment methods</div>';
+    }
+}
+
+// Display payment methods
+function displayPaymentMethods(methods) {
+    const container = document.getElementById('savedPaymentMethods');
+
+    if (methods.length === 0) {
+        container.innerHTML = '<p class="text-muted text-center py-3"><%= t("NoSavedPaymentMethods") %></p>';
+        return;
+    }
+
+    let html = '';
+    methods.forEach(method => {
+        const icon = method.provider === 'stripe' ? 'fa-credit-card' : 'fa-paypal';
+        const badge = method.isDefault ? '<span class="badge badge-primary ml-2"><%= t("DefaultPaymentMethod") %></span>' : '';
+        const expired = method.isExpired ? '<span class="badge badge-danger ml-2"><%= t("ExpiredCard") %></span>' : '';
+
+        html += `
+            <div class="list-group-item payment-method-item d-flex justify-content-between align-items-center">
+                <div>
+                    <b class="fa ${icon}"></b>
+                    <strong>${method.displayName}</strong>
+                    ${badge}
+                    ${expired}
+                </div>
+                <div>
+                    ${method.isDefault ? '' : '<button class="btn btn-sm btn-outline-primary mr-2" onclick="setDefaultPaymentMethod(\'' + method.id + '\')"><%= t("SetAsDefaultBtn") %></button>'}
+                    <button class="btn btn-sm btn-outline-danger" onclick="deletePaymentMethod('${method.id}')">
+                        <b class="fa fa-trash"></b>
+                    </button>
+                </div>
+            </div>
+        `;
+    });
+
+    container.innerHTML = html;
+}
+
+// Handle card payment form submission - attach inside first DOMContentLoaded
+function initializeCardForm() {
+    const cardForm = document.getElementById('cardPaymentForm');
+    if (!cardForm) {
+        console.error('cardPaymentForm not found');
+        return;
+    }
+
+    cardForm.addEventListener('submit', async function(event) {
+        event.preventDefault();
+        console.log('Submitting card payment form...');
+
+        // Check if Stripe is initialized
+        if (!stripe || !cardElement) {
+            showAlert('danger', '<%= t("ErrorOccurred") %> - Stripe not initialized');
+            return;
+        }
+
+        const submitBtn = document.getElementById('submitCardBtn');
+        const btnText = document.getElementById('cardButtonText');
+        const spinner = document.getElementById('cardSpinner');
+
+        // Disable button and show spinner
+        submitBtn.disabled = true;
+        btnText.classList.add('d-none');
+        spinner.classList.remove('d-none');
+
+        try {
+        // Step 1: Create setup intent
+        console.log('Creating setup intent...');
+        const setupResponse = await fetch('/api/payment/setup-intent', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        console.log('Setup intent response:', setupResponse);
+        const setupData = await setupResponse.json();
+
+        if (!setupData.success) {
+            throw new Error(setupData.error || 'Failed to create setup intent');
+        }
+
+        // Step 2: Confirm card setup with Stripe
+        const { setupIntent, error } = await stripe.confirmCardSetup(
+            setupData.clientSecret,
+            {
+                payment_method: {
+                    card: cardElement,
+                    billing_details: {
+                        name: document.getElementById('cardholderName').value,
+                        email: '<%= usr.email %>',
+                        address: {
+                            postal_code: document.getElementById('billingZip').value,
+                            country: document.getElementById('billingCountry').value
+                        }
+                    }
+                }
+            }
+        );
+
+        if (error) {
+            throw new Error(error.message);
+        }
+
+        // Step 3: Save payment method to our backend
+        const saveResponse = await fetch('/api/payment/payment-method', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                provider: 'stripe',
+                paymentMethodId: setupIntent.payment_method,
+                setAsDefault: document.getElementById('setAsDefaultCard').checked
+            })
+        });
+
+        const saveData = await saveResponse.json();
+
+        if (!saveData.success) {
+            throw new Error(saveData.error || 'Failed to save payment method');
+        }
+
+        // Success!
+        showAlert('success', '<%= t("PaymentMethodAdded") %>');
+
+        // Reset form
+        document.getElementById('cardPaymentForm').reset();
+        cardElement.clear();
+
+        // Reload payment methods
+        await loadPaymentMethods();
+
+    } catch (error) {
+        console.error('Error:', error);
+
+        // Translate common Stripe error messages
+        let errorMessage = error.message;
+        const errorTranslations = {
+            'Your card number is invalid': '<%= t("InvalidCardNumber") %>',
+            'Your card has expired': '<%= t("CardExpired") %>',
+            'Your card\'s security code is invalid': '<%= t("InvalidCVC") %>',
+            'Your postal code is invalid': '<%= t("InvalidZipCode") %>',
+            'Your card was declined': '<%= t("PaymentDeclined") %>',
+            'Your card has insufficient funds': '<%= t("InsufficientFunds") %>',
+            'Your card does not support this type of purchase': '<%= t("CardNotSupported") %>'
+        };
+
+        // Check if we have a translation for this error
+        for (const [key, value] of Object.entries(errorTranslations)) {
+            if (errorMessage.includes(key)) {
+                errorMessage = value;
+                break;
+            }
+        }
+
+        showAlert('danger', errorMessage);
+    } finally {
+        // Re-enable button
+        submitBtn.disabled = false;
+        btnText.classList.remove('d-none');
+        spinner.classList.add('d-none');
+    }
+    });
+}
+
+// Initialize PayPal button
+if (window.paypal) {
+    paypal.Buttons({
+        createBillingAgreement: function() {
+            return fetch('/api/payment/paypal/create-billing-agreement', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    email: document.getElementById('paypalEmail').value
+                })
+            })
+            .then(response => response.json())
+            .then(data => data.agreementId);
+        },
+        onApprove: function(data) {
+            return fetch('/api/payment/payment-method', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    provider: 'paypal',
+                    paymentMethodId: data.billingToken,
+                    paypalEmail: document.getElementById('paypalEmail').value,
+                    setAsDefault: document.getElementById('setAsDefaultPaypal').checked
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showAlert('success', '<%= t("PaymentMethodAdded") %>');
+                    loadPaymentMethods();
+                } else {
+                    throw new Error(data.error);
+                }
+            })
+            .catch(error => {
+                showAlert('danger', error.message || '<%= t("ErrorAddingPaymentMethod") %>');
+            });
+        },
+        onError: function(err) {
+            console.error('PayPal error:', err);
+            showAlert('danger', '<%= t("PaymentFailedError") %>');
+        }
+    }).render('#paypal-button-container');
+}
+
+// Set default payment method
+async function setDefaultPaymentMethod(paymentMethodId) {
+    try {
+        const response = await fetch(`/api/payment/payment-method/${paymentMethodId}/default`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            showAlert('success', '<%= t("PaymentMethodUpdated") %>');
+            await loadPaymentMethods();
+        } else {
+            throw new Error(data.error);
+        }
+    } catch (error) {
+        showAlert('danger', error.message || '<%= t("ErrorAddingPaymentMethod") %>');
+    }
+}
+
+// Delete payment method
+async function deletePaymentMethod(paymentMethodId) {
+    if (!confirm('<%= t("AreYouSureDeletePaymentMethod") %>')) {
+        return;
+    }
+
+    try {
+        const response = await fetch(`/api/payment/payment-method/${paymentMethodId}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            showAlert('success', '<%= t("PaymentMethodDeleted") %>');
+            await loadPaymentMethods();
+        } else {
+            throw new Error(data.error);
+        }
+    } catch (error) {
+        showAlert('danger', error.message || '<%= t("ErrorDeletingPaymentMethod") %>');
+    }
+}
+
+// Show alert
+function showAlert(type, message) {
+    const alert = document.getElementById('paymentAlert');
+    alert.className = `alert alert-${type}`;
+    alert.textContent = message;
+    alert.classList.remove('d-none');
+
+    setTimeout(() => {
+        alert.classList.add('d-none');
+    }, 5000);
+}
+
+// Load payment methods when modal is opened
+$('#paymentInfoModalCta').on('shown.bs.modal', function() {
+    loadPaymentMethods();
+});
+
+// Payment selection for booking confirmation
+async function showPaymentSelectionForBooking(bookingId) {
+    currentBookingId = bookingId;
+    selectedPaymentMethodId = null;
+
+    try {
+        const response = await fetch('/api/payment/payment-methods');
+        const data = await response.json();
+
+        if (data.success && data.paymentMethods.length > 0) {
+            displayPaymentMethodsForSelection(data.paymentMethods);
+            $('#paymentSelectionModal').modal('show');
+        } else {
+            // No payment methods, redirect to add one
+            $('#paymentInfoModalCta').modal('show');
+            showAlert('warning', '<%= t("PaymentMethodRequired") %>');
+        }
+    } catch (error) {
+        showAlert('danger', '<%= t("ErrorLoadingPaymentMethods") %>');
+    }
+}
+
+// Display payment methods for selection
+function displayPaymentMethodsForSelection(methods) {
+    const container = document.getElementById('paymentMethodsList');
+
+    let html = '';
+    methods.forEach(method => {
+        const icon = method.provider === 'stripe' ? 'fa-credit-card' : 'fa-paypal';
+        const badge = method.isDefault ? '<span class="badge badge-primary ml-2"><%= t("DefaultPaymentMethod") %></span>' : '';
+        const disabled = method.isExpired ? 'disabled' : '';
+
+        html += `
+            <button class="list-group-item list-group-item-action payment-method-item ${disabled}"
+                    onclick="selectPaymentMethod('${method.id}')"
+                    data-method-id="${method.id}"
+                    ${disabled}>
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <b class="fa ${icon}"> </b>
+                        <strong>${method.displayName}</strong>
+                        ${badge}
+                    </div>
+                    <b class="fa fa-check text-success d-none"> </b>
+                </div>
+            </button>
+        `;
+    });
+
+    container.innerHTML = html;
+}
+
+// Select payment method
+function selectPaymentMethod(methodId) {
+    selectedPaymentMethodId = methodId;
+
+    // Update UI
+    document.querySelectorAll('.payment-method-item').forEach(item => {
+        item.classList.remove('selected');
+        item.querySelector('.fa-check').classList.add('d-none');
+    });
+
+    const selectedItem = document.querySelector(`[data-method-id="${methodId}"]`);
+    selectedItem.classList.add('selected');
+    selectedItem.querySelector('.fa-check').classList.remove('d-none');
+
+    // Enable confirm button
+    document.getElementById('confirmBookingWithPayment').disabled = false;
+}
+
+// Confirm booking with payment
+document.getElementById('confirmBookingWithPayment').addEventListener('click', async function() {
+    if (!selectedPaymentMethodId || !currentBookingId) {
+        showAlert('danger', '<%= t("PaymentRequiredError") %>');
+        return;
+    }
+
+    const btn = this;
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm mr-2"></span><%= t("PaymentProcessing") %>';
+
+    try {
+        const response = await fetch('/confirm-booking', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                bookingId: currentBookingId,
+                paymentMethodId: selectedPaymentMethodId
+            })
+        });
+
+        const data = await response.json();
+
+        if (response.status === 200) {
+            $('#paymentSelectionModal').modal('hide');
+            alert('<%= t("BookingConfirmedPaymentProcessed") %>');
+            location.reload();
+        } else if (response.status === 402) {
+            throw new Error(data.message || '<%= t("PaymentFailedError") %>');
+        } else {
+            throw new Error(data.message || '<%= t("ErrorOccurred") %>');
+        }
+    } catch (error) {
+        showAlert('danger', error.message);
+        btn.disabled = false;
+        btn.textContent = '<%= t("ConfirmBookingPay") %>';
+    }
+});
+
+// Make function globally available
+window.showPaymentSelectionForBooking = showPaymentSelectionForBooking;
+
+// Load payment methods when modal is shown
+$('#paymentInfoModalCta').on('shown.bs.modal', function () {
+    console.log('Payment modal opened - loading payment methods...');
+    loadPaymentMethods();
+});
+
+// Initialize on DOM ready
+$(document).ready(function() {
+    console.log('Payment modal script initialized');
+
+    // Check if Stripe key is configured
+    if ('<%= process.env.STRIPE_PUBLISHABLE_KEY || "" %>' === '') {
+        console.error('STRIPE_PUBLISHABLE_KEY is not configured in .env');
+        showAlert('danger', 'Payment system not configured. Please contact support.');
+    }
+});
+</script>
+<% } %>

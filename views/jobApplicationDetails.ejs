@@ -1,0 +1,120 @@
+
+<%- include('partials/header') %>
+
+<section class="<%=bg%> padt-5">
+    <div class="container px-4">
+        <nav aria-label="breadcrumb" class="main-breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="/applications">Job Applications</a></li>
+                <li class="breadcrumb-item active" aria-current="page"><%=job.requestTitle%></li>
+            </ol>
+        </nav>
+
+        <div class="row">
+            <div class="col-lg-8 col-md-12 col-sm-12">
+                <div class="container shadow-sm p-4 mb-5 bg-white rounded pt-1 mb-1">
+                    <div class="mt-1">
+                        <h5 class="mt-1 mb-1 text-center">   <%=job.requestTitle%>  </h5>
+                        </div>
+                                <div class="modal-container-job px-4">
+                                    <span id="mess" class="error_message"></span>
+                                    <div class="row  mt-3">
+                                        <div class="col">
+                                            <h6 class="border-bottom mb-1"><%=t('Category') %></h6><span class="job-details pl-2 mt-4"><%=job.requestCategory %></span> 
+                                        </div>
+                                    </div>
+                                    <div class="row mt-3">
+                                        <div class="col">
+                                            <h6 class="border-bottom mb-1"><%= t('Budget') %></h6> <span class="job-details pl-2 mt-4"> <%=job.budget%> <%=job.currency%> <%=job.convCurr%> - <%=job.budgetType%></span>
+                                        </div>
+                                    </div>
+
+                                    <div class="row mt-3">
+                                        <div class="col">
+                                            <h6 class="border-bottom mb-1"><%=t('Deadline') %></h6><span class="job-details pl-2 mt-4"><%=job.deadline%></span>
+                                        </div>
+                                    </div>
+
+                                    <div class="row mt-3">
+                                        <div class="col">
+                                            <h6 class="border-bottom mb-1"><%= t('Description') %></h6>
+                                            <span class="job-details pl-2"><%=job.requestDescription%></span>
+                                        </div>
+                                    </div>
+                                    <div class="row mt-3">
+                                        <div class="col">
+                                            <h6 class="border-bottom mb-3"><%=t('Files')%></h6>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row mt-1">
+                                        
+                                        <% if (job.files.length == 0){ %>
+                                            <div class="col">
+                                                <span class="job-details pl-2"> <%=t("NoAttachedDocument")%></span>
+                                            </div>
+                                        <% } else { %>
+                                            <% let j = 0; job.files.forEach(file=>{ j++; %>
+
+                                            <!--span class="d-none" id="file-"><%= file%></a></p-->
+                                            <div title="Download file <%=j%>" data-toggle="tooltip" data-placement="bottom"  class=" col-sm-4 col-lg-2 tooltips cursor mb-4" >
+                                            <!--span class="job-details"><%=job.files.length%></span-->
+                                                <!-- Post Modern-->
+                                                <div class="d-flex justify-content-center px-auto" onClick="downloadFile('<%= file%>')" >
+                                                    <b class="fa fa-file-text fa-5x mb-1 file-icon" aria-hidden="true"></b>
+                                                    <span class="post-modern-time">  file <%=j%></span>
+                                                    
+                                                </div>
+                                                
+                                            </div>
+
+                                            <% }); } %>
+                                    </div>
+                                    <div class="row pb-4 mb-4 mt-3">
+                                        <div class="col">
+                                            <h6 class="border-bottom mb-2"><%=t('AppliedOn')%></h6>
+                                            <span class="job-details pl-2"><%= job.createdAt.getUTCMonth() + 1 %>/<%= job.createdAt.getUTCDate()%>/<%= job.createdAt.getUTCFullYear() %></span>
+                                        </div>
+                                    </div>
+                                        <p class="post-modern-text text-petit mt-1 border-top"><%=t('DecisionAboutProjectPrint')%></p>
+                                    </div>
+                                    <% if(job.appStatus == "active") { %>
+                                        <div class="p-4 d-flex justify-content-center"><button class=" btn-danger"  href="#cancelApplicationConfModalCta" data-toggle="modal" data-caption-animate="fadeInUp">Cancel my application</button></div>
+                                    <% } %>
+                                    <!--div class="p-4 d-flex justify-content-center"><button class=" btn-danger">Provide a quotation</button></div-->
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-12 col-sm-12 col">
+                        <div class="container shadow-sm mb-5 pb-1 bg-white rounded ">
+                          <div class="row">
+                            <div class="w-100 d-flex justify-content-between align-items-center border-bottom border-dark p-3">
+                              <h6><%=t('requestedBy')%></h6>
+                            </div>
+                          </div>
+                          <% if(postedBy) { %>
+                            <div class="row">
+                                <div class=" col">
+                                    <div class="card">
+                                        <div class="card-body p-4 d-flex align-items-center gap-3">
+                                            <img src="<%=postedBy.photo %>"  alt="" class="rounded-circle" style="height:45px !important; width:45px !important;">
+                                            <div class="ml-3">
+                                                <h6 class="fw-semibold mb-0"><a href="#"><%=postedBy.firstName %> <%=postedBy.lastName %> </a></h6>
+                                                <span class="fs-2 d-flex align-items-center"><i class="ti ti-map-pin text-primary fs-3 me-1"> </i> 
+                                                <%=postedBy.city%>, <%=postedBy.country%></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                          <% } %>
+                          </div>
+                    </div>
+                </div>
+            </div>
+</section>
+
+<%- include('partials/cancelApplicationConfModal') %>
+
+<script src="js/jobApplication.js"></script>
+<%- include('partials/footer') %>

@@ -1,0 +1,5 @@
+{
+    "welcome": "Welcome to our app!",
+    "motto": "Professional Service Finder",
+    "greeting": "Hello, {{name}}!"
+}

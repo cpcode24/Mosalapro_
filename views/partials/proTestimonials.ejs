@@ -1,0 +1,63 @@
+<section class="testi-section box-image-left ">
+        <div class="container">
+          <div class="row">
+            <div class="col-lg-6 col-md-6 col-sm-12 col-12">
+              <div class="section-md section-md-bottom-50">
+                <h2 class="mb-3 mt-2"><span class="text-light"><%= t('WhatOur') %></span><span  class="title" ><%= t('ServiceProvidersSay') %></span></h2>
+                <!--- Caroussel Boots-->
+                <div id="testimonyCarousel" class="carousel slide" data-ride="carousel">
+                    <ol class="carousel-indicators">
+                      <li data-target="#testimonyCarousel" data-slide-to="0" class="active"></li>
+                      <li data-target="#testimonyCarousel" data-slide-to="1"></li>
+                      <li data-target="#testimonyCarousel" data-slide-to="2"></li>
+                    </ol>
+                    <div class="carousel-inner">
+                      <div class="carousel-item active">
+                        <blockquote class="quote quote-simple">
+                            <q><%= t('TestimonialSara') %></q>
+                            <div class="quote-meta">
+                              <div class="author">
+                                <cite>Sara Adeleke</cite>
+                              </div>
+                              <div class="position"><%= t('Accountant') %></div>
+                            </div>
+                          </blockquote>
+                      </div>
+                      <div class="carousel-item">
+                        <blockquote class="quote quote-simple">
+                            <q><%= t('TestimonialSam') %></q>
+                            <div class="quote-meta">
+                              <div class="author">
+                                <cite>Sam Fonjoh</cite>
+                              </div>
+                              <div class="position"><%= t('Lawyer') %></div>
+                            </div>
+                          </blockquote>
+                      </div>
+                      <div class="carousel-item">
+                        <blockquote class="quote quote-simple">
+                            <q><%= t('TestimonialAnna') %></q>
+                            <div class="quote-meta">
+                              <div class="author">
+                                <cite>Anna Bourso</cite>
+                              </div>
+                              <div class="position"><%= t('Architect') %></div>
+                            </div>
+                          </blockquote>
+                      </div>
+                    </div>
+                    <a class="carousel-control-prev" href="#testimonyCarousel" role="button" data-slide="prev">
+                      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                      <span class="sr-only"><%= t('Previous') %></span>
+                    </a>
+                    <a class="carousel-control-next" href="#testimonyCarousel" role="button" data-slide="next">
+                      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                      <span class="sr-only"><%= t('Next') %></span>
+                    </a>
+                  </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="box-image-item novi-background bg-image" style="background-image: url(images/business-partnership-illustration.png)"></div>
+  </section>

@@ -1,0 +1,550 @@
+[{
+  "_id": {
+    "$oid": "640be335c42a867e68d70dc5"
+  },
+  "name": "Operators",
+  "description": "Automatic or live assistance to a consumer to arrange for billing or completion of a telephone call, busy line verification, emergency interrupt, and operator-assisted directory assistance services.",
+  "icon": "services.png",
+  "translations": {
+    "fr": {
+      "name": "Opérateurs",
+      "description": "Assistance automatique ou en direct à un consommateur pour organiser la facturation ou l'achèvement d'un appel téléphonique, la vérification d'une ligne occupée, l'interruption d'urgence et les services d'assistance-annuaire assistée par un opérateur."
+    }
+  }
+},{
+  "_id": {
+    "$oid": "640be335c42a867e68d70dc8"
+  },
+  "name": "Computer Repair",
+  "description": "Professionals who identify, troubleshoot and solve problems and issues in a faulty computer; or repair of computer hardware, software or network/Internet problems.",
+  "icon": "pc-tower.png",
+  "translations": {
+    "fr": {
+      "name": "Réparation d'Appareils",
+      "description": "Des professionnels qui identifient, dépannent et réparent des problèmes et des difficultés d'appareils electroniques défaillants."
+    }
+  }
+},{
+  "_id": {
+    "$oid": "640be335c42a867e68d70dc9"
+  },
+  "name": "Corporate Law Attorney",
+  "description": "Information on people rights, responsibilities, and duties under the law. Representation of the corporate entity at courts and negotiations.",
+  "icon": "lawyer.png",
+  "translations": {
+    "fr": {
+      "name": "Droit des Sociétés",
+      "description": "Informations sur les droits, responsabilités et devoirs des personnes en vertu de la loi. Représentation de l'entreprise devant les tribunaux et les négociations."
+    }
+  }
+},{
+  "_id": {
+    "$oid": "640be335c42a867e68d70dca"
+  },
+  "name": "Notarization",
+  "description": "Public services in non-contentious matters usually concerned with general financial transactions, estates, deeds, powers-of-attorney, and foreign and international business",
+  "icon": "process.png",
+  "translations": {
+    "fr": {
+      "name": "Notariat",
+      "description": "Services publics dans les affaires non contentieuses portant généralement sur les transactions financières générales, les successions, les actes, les procurations et les affaires étrangères et internationales"
+    }
+  }
+},{
+  "_id": {
+    "$oid": "640be335c42a867e68d70dcd"
+  },
+  "name": "Events",
+  "description": " Provision of artwork support in respect of events, includes related Logistics Services and associated services in relation to an event",
+  "icon": "red-carpet.png",
+  "translations":{
+    "fr":{
+      "name": "Événements",
+      "description": "Soutien artistique ou de decor dans le cadre d'événements, y compris les services logistiques connexes et les services associés relatifs à un événement"  
+    }
+    }
+},{
+  "_id": {
+    "$oid": "640be335c42a867e68d70dce"
+  },
+  "name": "Events Security",
+  "description": "Safety guards to provide safety and protection of all attendees at events including concerts, sporting events, conferences, and private gatherings",
+  "icon": "check.png",
+  "translations":{
+    "fr":{
+      "name":"Sécurité des Événements",
+      "description": "Agents de sécurité pour assurer la sécurité et la protection de tous les participants lors d'événements, y compris des concerts, des événements sportifs, des conférences et des rassemblements privés"
+    }
+  }
+},{
+  "_id": {
+    "$oid": "640be335c42a867e68d70dc7"
+  },
+  "name": "Accounting",
+  "description": "Measurement, processing and communication of financial information about economic entities including, financial accounting, management accounting, auditing, auditing services, taxation and accounting information systems etc..",
+  "icon": "budget.png",
+  "translations":{
+    "fr":{
+      "name":"Comptabilité",
+      "description":"Traitement et communication d'informations financières sur les entités économiques, y compris la comptabilité financière, la comptabilité de gestion, l'audit, les services d'audit, la fiscalité, etc."
+    }
+  }
+},{
+  "_id": {
+    "$oid": "640be335c42a867e68d70dc6"
+  },
+  "name": "Technology & Engineering",
+  "description": "Project-based's technology and engineering services, helping clients bring products or technology to market. ",
+  "icon": "technology.png",
+  "translations":{
+    "fr":{
+      "name":"Technologie et Ingénierie",
+      "description":"Services technologiques et d'ingénierie basés sur des projets, aidant les clients à mettre des produits ou des technologies sur le marché."
+    }
+  }
+},{
+  "_id": {
+    "$oid": "640be335c42a867e68d70dcf"
+  },
+  "name": "Architecture",
+  "description": "Design, preparation of construction documents, and construction administration, feasibility studies, architectural programming and project management.",
+  "icon": "blueprint.png",
+  "translations":{
+    "fr":{
+      "name":"Architecture",
+      "description": "Conception, préparation des documents de construction, administration de la construction, études de faisabilité, programmation architecturale et gestion de projet."
+    }
+  }
+},{
+  "_id": {
+    "$oid": "640be335c42a867e68d70dd0"
+  },
+  "name": "Carpentry",
+  "description": "Cutting, shaping and installation of building materials during the construction of buildings, ships, timber bridges, concrete formwork, etc.",
+  "icon": "plumber.png",
+  "translations":{
+    "fr":{
+      "name":"Menuiserie",
+      "description":"Découpage, façonnage et pose de matériaux de construction lors de la construction de bâtiments, de navires, de ponts en bois, de coffrages en béton, etc."
+    }
+  }
+},{
+  "_id": {
+    "$oid": "640be335c42a867e68d70dd1"
+  },
+  "name": "Handyman Services",
+  "description": "Maintenance worker, repaire worker, keeping buildings, shops or equipment around the home in good repair.",
+  "icon": "technician.png",
+  "translations":{
+    "fr":{
+      "name":"Services Manuels",
+      "description": "Ouvriers d'entretien, réparateurs, qui maintiennent en bon état les bâtiments, les magasins ou les équipements de la maison."
+    }
+  }
+},{
+  "_id": {
+    "$oid": "640be335c42a867e68d70dd2"
+  },
+  "name": "Cleaning Services",
+  "description": "Hand washing, dry cleaning machine, Ultrasonic parts cleaning, Carbon dioxide, snow cleaning in an aerospace setting ",
+  "icon": "cleaning.png",
+  "translations":{
+    "fr":{
+      "name":"Services de Nettoyage",
+      "description":"Professionnels qui offrent des services de lavage à la main, nettoyage à sec, nettoyage de pièces par ultrasons, nettoyage au dioxyde de carbone"
+    }
+  }
+},{
+  "_id": {
+    "$oid": "640be335c42a867e68d70dcc"
+  },
+  "name": "Software Development",
+  "description": "Computer programming, design, code development and maintenance, implementation, support, testing, and documentation services and other services",
+  "icon": "soft-dev.png",
+  "translations":{
+    "fr":{
+      "name":"Developpement de Logiciel",
+      "description":"Services de programmation informatique, de conception, de développement et de maintenance de codes, de mise en œuvre, de support, de test et de documentation et autres services"
+    }
+  }
+},{
+  "_id": {
+    "$oid": "640be335c42a867e68d70dcb"
+  },
+  "name": "Real Estate",
+  "description": "Service provision with respect to the purchase, sale, lease, rental, or appraisal of real property",
+  "icon": "real-estate.png",
+  "translations":{
+    "fr":{
+      "name":"Service Immobilier",
+      "description":"Prestation de services en matière d'achat, de vente, de location ou d'évaluation de biens immobiliers"
+    }
+  }
+},
+  {
+    "_id": {
+      "$oid": "640be335c42a867e68d71hjd"
+    },
+    "name": "Personal Trainer",
+    "description": "Personal trainers to create and deliver safe and effective exercise programs for healthy individuals and groups, or those with medical clearance to exercise. ",
+    "icon": "perso-trainer.png",
+    "translations":{
+      "fr":{
+        "name":"Entraîneurs Personnels",
+        "description":"Entraîneurs personnels pour créer et proposer des programmes d'exercices sûrs et efficaces pour les personnes et les groupes en bonne santé, ou pour les personnes ayant une autorisation médicale de faire de l'exercice."
+      }
+    }
+},
+{
+  "_id": {
+    "$oid": "640be335c42a867e68d84try"
+  },
+  "name": "Car Sales and Rentals",
+  "description": "Buying and selling of vehicles, typically from private sellers. Buying a car, either new or used, and owning it outright. Renting a car for a short-term period without ownership.",
+  "icon": "rental-car.png",
+  "translations":{
+    "fr":{
+      "name":"Vente et Location de Voitures",
+      "description":"Achat et vente de véhicules, généralement auprès de vendeurs privés. Achat d'une voiture, neuve ou d'occasion, et en devenir propriétaire. Location d'une voiture pour une courte période sans en être propriétaire"
+    }
+  }
+},
+{ "_id": {
+    "$oid": "640be335c42a867e68d87rth"
+  },
+  "name": "Formal Education",
+  "description": "Providing assistance or tutelage to one or more people on certain subject areas or skills. The tutor spends a few hours on a daily, weekly, or monthly basis to transfer their expertise on the topic or skill to the student.",
+  "icon": "tutor.png",
+  "translations":{
+    "fr":{
+      "name":"Pédagogie",
+      "description":"Fournir une assistance ou un tutorat à une ou plusieurs personnes sur certains domaines ou compétences. Le tuteur passe quelques heures par jour, par semaine ou par mois pour transmettre son expertise sur le sujet ou la compétence à l'étudiant."
+    }
+  }
+},
+{ "_id": {
+    "$oid": "640be335c42a867e68d88kjdf"
+  },
+  "name": "Hair Salon",
+  "description": "A beauty salon or beauty parlor that provides cosmetic treatments for people. Other variations of this type of business include hair salons.",
+  "icon": "hairdresser.png",
+  "translations":{
+    "fr":{
+      "name":"Salon de Coiffure",
+      "description":"Un salon de beauté ou un institut de beauté qui propose des soins cosmétiques aux personnes. D'autres variantes de ce type d'entreprise incluent les salons de coiffure."
+    }
+  }
+},
+{ "_id": {
+  "$oid": "640be335c42a867e68d89fder"
+},
+"name": "Metallic Construction and Welding",
+"description": "fabrication process that joins materials, usually metals or thermoplastics, primarily by using high temperature to melt the parts together and allow them to cool, causing fusion.",
+"icon": "welding.png",
+"translations":{
+  "fr":{
+    "name":"Construction Mettallique et Soudure",
+    "description":"Processus de fabrication qui assemble des matériaux, généralement des métaux ou des thermoplastiques, principalement en utilisant une température élevée pour faire fondre les pièces ensemble et leur permettre de refroidir, provoquant ainsi la fusion."
+  }
+}
+},
+  { "_id": {
+    "$oid": "640be335c42a867e68d90uuk"
+  },
+  "name": "Craftsmananship",
+  "description": " skilled craft worker who makes or creates material objects partly or entirely by hand. These objects may be functional or strictly decorative, for example furniture, decorative art, sculpture, clothing, food items, household items, and tools.",
+  "icon": "builder.png",
+  "translations":{
+    "fr":{
+      "name":"Artisanat",
+      "description":"Artisans qualifié qui fabrique ou crée des objets matériels en partie ou entièrement à la main. Des objets tels que des meubles, des objets d'art décoratif, des sculptures, des vêtements, des produits alimentaires, des articles ménagers."
+  }
+}
+},
+{ "_id": {
+    "$oid": "640be335c42a867e68d90uuk"
+  },
+  "name": "Agronomy, Environment and Seeds",
+  "description": " Producing and using plants by agriculture for food, fuel, fiber, chemicals, recreation, or land conservation.",
+  "icon": "agriculture.png",
+  "translations":{
+    "fr":{
+      "name":"Agronomie, Environment et Sémences",
+      "description":"Produire et utiliser des plantes par l’agriculture pour l’alimentation, le carburant, les fibres, les produits chimiques, les loisirs ou la conservation des terres."
+  }
+  }
+ },
+  { "_id": {
+    "$oid": "640be335c42a867e68d91feew"
+  },
+  "name": "Oil and Gas Services",
+  "description": "Oil and gas services refer to products and processes that support the oil and gas industry, including energy exploration, transport of petroleum and gas to refineries.",
+  "icon": "oil-pump.png",
+  "translations":{
+    "fr":{
+      "name":"Services Pétroliers",
+      "description":"Les services pétroliers et gaziers font référence aux produits et processus qui soutiennent l’industrie pétrolière et gazière, y compris l’exploration énergétique, le transport du pétrole et du gaz vers les raffineries."
+  }
+  }
+},
+  { "_id": {
+    "$oid": "640be335c42a867e68d92grff"
+  },
+  "name": "Transporation Services",
+  "description": "Transportation services refer to the various systems and modes that facilitate the movement of people and goods from one location to another.",
+  "icon": "manager.png",
+  "translations":{
+    "fr":{
+      "name":"Services de Transport",
+      "description":"Les services de transport font référence aux différents systèmes et modes qui facilitent le déplacement des personnes et des marchandises d’un endroit à un autre."
+  }
+  }
+},
+{ "_id": {
+  "$oid": "640be335c42a867e68d93fdg"
+},
+"name": "Renewable Energy",
+"description": "Installation, maintenance and repair related to most widely used renewable energy such as solar energy, wind power, hydropower, bioenergy and geothermal power.",
+"icon": "solar-energy.png",
+"translations":{
+  "fr":{
+    "name":"Energies Renouvable et Installation Panneaux Solaires",
+    "description":"Installation, entretien et réparation liés aux énergies renouvelables les plus utilisées telles que l'énergie solaire, l'énergie éolienne, l'hydroélectricité, la bioénergie et la géothermie."
+}
+}
+},
+{ "_id": {
+  "$oid": "640be335c42a867e68d95fder"
+},
+"name": "Domestic Chores",
+"description": "Maids perform typical domestic chores such as laundry, ironing, cleaning the house, grocery shopping, cooking, and caring for household pets. ",
+"icon": "dishwasher.png",
+"translations":{
+  "fr":{
+    "name":"Service de Ménage",
+    "description":"Les femmes de ménage qui effectuent des tâches ménagères courantes telles que la lessive, le repassage, le nettoyage de la maison, les courses, la cuisine et les soins aux animaux domestiques."
+}
+}
+},
+{ "_id": {
+  "$oid": "640be335c42a867e68d96fgs"
+},
+"name": "DJ",
+"description": "Professionals to play recorded music for an audience, including radio DJs, club DJs, mobile DJs at public and private events such as weddings, parties, or festivals, and turntablists who use record players, usually turntables, to manipulate sounds on phonograph records. ",
+"icon": "dj.png",
+"translations":{
+  "fr":{
+    "name":"DJ",
+    "description":"Professionnels qui jouent et manipulent de la musique enregistrée pour un public, notamment des DJ radio ou des DJ de club lors d'événements publics et privés tels que des mariages, des fêtes et autres occasions. "
+}
+}
+},
+{ "_id": {
+  "$oid": "640be335c42a867e68d97dfgj"
+},
+"name": "Musicians and Band",
+"description": "Musicians include songwriters, who write both music and lyrics for songs; conductors, who direct a musical performance; and performers, who perform for an audience. Singers who provide vocals, or instrumentalists, who play  musical instruments. ",
+"icon": "band.png",
+"translations":{
+  "fr":{
+    "name":"Musiciens et Orchestre",
+    "description":"Les musiciens comprennent les auteurs-compositeurs, qui écrivent à la fois la musique et les paroles des chansons ; les chefs d'orchestre, qui dirigent une performance musicale ; et les interprètes, qui se produisent devant un public et des chanteurs, qui assurent la voix."
+}
+}
+},
+{ "_id": {
+  "$oid": "640be335c42a867e68d98dfdj"
+},
+"name": "Healthcare and Well Being",
+"description": "Health professionals who practices medicine, which is concerned with promoting, maintaining or restoring health through the study, diagnosis, prognosis and treatment of disease, injury, and other physical and mental impairments. ",
+"icon": "physician-helthcare.png",
+"translations":{
+  "fr":{
+    "name":"Santé et Bien-être",
+    "description":"Professionnels de la santé qui pratique la médecine et qui s'intéresse à la promotion, au maintien ou au rétablissement de la santé par l'étude, le diagnostic, le pronostic et le traitement des maladies, des blessures et d'autres déficiences physiques et mentales."
+}
+}
+},
+{ "_id": {
+  "$oid": "640be335c42a867e68d99fdkj"
+},
+"name": "Pharmacies",
+"description": "Practice of discovering, producing, preparing, dispensing, reviewing and monitoring medications, aiming to ensure the safe, effective, and affordable use of medicines. ",
+"icon": "pharmacy.png",
+"translations":{
+  "fr":{
+    "name":"Pharamacies",
+    "description":"Pratique de découverte, de production, de préparation, de distribution, d’examen et de surveillance des médicaments, visant à garantir l’utilisation sûre, efficace et abordable des médicaments."
+}
+}
+},
+{ "_id": {
+  "$oid": "640be335c42a867e68d99fdkj"
+},
+"name": "Nursing Staff",
+"description": "Health care professionals that integrate the art and science of caring and focuse on the protection, promotion, and optimization of health and human functioning; ",
+"icon": "nurse.png",
+"translations":{
+  "fr":{
+    "name":"Infirmiers de Soins",
+    "description":"Professionnels de la santé qui intègrent l’art et la science des soins et se concentrent sur la protection, la promotion et l’optimisation de la santé et du fonctionnement humain;"
+}
+}
+},
+{ "_id": {
+  "$oid": "640be335c42a867e68d1023fdjj"
+},
+"name": "Photo and Production Studio",
+"description": "Professionals who create images and videos by recording light, either electronically by means of an image sensor, or chemically by means of a light-sensitive material such as photographic film. ",
+"icon": "photography.png",
+"translations":{
+  "fr":{
+    "name":"Studio Photo et Production",
+    "description":"Professionnels qui créent des images et des vidéos en enregistrant la lumière, électroniquement au moyen d'un capteur d'images, ou chimiquement au moyen d'un matériau sensible à la lumière."
+}
+}
+},
+{ "_id": {
+  "$oid": "640be335c42a867e68d1024fded"
+},
+"name": "Geographic Information System",
+"description": "Professionals who help users understand the patterns, relationships, and geographic context of data. ",
+"icon": "gis.png",
+"translations":{
+  "fr":{
+    "name":"Système Informatique Géographique",
+    "description":"Des professionnels qui aident les utilisateurs à comprendre les modèles, les relations et le contexte géographique des données."
+}
+}
+}
+,{ "_id": {
+  "$oid": "640be335c42a867e68d1025fder"
+},
+"name": "Rural and Urban Planning",
+"description": "Rural planning centers on improving the quality of life and economic well-being of communities in less populated areas.",
+"icon": "urban-planning.png",
+"translations":{
+  "fr":{
+    "name":"Amenagement Rural et Urbain",
+    "description":"Des professionnels qui font la planification rurale visant à améliorer la qualité de vie et le bien-être économique des communautés."
+}
+}
+}
+,{ "_id": {
+  "$oid": "640be335c42a867e68d1026fger"
+},
+"name": "Topography",
+"description": "Professionals who perform the study of the forms and features of land surfaces, landforms and lands' features themselves.",
+"icon": "topography.png",
+"translations":{
+  "fr":{
+    "name":"Topographie",
+    "description":"Des professionnels qui effectuent l'étude des formes et des caractéristiques des surfaces terrestres, et des reliefs."
+}
+}
+}
+,{ "_id": {
+  "$oid": "640be335c42a867e68d1027ffrer"
+},
+"name": "Private Security",
+"description": "Private security is a service that provides protection to businesses, homes and others structures. That often includes having security guards patrol a location.",
+"icon": "security.png",
+"translations":{
+  "fr":{
+    "name":"Securite Privée",
+    "description":"Les services de sécurité assurent la protection des entreprises, des habitations et d'autres structures. Cela implique souvent la présence d'agents de sécurité qui patrouillent dans un lieu."
+}
+}
+}
+,{ "_id": {
+  "$oid": "640be335c42a867e68d1028fferer"
+},
+"name": "Freight Forwarder Services",
+"description": "professionals specialized in the arrangement of cargo on behalf of shippers. They provide a variety of supply chain services, including: Ocean or air freight transportation. ",
+"icon": "freight.png",
+"translations":{
+  "fr":{
+    "name":"Services Transitaires",
+    "description":"Des professionnels spécialisés dans l'organisation de fret pour le compte des expéditeurs. Ils fournissent une variété de services de chaîne d'approvisionnement, maritime ou aérien."
+}
+}
+}
+,{ "_id": {
+  "$oid": "640be335c42a867e68d1029ffiuer"
+},
+"name": "Import-Export",
+"description": "Professionals who facilitate exchange of capital, goods, and services across international borders or territories because there is a need or want of goods or services. ",
+"icon": "export.png",
+"translations":{
+  "fr":{
+    "name":"Import-Export",
+    "description":"Des professionnels qui facilitent l’échange de capitaux, de biens et de services au-delà des frontières ou des territoires internationaux parce qu’il existe un besoin ou un manque de biens ou de services."
+}
+}
+}
+,{ "_id": {
+  "$oid": "640be335c42a867e68d1029ffiuer"
+},
+"name": "Airline Ticket Sales Service",
+"description": "Professionals who offer airline ticket reservation and sales services through agencies.",
+"icon": "airline-ticket.png",
+"translations":{
+  "fr":{
+    "name":"Service de Vente de Billets d'Avion",
+    "description":"Des professionnels qui proposent des services de reservation et de vente de billets d'avion a travers des agences."
+}
+}
+}
+,{ "_id": {
+  "$oid": "640be335c42a867e68d1030ffiuidr"
+},
+"name": "Printing and Computer Graphics",
+"description": "Professionals involved in printing, document management, illustration reproduction and photo processing to produce print-ready documents.",
+"icon": "printing.png",
+"translations":{
+  "fr":{
+    "name":"Imprimerie et Infographie",
+    "description":"Des professionnels impliqués dans l'impression, la gestion des documents, la reproduction d'illustrations et le traitement des photos dans le but de produire des documents prêts à être imprimés."
+}
+}
+}
+,{ "_id": {
+  "$oid": "640be335c42a867e68d1031ftridr"
+},
+"name": "Immigration Procedure",
+"description": "Professionals who help people prepare necessary documents to travel to a specific country, and provide them with advices and steps to follow.",
+"icon": "imm-services.png",
+"translations":{
+  "fr":{
+    "name":"Procedure d'Immigration",
+    "description":"Des professionnels qui aident les gens à préparer les documents nécessaires pour voyager dans un pays spécifique et leur fournissent des conseils et des étapes à suivre."
+}
+}
+}
+,{ "_id": {
+  "$oid": "640be335c42a867e68d1032ffgdr"
+},
+"name": "Catering",
+"description": "Services in charge of the provision of food and drink at a social event or other gathering, typically as a professional service.",
+"icon": "catering.png",
+"translations":{
+  "fr":{
+    "name":"Restauration",
+    "description":"Services de nourriture et de boissons lors d'un événement social ou d'un autre rassemblement, généralement en tant que service professionnel."
+}
+}
+}
+,{ "_id": {
+  "$oid": "640be335c42a867e68d1033fftyur"
+},
+"name": "Others",
+"description": "Services that are not listed as a category but can be added as a service.",
+"icon": "catering.png",
+"translations":{
+  "fr":{
+    "name":"Autres",
+    "description":"Les services qui ne sont pas listes comme categorie mais qui peuvent etre ajoutes comme service."
+}
+}
+}
+]

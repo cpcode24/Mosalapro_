@@ -1,0 +1,154 @@
+<form action="/find-services">
+    <div class="row mt-1 d-flex justify-content-center">
+        <div class="col searching">
+            <div class="card card-transp-bg p-4  py-2">
+                <div class="row mt-1 g-3">
+                    <div class="col-lg-4 col-md-4 col-sm-12">
+                        <div class="dropdown dropdown-search">
+                            <input type="text" class="form-control search-input-s" placeholder="<%= t('Category') %>" name="selected_category" id="selected_category"/>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-8 col-md-8 col-sm-12">
+                        <div class="input-group">
+                            <input type="search" class="form-control search-input rounded " name="search" placeholder="<%= t('KeywordSearchPlaceholder') %>" aria-label="Search" aria-describedby="search-addon" />
+                            <button type="submit" class="btn-outline-primary search-btn" onclick="handleSearch()" ><%= t('Search') %></button>
+                        </div>
+                        
+                    </div>
+                </div>
+        <div class="mt-3 not-small-screen">
+            <div class="text-center ">
+                <a data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample" class="advanced ">
+                    <%= t('AdvancedSearchWithFilters') %> <i class="fa fa-angle-down"></i>
+                    </a>
+            </div>
+
+
+
+            <div class="collapse" id="collapseExample">
+            <div class="card card-body">
+
+            <div class="row">
+
+            <div class="col-md-4">
+
+                <input type="text" placeholder="<%= t('RatePlaceholder') %>" class="form-control">
+                
+            </div>
+
+
+    <div class="col-md-4">
+
+        <input type="text" class="form-control" id="country_search" name="country_search" placeholder="<%= t('Country') %>"/>
+        
+    </div>
+    
+
+    <div class="col-md-4">
+
+        <input type="text" class="form-control" id="city_search" name="city_search" placeholder="<%= t('SelectCity') %>"/>
+        
+    </div>
+    
+    </div>
+
+    </div>
+    </div>
+
+
+                </div>    
+            </div>
+
+    </div>
+
+    <!--div class="searching-sm  p-2">
+        <div class="row px-2 justify-content-center">
+            <div class="col-10 card-transp-bg-sm">
+                <div class="row no-gutters px-2 py-3">
+                            <select class="form-control" aria-label="Select Category" name="selected_category" id="selected_category" style="display: inline;">
+                                <option value="">Category</option>
+                                <% if(categories){ categories.forEach(cat=>{ %>
+                                    <option value="<%=cat.name %>"><%=cat.name %></option>
+                                <% });} %>
+                            </select>
+                        
+                            <input type="text" placeholder=" Keyword... eg. Architect" class="form-control mt-2" id="search" name="search">
+                        
+                        <div class="text-center">
+                            <a data-toggle="collapse" href="#country_search" role="button" aria-expanded="false" aria-controls="collapseExample" class="advanced ml-2 text-center">
+                                Find providers by country <i class="fa fa-angle-down"></i>
+                            </a>
+                        </div>
+                        <select class="form-control collapse mt-2" id="country_search" name="country_search">
+                            <option selected value="">Country</option>
+                            <% countries.forEach(country => { %> 
+                                <option name="<%= country.name %>" value="<%= country.name %>"> <%= country.name %></option>
+                            <% }); %>
+                        </select>
+                        <button type="submit" class="search-btn mt-2" onclick="handleSearch()">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search mb-1"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg> search
+                        </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div-->
+</div>
+</form>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize autocomplete for search box elements
+    if (typeof AutoComplete !== 'undefined') {
+        // Category autocomplete
+        const categoryInput = document.getElementById('selected_category');
+        if (categoryInput) {
+            new AutoComplete({
+                inputId: 'selected_category',
+                apiUrl: '/api/search/categories',
+                minLength: 1,
+                placeholder: `<%= t('Category') %>`,
+                noResultsText: '<%= t("NoCategories") || "No categories found" %>',
+                debounceDelay: 300
+            });
+        }
+
+        // Country autocomplete
+        const countryInput = document.getElementById('country_search');
+        if (countryInput) {
+            new AutoComplete({
+                inputId: 'country_search',
+                apiUrl: '/api/search/countries',
+                minLength: 1,
+                placeholder: `<%= t('Country') %>`,
+                noResultsText: '<%= t("NoCountries") || "No countries found" %>',
+                debounceDelay: 300,
+                onSelect: function(item, input) {
+                    // Clear city when country changes
+                    const cityInput = document.getElementById('city_search');
+                    if (cityInput) {
+                        cityInput.value = '';
+                        cityInput.removeAttribute('data-value');
+                    }
+                }
+            });
+        }
+
+        // City autocomplete
+        const cityInput = document.getElementById('city_search');
+        if (cityInput) {
+            new AutoComplete({
+                inputId: 'city_search',
+                apiUrl: '/api/search/cities',
+                minLength: 1,
+                placeholder: `<%= t('City') %>`,
+                noResultsText: '<%= t("NoCities") || "No cities found" %>',
+                dependsOn: 'country_search',
+                debounceDelay: 300
+            });
+        }
+    }
+});
+</script>
+

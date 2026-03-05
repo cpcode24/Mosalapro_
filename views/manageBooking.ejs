@@ -1,0 +1,201 @@
+<%- include('partials/header') %>
+
+<section class="<%=bg%> padt-8 ">
+  <div class="container pad-4" id="whole-sect-containr">
+        <div class="row">
+          <div class="col padt-4">
+            <nav aria-label="breadcrumb" class="main-breadcrumb">
+              <ol class="breadcrumb">
+                  <li class="breadcrumb-item"><a href="/"><%= t('Home') %></a></li>
+                  <li class="breadcrumb-item"><a href="/mybookings"><%= t('Bookings') %></a></li>
+                  <li class="breadcrumb-item active" aria-current="page"><%=booking.bookingTitle%></li>
+              </ol>
+          </nav>
+
+              <div class="row px-4">
+                 
+                  <div class="col-lg-8 col-md-12 col-12" id="booking-container-pr">
+                    <div class="container shadow-sm p-4 bg-white rounded mb-4">
+                      <div class="d-flex justify-content-between w-100 p-4">
+                        <h5><%= t('Booking') %>: <%=booking.bookingTitle%></h5>
+                        <span id="booking-msg"></span>
+                      </div>
+                      <div class="modal-container-job px-4">
+                        <input class="d-none" id="jobId" value="<%=job._id%>">
+                        <input class="d-none" id="userName" value="<%=job.username%>">
+                        <span id="mess" class="error_message"></span>
+                        <div class="row  mt-2">
+                            <div class="col">
+                                <span class="job-details pl-2 mt-4"><b><%= t('Category') %>:</b> category</span> 
+                            </div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col">
+                                <span class="job-details pl-2 mt-4"><b><%= t('Budget') %>:</b> <%=booking.budget%> <%=booking.currency%> <%=convertedCurr%> - <%=booking.budgetType%></span>
+                            </div>
+                        </div>
+
+                        <div class="row mt-2">
+                            <div class="col">
+                                <span class="job-details pl-2 mt-4"><b><%= t('Deadline') %>:</b> </span> <span id="currDL"><%=booking.deadline%></span>
+                            </div>
+                        </div>
+
+                        <div class="row mt-2">
+                            <div class="col">
+                                <span class="job-details pl-2"><b><%= t('Description') %>: </b></span><span><%=booking.bookingDescription%></span>
+                            </div>
+                        </div>
+                        <div class="row mt-2">
+                          <div class="col">
+                              <span class="job-details pl-2"><b><%= t('Status') %>: </b></span><span><%=booking.status%></span>
+                          </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <h6 class="border-bottom mb-3"><%= t('Files') %></h6>
+                            </div>
+                        </div>
+                        <div class="row">
+                          <div class="col">
+                            <% if(booking.files.length > 0 && booking.files[0] != "" && booking.files[0] != 'no file') { %>
+                                <% let j = 0; booking.files.forEach(file=>{ j++; %>
+
+                                <!--span class="d-none" id="file-"><%= file%></a></p-->
+                                <div title="Download file <%=j%>" data-toggle="tooltip" data-placement="bottom"  class=" col-sm-4 col-lg-2 tooltips cursor mb-4" >
+                                <!-- Post Modern-->
+                                    <div class="d-flex justify-content-center px-4 px-auto" onClick="downloadFile('<%= file%>')" >
+                                        <b class="fa fa-file-text fa-3x mb-1 file-icon" aria-hidden="true"></b>
+                                        <span class="post-modern-time"><span class="text-petit"> <%= t('AttachedFile') %> </span></span>
+                                    </div>
+                                    
+                                  </div>
+
+                                <% }); } else{ %>
+                                  <p class=" text-small text-light mb-2 mt-2" ><%= t('NoRequirementDocument') %></p>
+                                <% } %>
+                            </div>
+                          </div>
+                        <div class="row border-bottom p-3 mt-1">
+                            </div>
+                        <% if(booking.status != 'accepted' && job.status != 'completed') { %> 
+                            <p class="text-light text-primary mt-1 mb-4"><%= t('ReadDocumentsCarefully') %></p>
+                        <% } else { %>
+                              <p class="text-light text-primary mt-1 mb-4"><%= t('ServiceRequestStatusUpdate') %> <%=booking.status %> <%= t('On') %> <%=booking.lastUpdate %></p>
+                        <% } %>
+                            <% if(booking.status !== "completed" && delivery && delivery.revisionReason) { %>
+                              <div class="row">
+                                <div class="col">
+                                  <h6 class="border-bottom mb-3"><%= t('RevisionMessage') %></h6>
+                                  <p class="text-primary mt-1"><%=delivery.revisionReason%></p>
+                                </div>
+                              </div>
+                            <% } %>
+                        
+                        <% if(booking.status == "active") { %> 
+                        <div class="d-flex justify-content-center mt-3 mb-4">
+                          <button onclick="showModal('#cancelBookingConfModalCta')" class="btn-job btn-primary-job-inv-dgr mr-3" ><%= t('CancelBooking') %></button>
+                          <button class="btn-job btn-primary-job" onclick="showModal('#confBookingModalCta')"><%= t('ConfirmBooking') %></button>
+                          <button class="btn-job btn-primary-job-inv-blue tooltips ml-3" onclick="showModal('#quotationModalCta')" title="If you are not satisfied with the budget, you can provide your quote for this request." 
+                            data-toggle="tooltip" data-placement="top" 
+                             ><%= t('ProvideQuote') %></button>
+                             
+                        </div>
+                        <% } else if (booking.status == "in-progress") { %>
+                          <div class="d-flex justify-content-center mt-3 mb-4">
+                            <button onclick="showModal('#confBookingCompleteModalCta')" class="btn-job btn-primary-job" ><%= t('CompleteJobAndSubmit') %></button>
+                            <button onclick="showModal('#requestExtensionModalCta')" class="btn-job btn-primary-job-inv-blue tooltips ml-3" title="If you can't meet the deadline, you can request an extension." 
+                              data-toggle="tooltip" data-placement="top" 
+                               ><%= t('RequestDeadlineExtension') %></button>
+                               
+                          </div>
+
+                        <% } else if (booking.status === "completed" || booking.status === "accepted") {%>
+                          <div class="row mt-2">
+                            <div class="col">
+                              <div class="text-wrap">
+                                  <h6 class="border-bottom text-primary mb-3"><%= t('YourDelivery') %></h6>
+                                  <p class="mt-2 ml-2 ">
+                                    <span class="text-primary ml-2"><%= t('DeliveryDateTime') %>: </span><%=delivery?.createdAt%>
+                                  </p>
+                                  <p class="mt-2 ml-2">
+                                      <span class="text-primary ml-2"> <%= t('Comment') %>: </span> <%=delivery?.comment %>
+                                  </p>
+                              </div>
+                              
+                              <% if(delivery?.file) { %>
+                                <div class="mr-4 ml-2"  onclick="downloadFile('<%=delivery?.file%>')">
+                                    <b class="fa fa-file-text mb-1 file-icon" aria-hidden="true"></b>
+                                    <span class="pl-2"><%=delivery?.file %></span>
+                                </div>
+                              <% } %>
+                              <% if(rating){ %>
+                                <h6 class="border-bottom mt-4 mb-3"> <%= t('ClientFeedback') %>: </h6>
+                                <div class="ml-2"> <span class="text-primary"><%= t('Rating') %>: &nbsp;</span>
+                                  <% let i = 0; for(i = 0; i < rating.rating; i++) { %>
+                                      <li class="d-inline"><b class="fa-star fa-sm rating-star-color fas "></b></li>
+                                  <% } if(i < 5) while(i < 5) { %>
+                                      <li class="d-inline"><b class="fa-star-o fa-sm rating-star-color fas "></b></li>
+                                  <% i++; } %>
+                                  </div>
+                                <p class="mt-1 ml-2"><span class="text-primary"><%= t('ClientComment') %>: </span> <i>"<%=rating.userComment %> "</i></p>
+                              <% } %>
+                            </div>
+                          </div>
+                        <% } %>
+                        
+                      </div>
+                  </div>
+                </div>
+                <div class="col-lg-4 col-md-4 col-12">
+                  <div class="container shadow-sm mb-5 pb-1 bg-white rounded ">
+                    <div class="row">
+                      <div class="w-100 d-flex justify-content-between align-items-center border-bottom border-dark p-3">
+                        <h6><%= t('ServiceBookedBy') %></h6>
+                      </div>
+                    </div>
+                    <div class=" col mt-2">
+                      <div class="card">
+                          <div class="card-body p-4 d-flex align-items-center gap-3">
+                              <img src="<%=customer?.photo %>"  alt="" class="rounded-circle" style="height:45px !important; width:45px !important;">
+                              <div class="ml-3">
+                                  <h6 class="fw-semibold mb-0"><a href="#"><%=customer?.firstName %> <%=customer?.lastName %> </a></h6>
+                                  <span class="fs-2 d-flex align-items-center"><i class="ti ti-map-pin text-primary fs-3 me-1"> </i> 
+                                  <%=customer?.city%>, <%=customer?.country%></span>
+                                </div>
+                          </div>
+                      </div>
+                  </div>
+                    <% if(booking.status != "cancelled") { %> 
+                      <div class="d-flex justify-content-center mb-3"><a href="/invoice?sr=<%=booking.jobId%>&p=<%=usr._id%>">
+                          <button type="reset" class="btn-job btn-primary-job-inv-blue ml-3"><%= t('ViewInvoice') %></button></a>
+                      </div>
+                    <% } %>
+                    </div>
+                </div>
+            </div>
+          </div>
+      </div>
+      </div>
+  </section>
+
+  <%- include('partials/requestExtensionModal') %>
+  <%- include('partials/cancelBookingConfModal') %>
+  <%- include('partials/confirmBookingModal') %>
+  <%- include('partials/bookingQuotationModal') %>
+  <%- include('partials/confBookingCompleteModal') %>
+
+  <%- include('partials/footer') %>
+<script>
+  const output = document.querySelector(".output");
+  const fileInput = document.querySelector("#pr-attachment");
+  if(fileInput){
+    fileInput.addEventListener("change", () => {
+      for (const file of fileInput.files) {
+        output.innerText += `\n${file.name}`; 
+      }
+    });
+  }
+</script>
+  <script src="js/manageBookingHandler.js"></script>
+  

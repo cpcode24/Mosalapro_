@@ -1,0 +1,376 @@
+
+<%- include('partials/header') %>
+<% let lim = 12; %>
+<style>
+/* Enhanced UI Styling for Job Requests */
+.requests-header {
+    background: linear-gradient(135deg, rgba(8, 173, 91, 0.1) 0%, rgba(32, 209, 55, 0.05) 100%);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    border: 1px solid rgba(7, 91, 32, 0.1);
+}
+
+.requests-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(135deg, #5A9E2F 0%, #3f8215 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.requests-subtitle {
+    opacity: 0.8;
+    font-size: 1.1rem;
+    margin-bottom: 0;
+    color: #666;
+}
+
+.filter-section {
+    background: rgba(255,255,255,0.1);
+    border-radius: 15px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    border: 1px solid rgba(255,255,255,0.1);
+    backdrop-filter: blur(5px);
+}
+
+.filter-section select {
+    color: #3f8215;
+	font-size: large;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.2);
+    background: rgba(255,255,255,0.9);
+    padding-left: 1.0rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.filter-section select:focus {
+    border-color: #5A9E2F;
+    box-shadow: 0 0 0 0.2rem rgba(90, 158, 47, 0.25);
+}
+
+/* Custom input styling to match existing design */
+.filter-section input[type="text"] {
+    color: #3f8215;
+    font-size: large;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.2);
+    background: rgba(255,255,255,0.9);
+    padding-left: 1.0rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.filter-section input[type="text"]:focus {
+    border-color: #5A9E2F;
+    box-shadow: 0 0 0 0.2rem rgba(90, 158, 47, 0.25);
+    outline: none;
+}
+
+/* Override AutoComplete styles to match design */
+.autocomplete-container .autocomplete-results {
+    background: white;
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 0 0 10px 10px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    font-size: large;
+}
+
+.autocomplete-container .autocomplete-results li {
+    color: #3f8215;
+    font-weight: 500;
+    padding: 0.75rem 1rem;
+}
+
+.autocomplete-container .autocomplete-results li:hover,
+.autocomplete-container .autocomplete-results li.highlighted {
+    background: rgba(90, 158, 47, 0.1);
+    color: #3f8215;
+}
+
+.job-request-card {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: slideInUp 0.6s ease-out both;
+}
+
+
+.card.bg-light-job {
+    background: rgba(255,255,255,0.95) !important;
+    border-radius: 20px;
+    border: 1px solid rgba(255,255,255,0.2);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+    position: relative;
+}
+
+.card.bg-light-job::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(135deg, #5A9E2F 0%, #3f8215 100%);
+}
+
+.card.bg-light-job:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+}
+
+.card-body {
+    position: relative;
+    z-index: 1;
+}
+
+.btn-job {
+    border-radius: 25px;
+    padding: 0.5rem 1.5rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    display: inline-block;
+    text-align: center;
+    border: 2px solid transparent;
+}
+
+.job-details {
+    color: #666;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+}
+
+.cat-job {
+    border-radius: 15px !important;
+    font-weight: 500;
+    font-size: 0.8rem;
+    padding: 0.4rem 0.8rem;
+    transition: all 0.3s ease;
+}
+
+.load-more-container {
+    text-align: center;
+    padding: 2rem 0;
+    margin-top: 2rem;
+}
+
+.load-more-btn {
+    background: linear-gradient(135deg, #5A9E2F 0%, #3f8215 100%);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 1rem 2rem;
+    font-weight: 500;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.load-more-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(90, 158, 47, 0.4);
+    color: white;
+}
+
+.load-more-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.loading-spinner {
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-radius: 50%;
+    border-top-color: white;
+    animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.no-requests-message {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: #666;
+}
+
+.no-requests-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    opacity: 0.3;
+}
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 768px) {
+    .requests-title {
+        font-size: 2rem;
+    }
+    
+    .card.bg-light-job:hover {
+        transform: translateY(-4px);
+    }
+}
+</style>
+
+<section class="<%=bg%>  padt-8 pb-3">
+    <div class="container pad-4 ">
+        <div class=" pad-4 px-3">
+        <% const classes = ["bg-soft-danger", "bg-soft-base", "bg-soft-warning", "bg-soft-success", "bg-soft-info"]; %>
+        <nav aria-label="breadcrumb" class="main-breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/"><%= t('Home') %></a></li>
+                <% if(usr.accountType == "user") { %> 
+                    <li class="breadcrumb-item"><a href="javascript:void(0)"><%= t('User') %></a></li>
+                  <% } else { %>
+                    <li class="breadcrumb-item"><a href="javascript:void(0)"><%= t('Provider') %></a></li>
+                  <% } %>
+                <li class="breadcrumb-item active" aria-current="page"><%= t('ServiceRequests') %> </li>
+            </ol>
+        </nav>
+
+        <!-- Enhanced Header -->
+        <div class="requests-header">
+            <h1 class="requests-title"><%= t('ActiveServiceRequests') %></h1>
+            <p class="requests-subtitle"><%= t('ServiceRequestsSubtitle')%></p>
+        </div>
+
+        <!-- Enhanced Filter Section -->
+        <form id="jrfilter-form">
+            <div class="filter-section">
+                <div class="row no-gutters shadow-sm row-bg ">
+                    <div class="col-lg-6 col-md-6 col-12 justify-content-end d-flex mr-3">
+                        <h6 class="font-weight-semibold my-3 py-1">
+                            <b class="fa fa-filter mr-2"></b><%= t('FilterServiceRequestsByCategory') %> :
+                        </h6>
+                    </div>
+                    <div class="col-lg-4 col-md-6 col-12 ">
+                        <input type="text" class="form-control search-input-s" placeholder="<%= t('BeginCategory') %>" name="selected_category" id="selected_category" autocomplete="off" >
+                    </div>
+                </div>
+            </div>
+        </form>
+                <div class="row mt-1" id="requestsRow">
+                    <% let i = 0; if (jobs) { jobs.forEach(job=> {  i++; %>
+                    <div class="col-lg-4 col-md-6 col-12 mt-1 pt-2">
+                        <div class="card border-0 bg-light-job rounded-job shadow-job">
+                            <div class="card-body p-4">
+                                
+
+                            <span class="btn btn-sm <%=classes[Math.floor(Math.random() * 5)]%> cat-job float-md-right mb-3 mb-sm-0"><%=job.requestCategory %></span>
+                            <h6><%=job.requestTitle%></h6>
+                            <div class="mt-3">
+                                <span class="d-block job-details"><b class="fa fa-money mr-2" aria-hidden="true"></b>  <%= t('Budget') %>: <%=job.budget%> <%=job.currency%> <%=convCurrs[i-1]%> - <%=job.budgetType%></span>
+                                <span class="d-block job-details"><b class="fa fa-calendar mr-2" aria-hidden="true"></b> <%= t('Deadline') %>: <%=job.deadline%></span>
+                            </div>
+                            <div class="mt-3 border-bottom pb-4 d-flex justify-content-center">
+                                <a class="btn-job btn-primary-job-inv" href="/sr-details/<%=job._id%>"><%= t('ViewJobDetailsAndApply') %></a>
+                                <!--a href="#jobDetailModal<%=i%>" data-toggle="modal" data-caption-animate="fadeInUp" class="btn-job btn-primary-job-inv">View Details</a--> 
+                                
+                            </div>
+                                <div class=""><span class="float-md-right text-small mt-1"><%= t('PostedOn') %> <%= job.createdAt.getUTCMonth() + 1 %>/<%= job.createdAt.getUTCDate()%>/<%= job.createdAt.getUTCFullYear() %></span></div>
+                            </div>
+                        
+                        </div>
+                    </div>
+
+                
+                   
+        
+                        
+
+
+        <% } ); } %>
+        </div>
+        <!--div class="text-center text-md-end d-md-block">
+            <a href="#" class="text-primary">View more Jobs <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right fea icon-sm"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></a>
+        </div-->
+     </div>
+  </div>
+</section>  
+<%- include('partials/footer') %>
+
+<script src="js/autocomplete.js"></script>
+<script src="js/jobRequests.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize autocomplete for category with multi-language support
+    const autocompleteInstance = new AutoComplete({
+        inputId: 'selected_category',
+        apiUrl: '/api/search/categories',
+        minLength: 1,
+        placeholder: '<%= t("BeginCategory") %>',
+        noResultsText: '<%= t("NoCategories") || "No categories found" %>',
+        debounceDelay: 300,
+        onSelect: function(result, input) {
+            // Trigger filtering when a category is selected
+            filterRequestsByCat();
+        }
+    });
+
+    // Move dropdown to body to escape stacking context issues
+    setTimeout(() => {
+        const autocompleteResults = document.querySelector('.autocomplete-results');
+        const inputElement = document.getElementById('selected_category');
+
+        if (autocompleteResults && inputElement) {
+            // Move dropdown to body
+            document.body.appendChild(autocompleteResults);
+
+            // Override positioning to be relative to input
+            autocompleteResults.style.position = 'absolute';
+            autocompleteResults.style.zIndex = '999999';
+
+            // Function to position dropdown relative to input
+            const positionDropdown = () => {
+                const inputRect = inputElement.getBoundingClientRect();
+                autocompleteResults.style.top = (inputRect.bottom + window.scrollY) + 'px';
+                autocompleteResults.style.left = inputRect.left + 'px';
+                autocompleteResults.style.width = inputRect.width + 'px';
+            };
+
+            // Position on focus and input
+            inputElement.addEventListener('focus', positionDropdown);
+            inputElement.addEventListener('input', positionDropdown);
+            window.addEventListener('scroll', positionDropdown);
+            window.addEventListener('resize', positionDropdown);
+
+            // Initial positioning
+            positionDropdown();
+        }
+    }, 200);
+
+    // Set initial value if user has a category
+    <% if(usr.category && usr.category !== 'all') { %>
+        const categoryInput = document.getElementById('selected_category');
+        if (categoryInput) {
+            // The AutoComplete class will handle the initial display through the API
+            categoryInput.setAttribute('data-value', '<%=usr.category%>');
+            // Trigger initial filter to show user's category results
+            setTimeout(() => {
+                filterRequestsByCat();
+            }, 100);
+        }
+    <% } %>
+});
+</script>

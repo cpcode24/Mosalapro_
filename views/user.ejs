@@ -1,0 +1,159 @@
+<%- include('partials/header') %>
+
+
+<section class="<%=bg%> padt-8 ">
+  <div class="container pad-4">
+    
+<div class=" padt-4">
+    <nav aria-label="breadcrumb" class="main-breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Home</a></li>
+            <li class="breadcrumb-item"><a href="#">Provider</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Profile</li>
+        </ol>
+    </nav>
+  <div class=" text-secondary px-2"> 
+    <div class="row">
+      <div class="col-lg-8 col-md-12 col-sm-12 col-12">
+        <div class="shadow-sm p-4 mb-5 bg-white rounded " id="contentId">
+          <div class="row">
+            <div class="col-lg-4 col-md-12 col-sm-12 col-12">
+              <div
+                class="bg-image  w-100"
+                style="
+                  background-image: url('<%=usr.photo %>');
+                  height: 300px;
+                "
+              ></div>
+              
+            </div>
+            <div class="col-lg-8 col-md-12 col-sm-12 col-12">
+              <span id="mess__"></span>
+              <div class="d-flex justify-content-between w-100 mt-2" id="topInfo">
+                <!--div class="col-6 "--><h5 class="mt-2"><%=usr.firstName %> <%=usr.lastName %> </h5> <!--/div-->
+                <!--div class="col-6 "--> <a href="/user-edit" class=" simple-btn sm-scr ">Edit Profile</a><!--/div-->
+                <a href="/user-edit" class="sm-scr-show"><button type="button" class=" simple-btn ">Edit Profile </button> </a>
+              </div>
+              <p class="mt-2"><%=usr.role %></p>
+              <div> 
+                <span class="text-muted">(<%=usr.ratingCount%>)&nbsp;</span>
+                <% let i = 0; 
+                   let r = usr.rating < 1.5 ? 1: usr.rating < 2.5 ? 2: usr.rating < 3.5 ? 3 : usr.rating < 4.5 ? 4: 5; 
+                
+                for(i = 0; i < r; i++) { %>
+                    <li class="d-inline"><b class="fa-star fa-sm rating-star-color fas "></b></li>
+                <% } if(i < 5) while(i < 5) { %>
+                    <li class="d-inline"><b class="fa-star-o fa-sm rating-star-color fas "></b></li>
+                <% i++; } %>
+              </div>
+              <div class="d-flex w-100">
+
+                <div class="row">
+                    <!--div class="col-lg-6 col-md-6 col-sm-12 col-12"-->
+                      <div class="col ml-1">
+                        <p class="mt-1 mb-1"><span class="n-a "><%=jobsCompleted%></span> Jobs Completed</p>
+                        <p class="mt-1 mb-1">$<%=usr.rate %> / USD / hour</p>
+                        <p class="mt-1 mb-1"><%=usr.city %>, <span class="profile-country"><%=usr.country %></span></p>
+                        <p class="mt-1 mb-1">Local time zone: <span class="text-muted"> <%=tz %> </span>
+                        <p class="mt-1 mb-1">Joined <%= new Date(usr.createdAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) %></p>
+                       
+
+                        
+                    </div>
+
+                    <!--div class="col-lg-6 col-md-6 col-sm-12 col-12">
+                        <div class="mr-2">
+                            <p><span class="n-a">N/A</span> Jobs Completed</p>
+                            <p><span class="n-a">N/A</span> On Time </p>  
+                            <p><span class="n-a">N/A</span> On Budged</p>
+                            <p><span class="n-a">N/A</span> Repeat Hire Rate</p>
+                        </div>
+                </div-->
+
+                </div>
+
+              
+                  
+              </div>
+
+              <p class="mt-1 mb-1"><i>" <%=usr.description %> "</i></p>
+
+              <div class="row gx-5 mt-4 justify-content-center">
+                
+                        <!--div id="shareProButton" class="fb-share-button" data-layout="" data-size=""><a target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fdevelopers.facebook.com%2Fdocs%2Fplugins%2F&amp;src=sdkpreparse" class="fb-xfbml-parse-ignore"> </a></div-->
+      
+              </div>
+            </div>
+            
+          </div>
+        </div>
+        <div class="container shadow-sm mb-5 bg-white rounded ">
+          <div class="row">
+            <div class="p-3 w-100 d-flex justify-content-between border-bottom border-dark">
+              <h5>Portfolio Items</h5>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col">
+        <div class="container shadow-sm mb-5 pb-1 bg-white rounded ">
+          <div class="row">
+            <div class="w-100 d-flex justify-content-between align-items-center border-bottom border-dark p-3">
+              <h6>Verification</h6>
+            </div>
+          </div>
+            
+            <div class="d-flex justify-content-between align-items-center my-3">
+              <span>Identity Verification</span>
+              <span class="text-primary">Verified</span>
+            </div>
+           
+            <div class="d-flex justify-content-between align-items-center my-3">
+              <span>Email Address</span>
+              <span class="text-primary">Verified</span>
+            </div>
+            <div class="d-flex justify-content-between align-items-center my-3">
+              <span>LinkedIn Profile</span>
+              <span class="text-primary">Verified</span>
+            </div>
+
+            
+          <p></p>
+        </div>
+        <div class="container shadow-sm mb-5 pb-3 bg-white rounded ">
+          <div class="row">
+            <div class="w-100 d-flex justify-content-between align-items-center border-bottom border-dark p-3">
+              <h6>Subscription</h6>
+            </div>
+          </div>
+          
+          <div class="d-flex justify-content-between">
+            <b><%=subName %></b>
+          </div>
+        </div>
+        <div class="container shadow-sm mb-5 pb-3 bg-white rounded ">
+          <div class="row">
+            <div class="w-100 d-flex justify-content-between align-items-center border-bottom border-dark p-3">
+              <h6>Skills</h6>
+            </div>
+          </div>
+          <div class="mt-2">
+
+          <% if(usr.skills) usr.skills.forEach(skill => { %> 
+            <p><%= skill %></p>
+          <% }); %>
+        </div>
+
+        </div>
+      </div>
+    </div>
+    </div>
+    
+  </div>
+</div>
+
+<div id="fb-root"></div>
+<script async defer crossorigin="anonymous" src="https://connect.facebook.net/pl_PL/sdk.js#xfbml=1&version=v20.0" nonce="dzSIjiqo"></script>
+    </div>
+  </section>
+  <%- include('partials/footer') %>

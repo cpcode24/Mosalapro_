@@ -1,0 +1,331 @@
+<div class="modal fade" id="phoneAuthModal" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-md modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"><%= t('SignInWithPhone') || 'Sign in with Phone' %></h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      
+      <div class="modal-body">
+        <!-- Step 1: Enter Phone Number -->
+        <div id="phoneStep" class="auth-step">
+          <div class="text-center mb-3">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z" fill="#28a745"/>
+            </svg>
+          </div>
+          
+          <p class="text-center"><%= t('EnterPhoneToReceiveOTP')  %></p>
+          
+          <div class="form-group">
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <select class="form-control" id="countryCode" style="width: 80px;">
+                  <option value="+1">+1</option>
+                  <option value="+44">+44</option>
+                  <option value="+33">+33</option>
+                  <option value="+49">+49</option>
+                  <option value="+91">+91</option>
+                  <option value="+86">+86</option>
+                  <option value="+81">+81</option>
+                  <option value="+82">+82</option>
+                  <option value="+55">+55</option>
+                  <option value="+233">+233</option>
+                  <option value="+234">+234</option>
+                  <option value="+235">+235</option>
+                  <option value="+242">+242</option>
+                  <option value="+243">+243</option>
+                  <option value="+27">+27</option>
+                  <option value="+254">+254</option>
+                  <option value="+225">+225</option>
+                </select>
+              </div>
+              <input type="tel" class="form-control" id="phoneNumber" placeholder="<%= t('PhoneNumber') || 'Phone number' %>" required>
+            </div>
+          </div>
+          
+          
+          <div class="text-center mb-3">
+            <span id="phoneMessage" class="text-danger"></span>
+          </div>
+          
+          <button type="button" class="btn btn-primary btn-block button-primary" onclick="sendTwilioOTP()" id="sendOtpBtn">
+            <span id="sendOtpText"><%= t('SendOTP') %></span>
+            <span id="sendOtpLoader" class="d-none">
+              <div class="spinner-border spinner-border-sm" role="status"></div>
+              <%= t('Sending')  %>
+            </span>
+          </button>
+        </div>
+        
+        <!-- Step 2: Verify OTP -->
+        <div id="otpStep" class="auth-step d-none">
+          <div class="text-center mb-3">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z" fill="#28a745"/>
+              <path d="m10 17-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" fill="white"/>
+            </svg>
+          </div>
+          
+          <p class="text-center">
+            <%= t('OTPSentTo') %> <strong id="sentPhoneDisplay"></strong>
+          </p>
+          
+          <div class="form-group">
+            <input type="text" class="form-control text-center" id="otpCode" maxlength="6" style="font-size: 1.2em; letter-spacing: 0.5em;">
+          </div>
+          
+          <div class="text-center mb-3">
+            <span id="otpError" class="text-danger"></span>
+          </div>
+          
+          <button type="button" class="btn btn-block button-primary" onclick="verifyTwilioOTP()" id="verifyOtpBtn">
+            <span id="verifyOtpText"><%= t('Validate') %></span>
+            <span id="verifyOtpLoader" class="d-none">
+              <div class="spinner-border spinner-border-sm" role="status"></div>
+              <%= t('Verifying') %>
+            </span>
+          </button>
+          
+          <div class="text-center mt-3">
+            <button type="button" class="btn btn-outline-secondary btn-sm" onclick="resendOTP()">
+              <i class="fas fa-redo-alt"></i> <%= t('ResendOTP') %>
+            </button>
+          </div>
+          
+          <div class="text-center mt-2">
+            <a href="#" onclick="goBackToPhone()" class="text-primary">
+              <b class="fas fa-arrow-left"></b>  <%= t('ChangePhoneNumber') %>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let currentPhoneNumber = '';
+
+// Clean up when modal is closed
+$('#phoneAuthModal').on('hidden.bs.modal', function() {
+  document.getElementById('phoneStep').classList.remove('d-none');
+  document.getElementById('otpStep').classList.add('d-none');
+  document.getElementById('phoneMessage').textContent = '';
+  document.getElementById('otpError').textContent = '';
+  document.getElementById('phoneNumber').value = '';
+  document.getElementById('otpCode').value = '';
+  document.getElementById('sendOtpBtn').disabled = false;
+  currentPhoneNumber = '';
+});
+
+async function checkIfUserExists(phoneNumber) {
+  try {
+    const response = await fetch('/api/phone/check-user', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ phoneNumber })
+    });
+    
+    const data = await response.json();
+    return data.userExists;
+  } catch (error) {
+    console.error('Error checking user:', error);
+    return false;
+  }
+}
+
+async function sendTwilioOTP() {
+  const phoneNumber = document.getElementById('phoneNumber').value;
+  const countryCode = document.getElementById('countryCode').value;
+  const phoneMessage = document.getElementById('phoneMessage');
+  const sendOtpBtn = document.getElementById('sendOtpBtn');
+  const sendOtpText = document.getElementById('sendOtpText');
+  const sendOtpLoader = document.getElementById('sendOtpLoader');
+  
+  if (!phoneNumber || phoneNumber.length < 7) {
+    phoneMessage.textContent = `<%= t('EnterValidPhone') %>`;
+    return;
+  }
+  
+  const fullPhoneNumber = countryCode + phoneNumber;
+  currentPhoneNumber = fullPhoneNumber;
+  
+  // Check if user exists - only allow existing users to authenticate
+  const userExists = await checkIfUserExists(fullPhoneNumber);
+  if (!userExists) {
+    phoneMessage.textContent = `<%= t('PhoneNotRegistered') %>`;
+    return;
+  }
+  
+  phoneMessage.textContent = '';
+  sendOtpText.classList.add('d-none');
+  sendOtpLoader.classList.remove('d-none');
+  sendOtpBtn.disabled = true;
+  
+  try {
+    const response = await fetch('/api/phone/send-otp', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ phoneNumber: fullPhoneNumber })
+    });
+    
+    const data = await response.json();
+    
+    if (data.success) {
+      document.getElementById('sentPhoneDisplay').textContent = fullPhoneNumber;
+      showOTPStep();
+    } else {
+      phoneMessage.textContent = data.message || `<%= t('FailedToSendOTP') %>`;
+    }
+  } catch (error) {
+    console.error('Error sending OTP:', error);
+    phoneMessage.textContent = `<%= t('FailedToSendOTP') %>`;
+  } finally {
+    sendOtpText.classList.remove('d-none');
+    sendOtpLoader.classList.add('d-none');
+    sendOtpBtn.disabled = false;
+  }
+}
+
+async function verifyTwilioOTP() {
+  const otpCode = document.getElementById('otpCode').value;
+  const otpError = document.getElementById('otpError');
+  const verifyOtpBtn = document.getElementById('verifyOtpBtn');
+  const verifyOtpText = document.getElementById('verifyOtpText');
+  const verifyOtpLoader = document.getElementById('verifyOtpLoader');
+  
+  if (!otpCode || otpCode.length !== 6) {
+    otpError.textContent = `<%= t('EnterValid6DigitCode') %>`;
+    return;
+  }
+  
+  otpError.textContent = '';
+  verifyOtpText.classList.add('d-none');
+  verifyOtpLoader.classList.remove('d-none');
+  verifyOtpBtn.disabled = true;
+  
+  try {
+    const response = await fetch('/api/phone/verify-otp', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ 
+        phoneNumber: currentPhoneNumber, 
+        otp: otpCode
+      })
+    });
+    
+    const data = await response.json();
+    
+    if (data.success) {
+      $('#phoneAuthModal').modal('hide');
+      window.location.reload();
+    } else {
+      otpError.textContent = data.message || '<%= t("VerificationFailed")%>';
+    }
+  } catch (error) {
+    console.error('Error verifying OTP:', error);
+    otpError.textContent = '<%= t("InvalidOTP") || "Invalid OTP" %>. Please try again.';
+  } finally {
+    verifyOtpText.classList.remove('d-none');
+    verifyOtpLoader.classList.add('d-none');
+    verifyOtpBtn.disabled = false;
+  }
+}
+
+async function resendOTP() {
+  if (!currentPhoneNumber) {
+    goBackToPhone();
+    return;
+  }
+  
+  try {
+    const response = await fetch('/api/phone/send-otp', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ phoneNumber: currentPhoneNumber })
+    });
+    
+    const data = await response.json();
+    
+    if (data.success) {
+      document.getElementById('otpError').textContent = '';
+      document.getElementById('otpError').className = 'text-success';
+      document.getElementById('otpError').textContent = '<%= t("OTPResent") || "New OTP sent successfully!" %>';
+      
+      // Clear OTP input
+      document.getElementById('otpCode').value = '';
+      
+      // Reset error styling after 3 seconds
+      setTimeout(() => {
+        document.getElementById('otpError').textContent = '';
+        document.getElementById('otpError').className = 'text-danger';
+      }, 3000);
+    } else {
+      document.getElementById('otpError').textContent = data.message || '<%= t("FailedToResendOTP") || "Failed to resend OTP" %>';
+    }
+  } catch (error) {
+    console.error('Error resending OTP:', error);
+    document.getElementById('otpError').textContent = '<%= t("FailedToResendOTP") || "Failed to resend OTP" %>. Please try again.';
+  }
+}
+
+function goBackToPhone() {
+  document.getElementById('phoneStep').classList.remove('d-none');
+  document.getElementById('otpStep').classList.add('d-none');
+  document.getElementById('otpCode').value = '';
+  document.getElementById('otpError').textContent = '';
+  currentPhoneNumber = '';
+}
+
+function showOTPStep() {
+  document.getElementById('phoneStep').classList.add('d-none');
+  document.getElementById('otpStep').classList.remove('d-none');
+  
+  // Focus on OTP input
+  setTimeout(() => {
+    document.getElementById('otpCode').focus();
+  }, 300);
+}
+
+// Auto-focus and auto-submit for OTP input
+document.addEventListener('DOMContentLoaded', function() {
+  const otpInput = document.getElementById('otpCode');
+  if (otpInput) {
+    // Auto-verify when 6 digits are entered
+    otpInput.addEventListener('input', function() {
+      // Only allow numbers
+      this.value = this.value.replace(/[^0-9]/g, '');
+      
+      if (this.value.length === 6) {
+        // Small delay to allow user to see the complete code
+        setTimeout(() => {
+          verifyTwilioOTP();
+        }, 500);
+      }
+    });
+    
+    // Handle paste events
+    otpInput.addEventListener('paste', function(e) {
+      setTimeout(() => {
+        this.value = this.value.replace(/[^0-9]/g, '').substring(0, 6);
+        if (this.value.length === 6) {
+          setTimeout(() => {
+            verifyTwilioOTP();
+          }, 500);
+        }
+      }, 10);
+    });
+  }
+});
+</script>

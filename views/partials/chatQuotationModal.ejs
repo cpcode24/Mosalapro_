@@ -1,0 +1,161 @@
+<div class="modal fade" id="chatQuotationModalCta" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-md modal-dialog-centered" role="document">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content pt-1 mb-1">
+          <div class="modal-header mt-1">
+            <h5 class="mt-1 mb-1 text-center">New Quotation</h5>
+            </div>
+        <div class="form-container">
+              <!--form action="#" class="contact-form form-validate" novalidate="novalidate"-->
+                    <h6 class="mt-1 mb-3 text-center"> Title</h6>
+                    <span name="error" id="err_bm"></span>
+                      
+                    <div class="row mt-1">
+                      <div class="col-lg-12 col-md-16 col-12">
+                        <div class="form-group">
+                          <label class="required-field" for="quotationDesc">Title</label>
+
+                            <input type="text" class="form-control" id="title" name="title" placeholder="Title" >
+                        </div>
+                      </div>
+                        <div class="col-lg-6 col-md-6 col-12">
+                        <div class="form-group">
+                        <label class="required-field" for="quotationDesc">Budget</label>
+
+                            <input type="number" step=".01" min="1" oninput="validity.valid||(value='');" class="form-control" id="budget" name="contactFirstName" placeholder="0.0" >
+                        </div>
+                        </div>
+
+                    <div class="col-lg-6 col-md-6 col-12">
+                      <div class="form-group">
+                        <label class="required-field" for="quotationDesc">Type</label>
+
+                          <select name="budgetType" id="budgetType" class="form-control" onChange="onSelectQuoteType()" >
+                            <option value="Per hour"> Per hour</option>
+                            <option value="Per project"> Per project</option>
+                          </select>
+                      </div>
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-12 none" id="timeOfCompletionField">
+                      <div class="form-group" >
+                        <label class="required-field" for="quotationDesc">Time of completion</label>
+                        <input type="number" id="timeOfCompletion" name="timeOfCompletion" class="form-control" />
+                      </div>
+                    </div>
+                    <br />
+                    <br />
+                    <div class="col-lg-12 col-md-12 col-12 mb-2">
+                        <label class="required-field" for="quotationDesc">Which category best fits your project?</label>
+                        
+                        <input type="text" class="form-control" id="requestCategory" name="requestCategory" oninput="this.className = 'form-control'" placeholder="Category"/>
+                    </div>
+                    <div class="col-lg-12 col-md-12 col-12">
+                        <label class="required-field" for="quotationDesc">Deadline</label>
+
+                        <div class="form-group ">
+                            <div class="datepicker date input-group p-0 shadow-sm">
+                                <input placeholder="Select date" id="datepicker" name="requestDeadline">
+                                <!--div class="input-group-append"><span class="input-group-text px-4"><b class="fas fa-calendar"></b></span></div-->
+                                
+                            </div>
+                        </div>
+                    </div>
+                  
+                    <div class="col-lg-12 col-md-12 col-12  ">
+                    <div class="form-group">
+                    <label class="required-field" for="quotationDesc">Description</label>
+                    <textarea class="form-control" id="quotationDesc" name="quotationDesc" rows="4" oninput="this.className = 'form-control'" placeholder="Description"></textarea>
+                    </div>
+                    </div>
+                    <div class="col mb-2">
+                    <input type="button" onClick="sendQuotationInChat()" name="submit" class="btn button-primary btn-lg w-100 hover-lift-light mt-4-ver" value="Send">
+                    </div>
+                    </div>
+                <!--/form-->
+              </div>
+  
+          </div>
+        </div>
+      </div>
+    </div>
+    
+<script src="https://unpkg.com/gijgo@1.9.14/js/gijgo.min.js" type="text/javascript"></script>
+<script>
+  $('#datepicker').datepicker({ 
+      uiLibrary: 'bootstrap4'
+  }); 
+
+const timeOfCompletionField = document.getElementById("timeOfCompletionField");
+function onSelectQuoteType(e) {
+  const budgetTypeEl = document.getElementById("budgetType");
+  const timeOfCompletionField = document.getElementById("timeOfCompletionField");
+
+  if(budgetTypeEl.value === "Per hour") {
+    timeOfCompletionField.style.display = "block";
+  }  else {
+    timeOfCompletionField.style.display = "none";
+  }
+}
+
+function sendQuotationInChat() {
+  let params = new URLSearchParams(document.location.search);
+  let proId = params.get("id");
+
+  const title = document.getElementById("title").value;
+  const budget = document.getElementById("budget").value;
+  const budgetType = document.getElementById("budgetType").value;
+  const requestCategory = document.getElementById("requestCategory").value;
+  const requestDeadline = document.getElementById("datepicker").value;
+  const description = document.getElementById("quotationDesc").value;
+  const error = document.getElementById("err_bm");
+
+  requestData = {
+    title: title,
+    budget: budget,
+    budgetType: budgetType,
+    requestCategory: requestCategory,
+    requestDeadline: requestDeadline,
+    description: description,
+    proId: proId,
+  };
+
+  if (budgetType === "Per hour") {
+    const timeOfCompletion = document.getElementById("timeOfCompletion").value;
+    requestData.timeOfCompletion = timeOfCompletion;
+  }
+
+  _postData('/messages/quotation', requestData )
+  .then(async json => {
+    if(json.status == 200){
+        window.location.href = `/messages?id=${proId}`;
+    }
+    else if(json.status == 402){
+        error.innerHTML = "An error occured. Please try again.";
+        await new Promise(r => setTimeout(r, 2000));
+        // message.innerHTML = " ";
+    }
+    else{
+      error.innerHTML = "An error occured. Please try again.";
+    }
+  });
+
+}
+
+// Initialize autocomplete for chat quotation modal
+$(document).ready(function() {
+    if (typeof AutoComplete !== 'undefined') {
+        const categoryInput = document.getElementById('requestCategory');
+        if (categoryInput) {
+            new AutoComplete({
+                inputId: 'requestCategory',
+                apiUrl: '/api/search/categories',
+                minLength: 1,
+                placeholder: 'Type to search categories...',
+                noResultsText: 'No categories found',
+                debounceDelay: 300
+            });
+        }
+    }
+});
+
+</script>

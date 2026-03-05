@@ -1,0 +1,156 @@
+<%- include('partials/header') %>
+
+<section class="<%=bg%> pad-4">
+   <div class="container pad-4">
+
+    <div class="row">
+
+        <div class="col pad-4">
+
+            <nav aria-label="breadcrumb" class="main-breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/">Home</a></li>
+                    <% if(usr.accountType == "user") { %> 
+                      <li class="breadcrumb-item"><a href="javascript:void(0)">User</a></li>
+                    <% } else { %>
+                      <li class="breadcrumb-item"><a href="javascript:void(0)">Provider</a></li>
+                    <% } %>
+                    <li class="breadcrumb-item active" ><a href="/notifications">Notifications</a></li>
+                    <li class="breadcrumb-item active" aria-current="page"><%=notifi.title%></li>
+                </ol>
+            </nav>
+            <% if(notifi.title == "A service provider has applied for your service request.") { %>
+                <h5>Application for job request</h5> 
+                <span id="notif-msg"></span>
+                <div class="row">
+                    <div class="col-lg-8 col-md-12 col-sm-12 col-12">
+                      <div class="shadow-sm p-4 mb-5 bg-white rounded " id="contentId">
+                        <div class="row">
+                          <div class="col-lg-4 col-md-12 col-sm-12 col-12">
+                            <div
+                              class="bg-image  w-100"
+                              style="
+                                background-image: url('<%=pro.photo %>');
+                                height: 300px;
+                              "
+                            ></div>
+                            
+                          </div>
+                          <div class="col-lg-8 col-md-12 col-sm-12 col-12">
+                            <div class="d-flex justify-content-between w-100 mt-2">
+                              <h6 class="text-muted">Service provider profile information</h6>
+                            </div>
+                            <h5 class="text-primary mt-2"><%=pro.firstName %> <%=pro.lastName %></h5>
+                            <p class="mt-1 mb-1 text-primary"><%=pro.role %></p>
+                            <ul class="rating " data-mdb-toggle="rating" data-mdb-readonly="true" data-mdb-value="3"> 
+                              <% let i = 0; for(i = 0; i < pro.rating; i++) { %>
+                                  <li class="d-inline"><b class="fa-star fa-sm rating-star-color fas "></b></li>
+                              <% } if(i < 5) while(i < 5) { %>
+                                  <li class="d-inline"><b class="fa-star-o fa-sm rating-star-color fas "></b></li>
+                              <% i++; } %>
+                              <span>(0)</span>
+                            </ul>
+                            <div class="d-flex w-100">
+              
+                              <div class="row">
+                                  <div class="col-lg-6 col-md-6 col-sm-12 col-12">
+                                      
+                                      <p class="mt-1 mb-1 ml-1 text-primary">$<%=pro.rate %> / USD / hour</p>
+                                      <p class="mt-1 mb-1 ml-1 text-primary"><%=pro.city %>, <span class="profile-country"><%=pro.country %></span></p>
+                                      <p class="mt-1 mb-1 ml-1 text-primary">Local time: 11:12 PM </span>
+                                      <p class="mt-1 mb-1 ml-1 text-primary">Joined <%= new Date(pro.createdAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) %></p>
+                                     
+                                  </div>
+              
+                                  <div class="col-lg-6 col-md-6 col-sm-12 col-12">
+                                      <div class="mr-2">
+                                          <p class="text-primary"><span class="n-a"><%=postRequestsCompleted%></span> Jobs Completed</p>
+                                      </div>
+                              </div>
+              
+                              </div>
+              
+                            
+                                
+                            </div>
+              
+                            <p class="mt-1 mb-1"><%=pro.description %></p>
+                            <div class="row mt-2">
+                              <div class="col d-inline justify-content-between">
+                                <% if(checkBooking){ %>
+                                    <span class="mb-3"> You have already hired this provider for the job</span><br>
+                               <% } else { %>
+                                      <a href="#hireConfModalCta" data-toggle="modal" data-caption-animate="fadeInUp" class="simple-btn mr-3">
+                                          <b class="fa fa-envelope-o mr-1 mb-1" aria-hidden="true"></b>Hire <%=pro.firstName %>
+                                      </a>
+                                      <a class="simple-btn-inv-dgr mr-3" href="#rejectConfModalCta" data-toggle="modal" data-caption-animate="fadeInUp"><b class="fa fa-times mr-1 mb-1"></b> Reject application</a>
+                                <% } %>
+                                      
+                                </div>
+                              </div>
+                          </div>
+                          
+                        </div>
+                      </div>
+                      <% if (job) { %>
+                        <%- include('partials/requestDetails') %>
+                      <% } %>
+                    </div>
+                    <div class="col">
+                      <div class="container shadow-sm mb-5 pb-1 bg-white rounded ">
+                        <div class="row">
+                          <div class="w-100 d-flex justify-content-between align-items-center border-bottom border-dark p-3">
+                            <h6>Verification</h6>
+                          </div>
+                        </div>
+                          
+                          <div class="d-flex justify-content-between align-items-center my-3">
+                            <span>Identity Verification</span>
+                            <span class="text-primary">Verified</span>
+                          </div>
+                         
+                          <div class="d-flex justify-content-between align-items-center my-3">
+                            <span>Email Address</span>
+                            <span class="text-primary">Verified</span>
+                          </div>
+                          <div class="d-flex justify-content-between align-items-center my-3">
+                            <span>Account information</span>
+                            <span class="text-primary">Verified</span>
+                          </div>
+              
+                          
+                        <p></p>
+                      </div>
+                      <div class="container shadow-sm mb-5 pb-3 bg-white rounded ">
+                        <div class="row">
+                          <div class="w-100 d-flex justify-content-between align-items-center border-bottom border-dark p-3">
+                            <h6>Skills</h6>
+                          </div>
+                        </div>
+                        <div class="mt-2">
+              
+                        <% if(pro.skills) pro.skills.forEach(skill => { %> 
+                          <p><%= skill %></p>
+                        <% }); %>
+                      </div>
+              
+                      </div>
+                    </div>
+                  </div>
+
+
+            <% }  else { %>
+
+            <% } %>
+
+
+        </div>
+   </div>
+</div>
+</section>
+<% if (job && pro) { %>
+  <%- include('partials/HireConfirmationModal') %>
+  <%- include('partials/RejectConfirmationModal') %>
+<% } %>
+<script src="js/notificationDetailHandler.js"></script>
+<%- include('partials/footer') %>

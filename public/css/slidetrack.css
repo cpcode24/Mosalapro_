@@ -1,0 +1,58 @@
+
+
+  /* Indicators */
+  .strack-theme .strack-dots .strack-dot.active span, 
+  .strack-theme .strack-dots .strack-dot:hover span {
+      background:  orange;
+      width: 30px;
+  }
+
+  .strack-theme .strack-dots .strack-dot span {
+  width: 15px;
+  height: 15px;
+  background: orangered;
+  transition: all .2s ease;
+}
+
+/* Controls */
+/* button element */
+.strack-carousel .strack-nav button.strack-next, 
+.strack-carousel .strack-nav button.strack-prev {
+  position: relative;
+  background-color: rgba(255, 166, 0, 0.3);
+  width: 30px;
+  padding: 5px;
+}
+
+.strack-carousel .strack-nav button.strack-next:hover, 
+.strack-carousel .strack-nav button.strack-prev:hover {
+  background-color: orange;
+}
+
+.strack-carousel .strack-nav button.strack-next::before, 
+.strack-carousel .strack-nav button.strack-prev::before {
+  width: 100%;
+  height: 100%;
+  color: orangered;
+  /* inset: 0;
+  position: absolute; */
+}
+
+.strack-carousel .strack-nav button.strack-next::before {
+  content:'\f061'; /*unicode for arrow-right*/
+  font-family: 'Font Awesome 5 Free'; /* Font family for Font Awesome */
+  font-weight: 900; /* Font weight for the solid style (fas) */
+  margin-right: 5px; 
+}
+
+.strack-carousel .strack-nav button.strack-prev::before {
+  content:'\f060'; /*unicode for arrow-left*/
+  font-family: 'Font Awesome 5 Free'; /* Font family for Font Awesome */
+  font-weight: 900; /* Font weight for the solid style (fas) */
+  margin-right: 5px; 
+}
+
+.strack-carousel .strack-nav .strack-next [aria-label="Next"], 
+.strack-carousel .strack-nav .strack-prev [aria-label="Previous"]{
+visibility:hidden /*The Span element*/
+}

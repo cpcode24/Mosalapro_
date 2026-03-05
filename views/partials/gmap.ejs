@@ -1,0 +1,60 @@
+
+
+
+<%- include('partials/header') %>
+
+
+
+<%- include('partials/header') %>
+<section class="section swiper-container swiper-slider swiper-slider-1 context-dark" data-loop="true" data-autoplay="5000" data-simulate-touch="false">
+        <div class="swiper-wrapper" id="map">
+          
+         
+        
+          
+        </div>
+        <!--Swiper Pagination-->
+        <div class="swiper-pagination-wrap">
+          <div class="container">
+            <div class="row">
+              <!--div class="col-md-2 col-lg-2 offset-md-1 offset-xxl-0">
+                <div class="swiper-pagination"></div>
+              </div-->
+
+              <div class="col">
+
+                <%- include('partials/searching_box') %>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!--Icon List 2-->
+      <section class="section section-sm ">
+        <div class="container">
+          <div class="row row-30">
+
+            <div class="caroussel">
+              <div class="slide-track">
+                <% cats.forEach(cat=>{ %>
+                <div class="col-md-4  slide ">
+                  <div class="box-icon-2">
+                    <div class="icon novi-icon <%= cat.icon %>"></div>
+                    <h5 class="title"><%= cat.name %></h5>
+                    <p class="text"><%= cat.description %></p>
+                  </div>
+                </div>
+                <% }) %>
+              </div>
+            </div>
+            
+          </div>
+        </div>
+      </section>
+      <!--Searching box-->
+      
+      
+      
+
+
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=<%=map_api%>&callback=initMap"></script>

@@ -1,0 +1,167 @@
+.chat-online {
+    color: #34ce57;
+}
+
+.chat-offline {
+    color: #e4606d;
+}
+
+.online-status {
+    width: 10px;
+    height: 10px;
+    border-radius: 100%;
+    background-color: #34ce57;
+    position: absolute;
+    left: 29px;
+    top: 34px;
+}
+
+.chat-messages {
+    display: flex;
+    flex-direction: column;
+    max-height: 25em;
+    margin: 0 0.3em;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    padding: 3em;
+}
+
+@media(max-width: 700px){
+    .chat-messages {
+        display: flex;
+        flex-direction: column;
+        max-height: 25em;
+        margin: 0 2em;
+        overflow-y: scroll;
+        overflow-x: hidden;
+        padding: 0 !important;
+    }
+    .chat-message-left,
+    .chat-message-right {
+        display: block;
+        flex-shrink: 0;
+    }
+}
+
+.chat-message-left,
+.chat-message-right {
+    display: flex;
+    flex-shrink: 0;
+}
+.active-chat{
+    background-color: #5A9E2F;
+    color: white;
+}
+
+.sender-chat{
+    background-color: #5A9E2F;
+    color: #fff;
+    border-radius: 4px;
+}
+.round-border{
+    border-radius: 4px;
+}
+.corresp-content{
+    overflow-y: scroll;
+    overflow-x:hidden;
+    max-height: 510px !important;
+    border-right: 1px solid #dee2e6 !important;
+}
+.send-message{
+    height: 25px !important;
+    width: 25px !important;
+}
+.send-message-btn{
+    padding: 5px 24px;
+    outline: none;
+    text-decoration: none;
+    letter-spacing: 0.5px;
+    transition: all 0.3s;
+    font-weight: 600;
+    border-radius: 0 5px 5px 0;
+	cursor: pointer;
+    width: 60px;
+    color: #5A9E2F !important;
+    border: 1px solid #5A9E2F;
+    border-left: none;
+    background-color: #fff !important;
+    background-image: url('/images/icons/send-message.png');
+    background-repeat: no-repeat;
+    background-position-y: center;
+    background-position-x: center;
+    background-size: 25px;
+}
+.send-message-btn:hover{
+    border: 1px solid #5A9E2F !important;
+    background-color: #5A9E2F !important;
+    background-image: url('/images/icons/send-message_w.png');
+    background-repeat: no-repeat;
+    background-position-y: center;
+    background-position-x: center;
+}
+.input-message{
+    resize: none;
+    border: 1px solid #5A9E2F;
+}
+
+@media(max-width: 700px){
+    .corresp-content{
+        width: auto;
+        padding: 2em;
+    }
+}
+.card-chat {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	min-width: 0;
+    height: auto;
+	word-wrap: break-word;
+	background-color: #fff;
+	background-clip: border-box;
+	border: 1px solid rgba(0, 0, 0, 0.125);
+	border-radius: 0.25rem;
+}
+
+.chat-message-left {
+    margin-right: auto
+}
+
+.chat-message-right {
+    flex-direction: row-reverse;
+    margin-left: auto
+}
+@media(max-width: 700px){
+    .chat-message-left {
+        margin-right: 0 !important;
+    }
+    
+    .chat-message-right {
+        flex-direction: row-reverse;
+        margin-left: 0 !important;
+    }
+}
+.py-3 {
+    padding-top: 1rem!important;
+    padding-bottom: 1rem!important;
+}
+.px-4 {
+    padding-right: 1.5rem!important;
+    padding-left: 1.5rem!important;
+}
+.flex-grow-0 {
+    flex-grow: 0!important;
+}
+.border-top {
+    border-top: 1px solid #dee2e6!important;
+}
+
+#chat-content {
+    height: 448px;
+}
+
+#chatAttachmentBtn {
+    font-size: 20px;
+    padding: 0 12px;
+    cursor: pointer;
+}

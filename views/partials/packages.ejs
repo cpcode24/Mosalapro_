@@ -1,0 +1,141 @@
+<section class="section section-sm section-bottom-70 section-fluid bg-pricing ">
+    <div class="pricing-container">
+    
+          <h2 class="text-center mb"><span><%= t('JoinAsServiceProvider') %>. <span class="text-light"><%= t('ChooseRightPackage') %></span></span></h2>
+          <div class="row row-30 justify-content-center">
+            <div class="col-sm-3 ">
+              <div class="box-pricing box-pricing-black box-pricing-popular">
+                <div class="box-pricing-body">
+                  <h5 class="box-pricing-title "><%= t('Trial') %></h5>
+                  <h3 class="box-pricing-price "><%= t('Free') %></h3>
+                  <div class="box-pricing-time "><%= t('ThirtyDays') %></div>
+                  <div class="box-pricing-divider">
+                    <div class="divider"></div><span><%= t('Trial') %></span>
+                  </div>
+                  <ul class="box-pricing-list">
+                    <li class="active"><%= t('Booking') %></li>
+                    <li class="active"><%= t('ProviderPage') %></li>
+                    <li class="active"><%= t('GoogleCalendar') %></li>
+                    <li class="active"><%= t('Invoice') %></li>
+                    <li class=""><%= t('MultipleLocations') %></li>
+                    <li class=""><%= t('ContactNumbers') %></li>
+                    <li class=""><%= t('Gallery') %></li>
+                    <li class=""><%= t('QualityAssurance') %></li>
+                    <li class=""><%= t('FullSupport') %></li>
+                  </ul>
+                </div>
+                <% if(usr) { 
+                    if (usr.subscriptionPlan == "trial") {%>
+                      <div class="box-pricing-button" aria-disabled="true"><a class="button-lg button-block disabled_link"  href="#" data-toggle="modal" data-caption-animate="fadeInUp" >Current Plan</a></div>
+                      <div class="box-pricing-current"><%= t('CurrentPlan') %></div>
+                    <% }else{ %>
+                      <div class="box-pricing-button" aria-disabled="true"><a class="button-lg button-block button-gray-4"  href="#" data-toggle="modal" data-caption-animate="fadeInUp"><%= t('GetStarted') %></a></div>
+                <% } } else { %>
+                <div class="box-pricing-button" aria-disabled="true"><a class="button-lg button-block button-gray-4"  href="#logModalCta" data-toggle="modal" data-caption-animate="fadeInUp"><%= t('GetStarted') %></a></div>
+                 <% }%>
+              </div>
+            </div>
+
+            <div class="col-sm-3 ">
+              <div class="box-pricing box-pricing-black box-pricing-popular">
+                <div class="box-pricing-body">
+                  <h5 class="box-pricing-title"><%= t('Bronze') %></h5>
+                  <h3 class="box-pricing-price"><%= fifty %> <%= currency %></h3>
+                  <div class="box-pricing-time"><%= t('NinetyDays') %></div>
+                  <div class="box-pricing-divider">
+                    <div class="divider"></div><span><%= t('Silver') %></span>
+                  </div>
+                  <ul class="box-pricing-list">
+                    <li class="active"><%= t('Booking') %></li>
+                    <li class="active"><%= t('ProviderPage') %></li>
+                    <li class="active"><%= t('GoogleCalendar') %></li>
+                    <li class="active"><%= t('Invoice') %></li>
+                    <li class="active"><%= t('MultipleLocations') %></li>
+                    <li class=""><%= t('ContactNumbers') %></li>
+                    <li class="active"><%= t('Gallery') %></li>
+                    <li class=""><%= t('QualityAssurance') %></li>
+                    <li class=""><%= t('FullSupport') %></li>
+                  </ul>
+                </div>
+                <% if(usr) { 
+                  if (usr.subscriptionPlan == "bronze") {%>
+                    <div class="box-pricing-button" aria-disabled="true"><a class="button-lg button-block disabled_link"  href="#payModalCta" data-toggle="modal" data-caption-animate="fadeInUp" ><%= t('CurrentPlan') %></a></div>
+                    <div class="box-pricing-current"><%= t('CurrentPlan') %></div>
+                  <% }else{ %>
+                    <div class="box-pricing-button" aria-disabled="true"><a class="button-lg button-block button-gray-4"  href="#payModalCta" data-toggle="modal" data-caption-animate="fadeInUp" onclick="openSubscriptionModal('bronze')"><%= t('GetStarted') %></a></div>
+              <% } } else { %>
+              <div class="box-pricing-button" aria-disabled="true"><a class="button-lg button-block button-gray-4"  href="#logModalCta" data-toggle="modal" data-caption-animate="fadeInUp"><%= t('GetStarted') %></a></div>
+               <% }%>
+                </div>
+            </div>
+
+            <div class="col-sm-3 ">
+              <div class="box-pricing box-pricing-black box-pricing-popular">
+                <div class="box-pricing-body">
+                  <h5 class="box-pricing-title"><%= t('Gold') %></h5>
+                  <h3 class="box-pricing-price"><%= hundred %> <%= currency %></h3>
+                  <div class="box-pricing-time"><%= t('OneEightyDays') %></div>
+                  <div class="box-pricing-divider">
+                    <div class="divider"></div><span><%= t('Gold') %></span>
+                  </div>
+                  <ul class="box-pricing-list">
+                    <li class="active"><%= t('Booking') %></li>
+                    <li class="active"><%= t('ProviderPage') %></li>
+                    <li class="active"><%= t('GoogleCalendar') %></li>
+                    <li class="active"><%= t('Invoice') %></li>
+                    <li class="active"><%= t('MultipleLocations') %></li>
+                    <li class=""><%= t('ContactNumbers') %></li>
+                    <li class="active"><%= t('Gallery') %></li>
+                    <li class="active"><%= t('QualityAssurance') %></li>
+                    <li class=""><%= t('FullSupport') %></li>
+                  </ul>
+                </div>
+                <% if(usr) { 
+                  if (usr.subscriptionPlan == "gold") {%>
+                    <div class="box-pricing-button" aria-disabled="true"><a class="button-lg button-block disabled_link"  href="#payModalCta" data-toggle="modal" data-caption-animate="fadeInUp" ><%= t('CurrentPlan') %></a></div>
+                    <div class="box-pricing-current"><%= t('CurrentPlan') %></div>
+                  <% }else{ %>
+                    <div class="box-pricing-button" aria-disabled="true"><a class="button-lg button-block button-gray-4"  href="#payModalCta" data-toggle="modal" onclick="openSubscriptionModal('gold')" data-caption-animate="fadeInUp"><%= t('GetStarted') %></a></div>
+                    <div class="box-pricing-badge"><%=t('Popular')%></div>
+                  <% } } else { %>
+                    <div class="box-pricing-button" aria-disabled="true"><a class="button-lg button-block button-gray-4"  href="#logModalCta" data-toggle="modal" data-caption-animate="fadeInUp"><%= t('GetStarted') %></a></div>
+                    <div class="box-pricing-badge"><%=t('Popular')%></div>
+              <% }%>
+                
+              </div>
+            </div>
+            <div class="col-sm-3">
+              <div class="box-pricing box-pricing-black">
+                <div class="box-pricing-body">
+                  <h5 class="box-pricing-title"><%= t('Platinum') %></h5>
+                  <h3 class="box-pricing-price"><%= twofifty %> <%= currency %></h3>
+                  <div class="box-pricing-time"><%= t('ThreeSixtyFiveDays') %></div>
+                  <div class="box-pricing-divider">
+                    <div class="divider"></div><span><%= t('Platinum') %></span>
+                  </div>
+                  <ul class="box-pricing-list">
+                    <li class="active"><%= t('Booking') %></li>
+                    <li class="active"><%= t('ProviderPage') %></li>
+                    <li class="active"><%= t('GoogleCalendar') %></li>
+                    <li class="active"><%= t('Invoice') %></li>
+                    <li class="active"><%= t('MultipleLocations') %></li>
+                    <li class="active"><%= t('ContactNumbers') %></li>
+                    <li class="active"><%= t('Gallery') %></li>
+                    <li class="active"><%= t('QualityAssurance') %></li>
+                    <li class="active"><%= t('FullSupport') %></li>
+                  </ul>
+                </div>
+                <% if(usr) { 
+                  if (usr.subscriptionPlan == "Platinum") {%>
+                    <div class="box-pricing-button" aria-disabled="true"><a class="button-lg button-block disabled_link"  href="#payModalCta" data-toggle="modal" data-caption-animate="fadeInUp" ><%= t('CurrentPlan') %></a></div>
+                    <div class="box-pricing-current"><%= t('CurrentPlan') %></div>
+                  <% }else{ %>
+                    <div class="box-pricing-button" aria-disabled="true"><a class="button-lg button-block button-gray-4"  href="#payModalCta" data-toggle="modal" onclick="openSubscriptionModal('platinum')" data-caption-animate="fadeInUp"><%= t('GetStarted') %></a></div>
+              <% } } else { %>
+              <div class="box-pricing-button" aria-disabled="true"><a class="button-lg button-block button-gray-4"  href="#logModalCta" data-toggle="modal" data-caption-animate="fadeInUp"><%= t('GetStarted') %></a></div>
+               <% }%>
+              </div>
+            </div>
+          </div>
+        </div>
+</section>

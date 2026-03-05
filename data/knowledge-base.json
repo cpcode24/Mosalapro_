@@ -1,0 +1,290 @@
+[
+  {
+    "id": "account_001",
+    "category": "account_authentication",
+    "language": "en",
+    "text": "To create an account on MosalaPro, visit the registration page and choose between 'Service Seeker' or 'Service Provider'. Fill in your email, password, and basic information. You'll receive a verification email to activate your account. You can also sign up using Google or Facebook OAuth.",
+    "metadata": {
+      "keywords": ["register", "signup", "create account", "new user"]
+    }
+  },
+  {
+    "id": "account_002",
+    "category": "account_authentication",
+    "language": "fr",
+    "text": "Pour créer un compte sur MosalaPro, visitez la page d'inscription et choisissez entre 'Chercheur de services' ou 'Fournisseur de services'. Remplissez votre email, mot de passe et informations de base. Vous recevrez un email de vérification pour activer votre compte. Vous pouvez également vous inscrire avec Google ou Facebook OAuth.",
+    "metadata": {
+      "keywords": ["inscription", "créer compte", "nouvel utilisateur"]
+    }
+  },
+  {
+    "id": "seeker_001",
+    "category": "service_seeker",
+    "language": "en",
+    "text": "To post a service request: 1) Log in to your account, 2) Click 'Post Request' or 'New Request', 3) Fill in service details including title, description, category, budget, and deadline, 4) Add location information, 5) Upload any relevant images or documents, 6) Submit the request. Service providers will receive notifications and can send you quotations.",
+    "metadata": {
+      "keywords": ["post request", "create request", "service request", "hire"]
+    }
+  },
+  {
+    "id": "seeker_002",
+    "category": "service_seeker",
+    "language": "fr",
+    "text": "Pour publier une demande de service: 1) Connectez-vous à votre compte, 2) Cliquez sur 'Publier une demande' ou 'Nouvelle demande', 3) Remplissez les détails du service incluant titre, description, catégorie, budget et délai, 4) Ajoutez les informations de localisation, 5) Téléchargez des images ou documents pertinents, 6) Soumettez la demande. Les fournisseurs de services recevront des notifications et pourront vous envoyer des devis.",
+    "metadata": {
+      "keywords": ["publier demande", "créer demande", "demande service", "embaucher"]
+    }
+  },
+  {
+    "id": "provider_001",
+    "category": "service_provider",
+    "language": "en",
+    "text": "To become a service provider: 1) Register as a 'Service Provider', 2) Complete your profile with skills, experience, and portfolio, 3) Verify your account via email, 4) Browse available service requests in your categories, 5) Send quotations to clients with your pricing and timeline. You can also create a public profile showcasing your services.",
+    "metadata": {
+      "keywords": ["become provider", "register provider", "offer services", "quotation"]
+    }
+  },
+  {
+    "id": "provider_002",
+    "category": "service_provider",
+    "language": "fr",
+    "text": "Pour devenir fournisseur de services: 1) Inscrivez-vous en tant que 'Fournisseur de services', 2) Complétez votre profil avec compétences, expérience et portfolio, 3) Vérifiez votre compte par email, 4) Parcourez les demandes de services disponibles dans vos catégories, 5) Envoyez des devis aux clients avec vos tarifs et délais. Vous pouvez également créer un profil public présentant vos services.",
+    "metadata": {
+      "keywords": ["devenir fournisseur", "inscription fournisseur", "offrir services", "devis"]
+    }
+  },
+  {
+    "id": "quotation_001",
+    "category": "quotation_workflow",
+    "language": "en",
+    "text": "The quotation workflow: 1) Service provider views a request, 2) Provider sends a quotation with price, timeline, and service details, 3) Client reviews all received quotations, 4) Client accepts a quotation, 5) Work begins, 6) Provider marks work as completed, 7) Client reviews and approves, 8) Payment is processed. Quotations can include attachments and detailed breakdowns.",
+    "metadata": {
+      "keywords": ["quotation", "quote", "proposal", "accept", "workflow"]
+    }
+  },
+  {
+    "id": "quotation_002",
+    "category": "quotation_workflow",
+    "language": "fr",
+    "text": "Le processus de devis: 1) Le fournisseur de services consulte une demande, 2) Le fournisseur envoie un devis avec prix, délai et détails du service, 3) Le client examine tous les devis reçus, 4) Le client accepte un devis, 5) Le travail commence, 6) Le fournisseur marque le travail comme terminé, 7) Le client examine et approuve, 8) Le paiement est traité. Les devis peuvent inclure des pièces jointes et des détails détaillés.",
+    "metadata": {
+      "keywords": ["devis", "proposition", "accepter", "processus"]
+    }
+  },
+  {
+    "id": "payment_001",
+    "category": "payments",
+    "language": "en",
+    "text": "MosalaPro supports multiple payment methods including credit/debit cards, Paypal, and mobile money. Payments are held securely until work is approved. The platform charges a small service fee. You can view your payment history, download invoices, and set up automatic payments in your account settings.",
+    "metadata": {
+      "keywords": ["payment", "stripe", "mobile money", "invoice", "pay"]
+    }
+  },
+  {
+    "id": "payment_002",
+    "category": "payments",
+    "language": "fr",
+    "text": "MosalaPro prend en charge plusieurs méthodes de paiement notamment les cartes de crédit/débit, Paypal et mobile money. Les paiements sont conservés en toute sécurité jusqu'à l'approbation du travail. La plateforme facture de petits frais de service. Vous pouvez consulter votre historique de paiement, télécharger des factures et configurer des paiements automatiques dans les paramètres de votre compte.",
+    "metadata": {
+      "keywords": ["paiement", "stripe", "mobile money", "facture", "payer"]
+    }
+  },
+  {
+    "id": "communication_001",
+    "category": "communication",
+    "language": "en",
+    "text": "MosalaPro provides real-time messaging between clients and service providers. You can send text messages, share files and images, send quotations directly in chat, and receive notifications via email and push notifications. Chat history is preserved for reference. You can also report inappropriate messages or block users if needed.",
+    "metadata": {
+      "keywords": ["chat", "message", "communication", "contact", "talk"]
+    }
+  },
+  {
+    "id": "communication_002",
+    "category": "communication",
+    "language": "fr",
+    "text": "MosalaPro fournit une messagerie en temps réel entre clients et fournisseurs de services. Vous pouvez envoyer des messages texte, partager des fichiers et images, envoyer des devis directement dans le chat et recevoir des notifications par email et notifications push. L'historique des discussions est conservé pour référence. Vous pouvez également signaler des messages inappropriés ou bloquer des utilisateurs si nécessaire.",
+    "metadata": {
+      "keywords": ["discussion", "message", "communication", "contact", "parler"]
+    }
+  },
+  {
+    "id": "rating_001",
+    "category": "ratings_reviews",
+    "language": "en",
+    "text": "After a service is completed, clients can rate providers on a 5-star scale and leave detailed reviews. Ratings cover quality, communication, timeliness, and value. Providers can respond to reviews. Your average rating and reviews are displayed on your public profile. High ratings increase visibility and trust on the platform.",
+    "metadata": {
+      "keywords": ["rating", "review", "feedback", "stars", "rate"]
+    }
+  },
+  {
+    "id": "rating_002",
+    "category": "ratings_reviews",
+    "language": "fr",
+    "text": "Après la réalisation d'un service, les clients peuvent évaluer les fournisseurs sur une échelle de 5 étoiles et laisser des avis détaillés. Les évaluations couvrent la qualité, la communication, la ponctualité et la valeur. Les fournisseurs peuvent répondre aux avis. Votre note moyenne et vos avis sont affichés sur votre profil public. Les notes élevées augmentent la visibilité et la confiance sur la plateforme.",
+    "metadata": {
+      "keywords": ["évaluation", "avis", "commentaire", "étoiles", "noter"]
+    }
+  },
+  {
+    "id": "verification_001",
+    "category": "verification_trust",
+    "language": "en",
+    "text": "Account verification helps build trust on MosalaPro. Email verification is required for all users. Service providers can verify their identity by uploading government ID, verify phone numbers, and connect social media profiles. Verified accounts get a badge and higher visibility. This process ensures safety and reliability for all users.",
+    "metadata": {
+      "keywords": ["verify", "verification", "badge", "trust", "identity"]
+    }
+  },
+  {
+    "id": "verification_002",
+    "category": "verification_trust",
+    "language": "fr",
+    "text": "La vérification de compte aide à établir la confiance sur MosalaPro. La vérification par email est requise pour tous les utilisateurs. Les fournisseurs de services peuvent vérifier leur identité en téléchargeant une pièce d'identité gouvernementale, vérifier les numéros de téléphone et connecter les profils de réseaux sociaux. Les comptes vérifiés obtiennent un badge et une meilleure visibilité. Ce processus garantit la sécurité et la fiabilité pour tous les utilisateurs.",
+    "metadata": {
+      "keywords": ["vérifier", "vérification", "badge", "confiance", "identité"]
+    }
+  },
+  {
+    "id": "search_001",
+    "category": "search_discovery",
+    "language": "en",
+    "text": "You can search for services or providers using the search bar. Filter results by category, location, price range, ratings, and availability. Browse by popular categories including home services, professional services, events, technology, education, and more. Save your favorite providers for quick access. Set up alerts for new requests in specific categories.",
+    "metadata": {
+      "keywords": ["search", "find", "browse", "filter", "categories"]
+    }
+  },
+  {
+    "id": "search_002",
+    "category": "search_discovery",
+    "language": "fr",
+    "text": "Vous pouvez rechercher des services ou des fournisseurs en utilisant la barre de recherche. Filtrez les résultats par catégorie, emplacement, gamme de prix, évaluations et disponibilité. Parcourez par catégories populaires incluant services à domicile, services professionnels, événements, technologie, éducation et plus. Enregistrez vos fournisseurs favoris pour un accès rapide. Configurez des alertes pour les nouvelles demandes dans des catégories spécifiques.",
+    "metadata": {
+      "keywords": ["recherche", "trouver", "parcourir", "filtrer", "catégories"]
+    }
+  },
+  {
+    "id": "dispute_001",
+    "category": "dispute_resolution",
+    "language": "en",
+    "text": "If you have issues with a service, you can open a dispute through your transaction history. Provide details and evidence (messages, photos, etc.). MosalaPro support team reviews disputes within 48 hours. Funds are held during dispute resolution. The team mediates between both parties to reach a fair solution. Decisions are final and binding.",
+    "metadata": {
+      "keywords": ["dispute", "problem", "issue", "complaint", "refund"]
+    }
+  },
+  {
+    "id": "dispute_002",
+    "category": "dispute_resolution",
+    "language": "fr",
+    "text": "Si vous avez des problèmes avec un service, vous pouvez ouvrir un litige via votre historique de transactions. Fournissez des détails et des preuves (messages, photos, etc.). L'équipe de support MosalaPro examine les litiges dans les 48 heures. Les fonds sont bloqués pendant la résolution du litige. L'équipe fait la médiation entre les deux parties pour parvenir à une solution équitable. Les décisions sont finales et contraignantes.",
+    "metadata": {
+      "keywords": ["litige", "problème", "réclamation", "remboursement"]
+    }
+  },
+  {
+    "id": "profile_001",
+    "category": "profile_management",
+    "language": "en",
+    "text": "Your profile is your professional presence on MosalaPro. Add a profile photo, bio, skills, certifications, portfolio images, and contact preferences. Keep your profile updated with recent work and achievements. Public profiles are indexed by search engines. You can control privacy settings for different profile sections.",
+    "metadata": {
+      "keywords": ["profile", "bio", "portfolio", "settings", "update"]
+    }
+  },
+  {
+    "id": "profile_002",
+    "category": "profile_management",
+    "language": "fr",
+    "text": "Votre profil est votre présence professionnelle sur MosalaPro. Ajoutez une photo de profil, bio, compétences, certifications, images de portfolio et préférences de contact. Maintenez votre profil à jour avec les travaux récents et réalisations. Les profils publics sont indexés par les moteurs de recherche. Vous pouvez contrôler les paramètres de confidentialité pour différentes sections du profil.",
+    "metadata": {
+      "keywords": ["profil", "bio", "portfolio", "paramètres", "mettre à jour"]
+    }
+  },
+  {
+    "id": "categories_001",
+    "category": "service_categories",
+    "language": "en",
+    "text": "MosalaPro offers services across multiple categories: Home & Maintenance (cleaning, repairs, gardening), Professional Services (consulting, legal, accounting), Events (catering, photography, planning), Technology (web development, IT support, design), Education (tutoring, training, courses), Health & Wellness (fitness, beauty, therapy), and more. Each category has subcategories for specific services.",
+    "metadata": {
+      "keywords": ["categories", "services", "types", "what services"]
+    }
+  },
+  {
+    "id": "categories_002",
+    "category": "service_categories",
+    "language": "fr",
+    "text": "MosalaPro offre des services dans plusieurs catégories: Maison & Maintenance (nettoyage, réparations, jardinage), Services Professionnels (conseil, juridique, comptabilité), Événements (restauration, photographie, planification), Technologie (développement web, support IT, design), Éducation (tutorat, formation, cours), Santé & Bien-être (fitness, beauté, thérapie) et plus. Chaque catégorie a des sous-catégories pour des services spécifiques.",
+    "metadata": {
+      "keywords": ["catégories", "services", "types", "quels services"]
+    }
+  },
+  {
+    "id": "mobile_001",
+    "category": "mobile_access",
+    "language": "en",
+    "text": "MosalaPro is accessible on mobile devices through web browsers. The responsive design adapts to all screen sizes. Enable push notifications to receive instant updates about messages, quotations, and service requests. You can manage your account, chat, accept quotations, and process payments all from your mobile device.",
+    "metadata": {
+      "keywords": ["mobile", "phone", "app", "notifications", "responsive"]
+    }
+  },
+  {
+    "id": "mobile_002",
+    "category": "mobile_access",
+    "language": "fr",
+    "text": "MosalaPro est accessible sur les appareils mobiles via les navigateurs web. Le design responsive s'adapte à toutes les tailles d'écran. Activez les notifications push pour recevoir des mises à jour instantanées sur les messages, devis et demandes de services. Vous pouvez gérer votre compte, discuter, accepter des devis et traiter des paiements depuis votre appareil mobile.",
+    "metadata": {
+      "keywords": ["mobile", "téléphone", "app", "notifications", "responsive"]
+    }
+  },
+  {
+    "id": "security_001",
+    "category": "security_privacy",
+    "language": "en",
+    "text": "MosalaPro takes security seriously. We use SSL encryption for all data transmission, secure password hashing with bcrypt, regular security audits, and compliance with data protection regulations. Never share your password with anyone. Enable two-factor authentication for additional security. Report suspicious activities to our support team immediately.",
+    "metadata": {
+      "keywords": ["security", "privacy", "password", "safe", "protection"]
+    }
+  },
+  {
+    "id": "security_002",
+    "category": "security_privacy",
+    "language": "fr",
+    "text": "MosalaPro prend la sécurité au sérieux. Nous utilisons le chiffrement SSL pour toute transmission de données, le hachage sécurisé des mots de passe avec bcrypt, des audits de sécurité réguliers et la conformité avec les réglementations de protection des données. Ne partagez jamais votre mot de passe. Activez l'authentification à deux facteurs pour plus de sécurité. Signalez immédiatement les activités suspectes à notre équipe de support.",
+    "metadata": {
+      "keywords": ["sécurité", "confidentialité", "mot de passe", "sûr", "protection"]
+    }
+  },
+  {
+    "id": "pricing_001",
+    "category": "pricing_fees",
+    "language": "en",
+    "text": "MosalaPro charges a small service fee on completed transactions. Service seekers can post requests for free. Service providers pay a commission only when they successfully complete a paid job. The platform fee covers payment processing, dispute resolution, customer support, and platform maintenance. Detailed fee structure is available in your account settings.",
+    "metadata": {
+      "keywords": ["pricing", "fees", "commission", "cost", "charges"]
+    }
+  },
+  {
+    "id": "pricing_002",
+    "category": "pricing_fees",
+    "language": "fr",
+    "text": "MosalaPro facture de petits frais de service sur les transactions complétées. Les chercheurs de services peuvent publier des demandes gratuitement. Les fournisseurs de services paient une commission uniquement lorsqu'ils terminent avec succès un travail payé. Les frais de plateforme couvrent le traitement des paiements, la résolution des litiges, le support client et la maintenance de la plateforme. La structure détaillée des frais est disponible dans les paramètres de votre compte.",
+    "metadata": {
+      "keywords": ["tarification", "frais", "commission", "coût", "charges"]
+    }
+  },
+  {
+    "id": "support_001",
+    "category": "customer_support",
+    "language": "en",
+    "text": "Need help? Contact MosalaPro support via this chat widget, email support@mosalapro.com, or use the contact form on the website. Support is available in English and French. Response time is typically within 24 hours. For urgent issues, mark your message as 'urgent'. Check the FAQ section for quick answers to common questions.",
+    "metadata": {
+      "keywords": ["support", "help", "contact", "assistance", "customer service"]
+    }
+  },
+  {
+    "id": "support_002",
+    "category": "customer_support",
+    "language": "fr",
+    "text": "Besoin d'aide? Contactez le support MosalaPro via ce widget de chat, email support@mosalapro.com, ou utilisez le formulaire de contact sur le site web. Le support est disponible en anglais et français. Le temps de réponse est généralement dans les 24 heures. Pour les problèmes urgents, marquez votre message comme 'urgent'. Consultez la section FAQ pour des réponses rapides aux questions courantes.",
+    "metadata": {
+      "keywords": ["support", "aide", "contact", "assistance", "service client"]
+    }
+  }
+]

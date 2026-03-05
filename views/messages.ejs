@@ -1,0 +1,456 @@
+<%- include('partials/header') %>
+<section class="<%=bg%> h-100 padt-8 ">
+    <div class="container pb-4">
+        <div class="row">
+          <div class="col padt-4">
+            <nav aria-label="breadcrumb" class="main-breadcrumb">
+              <ol class="breadcrumb">
+                  <li class="breadcrumb-item"><a href="/"><%= t('Home') %></a></li>
+                  <li class="breadcrumb-item"><a href="/notifications"><%= t('Notifications') %></a></li>
+                  <li class="breadcrumb-item active" aria-current="page"><%= t('Messages') %></li>
+              </ol>
+          </nav>
+    <div class="card-chat mt-4" id="w-chat-content">
+        <div class="row g-0">
+            <div class="col-12 col-lg-5 col-xl-3 corresp-content ">
+                <div class="px-4 d-none d-md-block">
+                    <div class="d-flex align-items-center">
+                    <div class="flex-grow-1">
+                    <input type="text" class="form-control my-3" placeholder="<%= t('Search') %>...">
+                    </div>
+                    </div>
+                </div>
+
+                <% let start = true; 
+                    if(firstCor.photo) {
+                        if(!firstCor.photo.includes("https://")) firstCor.photo = "/photo/"+firstCor.photo;
+                    } else firstCor.photo = "/photo/default.png";
+                    if(correspondants.length > 0 || firstCor != 'none') { 
+                        let total = correspondants.length+1;   %>
+                        <!--first correspondant-->
+                        <div class="list-group-item list-group-item-action  active-chat" id="1" data-toggle="tab" onClick="getMessages('<%=firstCor._id%>', '<%=total%>', '1')">
+                   
+                            <div class="d-flex align-items-center position-relative">
+                                <img src="<%=firstCor.photo%>" class="rounded-circle mr-1" style="height: 45px !important; width: 45px !important;" alt="<%= firstCor.firstName %>  <%= firstCor.lastName %>" width="40" height="40">
+                                <div class="flex-grow-1 ml-3 my-auto">
+                                    <%= firstCor.firstName %>  <%= firstCor.lastName %>
+                                </div>
+                                <% if(firstCor.isOnline) { %>
+                                    <div class="online-status">i</div>
+                                <% } %>
+                            </div>
+                   
+                        </div>
+
+                    <% let counter = 2; 
+                        correspondants.forEach( c =>{  
+                        if(c.photo) {
+                            if(!c.photo.includes("https://")) c.photo = "/photo/"+c.photo;
+                        } else c.photo = "/photo/default.png";
+                    %>
+                        <div class="list-group-item list-group-item-action " id="<%=counter%>" data-toggle="tab" onClick="getMessages('<%=c._id%>', '<%=total%>', '<%=counter%>')">
+                        
+                            <div class="d-flex align-items-center position-relative">
+                                <img src="<%=c.photo%>" class="rounded-circle mr-1" style="height: 45px !important; width: 45px !important;" alt="<%= c.firstName %>  <%= c.lastName %>" width="40" height="40">
+                                <div class="flex-grow-1 ml-3 my-auto">
+                                    <%= c.firstName %>  <%= c.lastName %>
+                                </div>
+                                <% if(c.isOnline) { %>
+                                    <div class="online-status">i</div>
+                                <% } %>
+                            </div>
+                       
+                        </div>
+                <% counter = counter + 1; } ); } %>
+           
+
+
+
+        <hr class="d-block d-lg-none mt-1 mb-0">
+    </div>
+    <div class="col-12 col-lg-7 col-xl-9" id="message-block">
+    <div class="py-2 px-4 border-bottom d-none d-lg-block mr-1">
+    <div class="d-flex align-items-center py-1">
+    <% if(data.length > 0 ) { %>
+        <a href="/pro-profile/<%=firstCor._id%>"><div id="chat-box-top" class="d-flex">
+            <div class="">
+                <img src="<%=firstCor.photo%>" class="rounded-circle mr-1" style="height: 45px !important; width: 45px !important;" alt="<%= firstCor.firstName%> <%=firstCor.lastName%>" width="40" height="40">
+            </div>
+            <div class="flex-grow-1 pl-3">
+                <strong><%= firstCor.firstName%> <%=firstCor.lastName%></strong>
+                <div class="text-muted small"><em><%=firstCor.accountType%></em></div>
+            </div>
+        </div></a>
+    <% } else { %>
+        <strong>No Messages</strong>
+    <% } %>
+    <div>
+    <!--button class="btn btn-light border btn-lg px-3"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-more-horizontal feather-lg"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg></button-->
+    </div>
+    </div>
+    </div>
+    
+    <div class="position-relative">
+    <div class="chat-messages" id="chat-content">
+    <% 
+        if(data ) { 
+        
+        for(let i = 0; i < data.length; i++) { %>
+        <% if(usr._id == data[i].senderId) { %> 
+            
+            <% if (data[i].isQuotation) {%>
+                <div class="chat-message-right pb-4">
+                    <div class="d-none d-lg-block d-md-block">
+                        <img src="<%= usr.photo%>" class="rounded-circle mr-1" style="height: 45px !important; width: 45px !important;" alt="" width="40" height="40">
+                    </div>
+                    <div class="flex-shrink-1 sender-chat round-border text-wrap py-2 sender-chat px-3 mr-3">
+                        
+                        <div class="font-weight-bold mb-1">You</div>
+                        <h5 class="mb-2 text-white">New Quotation</h5>
+                        <h6 class="text-white"><b><%=data[i].quotation.requestTitle%></b></h6>
+                        <p class="mt-0 mb-1">$<%=data[i].quotation.budget%> / <%=data[i].quotation.budgetType%></p> 
+                        <% if(data[i].quotation.budgetType === 'Per hour') { %>
+                            <p class="small mt-0 ">Time of completion</p>
+                            <p class="mt-0 mb-1"><%=data[i].quotation.timeOfCompletion%></p> 
+                        <% } %>
+
+                        <hr />
+                        <p class="mt-1"><%=data[i].quotation.requestDescription%></p> 
+                        <div class="row mt-1 pl-1">
+                            <div class="col-6">
+                                <p class=" small">Category</p>
+                                <p class="mt-0"><%=data[i].quotation.requestCategory%></p> 
+                            </div>
+                            <div class="col-6">
+                                <p class=" small">Deadline</p>
+                                <p class="mt-0"><%=data[i].quotation.deadline%></p> 
+                            </div>
+                        </div>
+                        <div class=" small text-wrap my-2"><%=new Date(data[i].createdAt).toLocaleDateString('us-EN', { month: 'short', day: 'numeric', year: 'numeric' })%> at <%= new Date(data[i].createdAt).toLocaleTimeString('us-EN')%></div>
+                        <% if (data[i].quotation.status === 'accepted') { %>
+                            <i class="text-light-g">Accepted</i>
+                        <% } else if (data[i].quotation.status === 'rejected') { %>
+                            <i class="error_message">Rejected</i>
+                        <% } else { %>
+                            <button class="btn-job btn-primary-job-inv-blue" onClick="">Cancel</button>
+                        <% } %>
+                    </div>
+                </div>
+            <% } else {%>
+            <div class="chat-message-right pb-4">
+                <div class="d-none d-lg-block d-md-block">
+                    <img src="<%= usr.photo%>" class="rounded-circle mr-1" alt="Chris Wood" style="height: 45px !important; width: 45px !important;">
+                    
+                </div>
+                <div class="flex-shrink-1 sender-chat text-wrap  py-2 round-border px-3 mr-3">
+                    
+                    <div class="font-weight-bold mb-1">You</div>
+                    <%= data[i].content %>
+                    <div class="small text-wrap mt-2 text-petit text-light-g"> <%=new Date(data[i].createdAt).toLocaleDateString('us-EN', { month: 'short', day: 'numeric', year: 'numeric' })%> at <%= new Date(data[i].createdAt).toLocaleTimeString('us-EN')%></div>
+                    <div>
+                        <% if(data[i].attachments) { for(let j = 0; j < data[i].attachments.length; j++) { %>
+                            <div class="mr-4" onclick="downloadFile('<%= data[i].attachments[j] %>')">
+                                <b class="fa fa-file-text mb-1 file-icon" aria-hidden="true"></b>
+                                <span class="pr-2"><%= data[i].attachments[j] %></span>
+                            </div>
+                        <% } }%>
+                    </div>
+                </div>
+            </div>
+            <% } %>
+        <% } else { %>
+
+            <% if (data[i].isQuotation) {%>
+                <div class="chat-message-left pb-4">
+                    <div class="d-none d-lg-block d-md-block">
+                        <img src="<%= firstCor.photo%>" class="rounded-circle mr-1" style="height: 45px !important; width: 45px !important;" alt="<%= firstCor.firstName%> <%=firstCor.lastName%>" width="40" height="40">
+                    </div>
+                    <div class="flex-shrink-1 bg-light-user text-primary text-wrap  round-border py-2 px-3 ml-3">
+                        <div class="font-weight-bold mb-1"><%=firstCor.firstName%> <%=firstCor.lastName%></div>
+                        <span id="qr-message-<%=data[i].quotation._id%>"></span>
+                        <h5 class="mb-2">New Quotation</h5>
+                        <h6><b><%=data[i].quotation.requestTitle%></b></h6>
+                        <p class="mt-0 mb-1">$<%=data[i].quotation.budget%> / <%=data[i].quotation.budgetType%></p> 
+
+                        <% if(data[i].quotation.budgetType === 'Per hour') { %>
+                            <p class="text-muted small">Time of completion</p>
+                            <p class="mt-0"><%=data[i].quotation.timeOfCompletion%></p> 
+                        <% } %>
+
+                        <hr />
+                        <p class="mt-1"><%=data[i].quotation.requestDescription%></p> 
+                        <div class="row mt-1 pl-1">
+                            <div class="col-6">
+                                <p class="text-muted small">Category</p>
+                                <p class="mt-0"><%=data[i].quotation.requestCategory%></p> 
+                            </div>
+                            <div class="col-6">
+                                <p class="text-muted small">Deadline</p>
+                                <p class="mt-0"><%=data[i].quotation.deadline%></p> 
+                            </div>
+                        </div>
+                        <div class="text-muted text-petit text-wrap my-2"><%=new Date(data[i].createdAt).toLocaleDateString('us-EN', { month: 'short', day: 'numeric', year: 'numeric' })%> at <%= new Date(data[i].createdAt).toLocaleTimeString('us-EN')%></div>
+                        <% if (data[i].quotation.status === 'accepted') { %>
+                            <i class="success_message">Accepted</i>
+                        <% } else if (data[i].quotation.status === 'rejected') { %>
+                            <i class="error_message">Rejected</i>
+                        <% } else { %>
+                            <div class="row justify-content-center">
+                                <button class="btn-job btn-primary-job mr-3" onClick="acceptQuotation('<%=data[i].quotation._id%>')">Accept</button>
+                                <button class="btn-job btn-primary-job-inv-dgr " onClick="rejectQuotation('<%=data[i].quotation._id%>')">Reject</button>
+                            </div>
+                        <% } %>
+                    </div>
+                    
+                </div>
+            <% } else {%>
+           
+            <div class="chat-message-left pb-4">
+                <div class="d-none d-lg-block d-md-block">
+                    <img src="<%= firstCor.photo%>" class="rounded-circle mr-1" style="height: 45px !important; width: 45px !important;" alt="<%= firstCor.firstName%> <%=firstCor.lastName%>" width="40" height="40">
+                </div>
+                <div class="flex-shrink-1 bg-light-user text-primary text-wrap  round-border py-2 px-3 ml-3">
+                    <div class="font-weight-bold mb-1"><%=firstCor.firstName%> <%=firstCor.lastName%></div>
+                    <%= data[i].content%>
+                    <div class="text-petit text-muted text-wrap mt-2"><%=new Date(data[i].createdAt).toLocaleDateString('us-EN', { month: 'short', day: 'numeric', year: 'numeric' })%> at <%= new Date(data[i].createdAt).toLocaleTimeString('us-EN')%></div>
+                    <div>
+                        <% if(data[i].attachments) { for(let j = 0; j < data[i].attachments.length; j++) { %>
+                            <div class="mr-4" onclick="downloadFile('<%= data[i].attachments[j] %>')">
+                                <b class="fa fa-file-text mb-1 file-icon" aria-hidden="true"></b>
+                                <span class="pr-2"><%= data[i].attachments[j] %></span>
+                            </div>
+                        <% } }%>
+                    </div>
+                </div>
+                
+            </div>
+            <% } %>
+    <% } } } %>
+   
+
+
+    </div>
+    </div>
+        <div class="flex-grow-0 py-3 px-4 border-top mr-1">
+            <div class="input-group d-flex gap-3">
+                <textarea rows="2" type="text" class="form-control input-message" placeholder="Type your message..." id="messageInput"></textarea>
+                <!--i class="fas fa-paperclip sm-scr" id="chatAttachmentBtn" onclick="openAttachmentModal()"></i> 
+                <input type="file" accept=
+                "application/msword, application/vnd.ms-excel, application/vnd.ms-powerpoint,
+                text/plain, application/pdf, image/*" style="display: none;" id="attachmentInput" onchange="addAttachment()"/-->
+                <button class="send-message-btn" onClick="sendChatMessage()"></button>
+                <% if(usr.accountType === 'provider') { %>
+                    <!--a href="#chatQuotationModalCta" data-toggle="modal" data-caption-animate="fadeInUp" class="sm-scr">
+                        <button class="btn-job btn-primary-job-inv-blue tooltips ml-3"
+                        data-toggle="tooltip" data-placement="top">Send quote</button>
+                    </a-->
+                <% } %>
+            </div>
+            <div class="d-flex gap-4" id="attachmentList">
+                
+            </div>
+       
+          
+        </div>
+       
+    </div>
+    </div>
+    </div>
+    </div>
+
+</section>
+
+<script src="js/handleMessages.js"></script>
+<script type="text/javascript">
+
+function downloadFile(filename){
+location.replace('files/'+filename);
+}
+
+
+const chatContent = document.getElementById('chat-content');
+  chatContent.scrollTop = chatContent.scrollHeight;
+
+const messageInput = document.getElementById("messageInput");
+
+messageInput.addEventListener("keydown", logKey);
+
+function logKey(e) {
+  if(e.code == 'Enter' && !e.shiftKey){
+    sendChatMessage();
+  }
+}
+
+async function sendChatMessage() {
+    let params = new URLSearchParams(document.location.search);
+    let proId = params.get("id");
+    if(messageInput.value.trim() == "") return;
+    var messageContent = document.getElementById("messageInput").value.trim().replace(/\n/g, "<br/>");;
+    
+    // const data = {
+    //     proId: proId,
+    //     messageTitle: "",   
+    //     content:messageContent,
+    //     isChatMessage: true,
+    // };
+
+    const body = new FormData();
+    body.append("proId", proId);
+    body.append("messageTitle", "");
+    body.append("content", messageContent);
+    body.append("isChatMessage", true);
+
+    for(let i = 0; i < selectedAttachments.length; i++) {
+        body.append("files", selectedAttachments[i], selectedAttachments[i].fileName);
+    }
+
+    // _postData(, body);
+    await fetch('/send-message', {
+        method: 'POST',
+        mode: 'cors',
+        cache: 'no-cache',
+        credentials: 'same-origin',
+        redirect: 'follow',
+        referrerPolicy: 'no-referrer',
+        
+        body: body
+    });
+
+    socket.emit("pushNotification", { 
+                    "title": "You have a new message",
+                    "content": "Someone has sent you a message.\n",
+                    "userId": params.get("id"),
+                    "notifType": "msg"
+    });
+
+    document.getElementById("messageInput").value = "";
+    const chatContent = document.getElementById('chat-content');
+
+    const lastMessage = await fetch(`/messages/${proId}/last`)
+        .then(res => res.json())
+
+    let attachmentsEls = "";
+    lastMessage.attachments.forEach(attch => {
+        attachmentsEls +=`<div class="mr-4" onclick="downloadFile('${attch}')">
+                <b class="fa fa-file-text-o mb-1 file-icon" aria-hidden="true"></b>
+                <span class="pr-2">${attch}</span>
+            </div>`;
+    });
+    
+    chatContent.innerHTML += `<div class="chat-message-right pb-4">
+        <div>
+            <img src="<%= usr.photo%>" class="rounded-circle mr-1" style="height: 45px !important; width: 45px !important;" alt="" width="40" height="40">
+        </div>
+        <div class="flex-shrink-1 round-border py-2 sender-chat px-3 mr-3">
+            <div class="font-weight-bold mb-1">You</div>
+            ${ lastMessage.content }
+            <div class="text-petit text-light-g text-wrap mt-2">${new Date(lastMessage.createdAt).toLocaleDateString('us-EN', { month: 'short', day: 'numeric', year: 'numeric' }) +' at '+ new Date(lastMessage.createdAt).toLocaleTimeString('us-EN')}</div>
+            <div>
+                ${ attachmentsEls }
+            </div>
+        </div>
+    </div>`;
+
+    chatContent.scrollTop = chatContent.scrollHeight;
+
+    
+    selectedAttachments = [];
+    document.getElementById("attachmentInput").value = "";
+    renderAttachments();
+    // getMessages(proId);
+}   
+
+    socket.on("connect", function () {
+        socket.emit("createUser", {userId: '<%=usr._id%>'});
+
+        
+     });
+
+     socket.on("messageQuotationToClient", function(data) {
+        const params = new URLSearchParams(document.location.search);
+        const proId = params.get("id");
+
+        const chatContent = document.getElementById('chat-content');
+        // console.log(data);
+        // console.log(proId);
+        // console.log(proId === data.sender._id);
+        if (proId === data.sender._id) {
+            const ppict = data.sender.photo.includes("https://")? data.sender.photo : data.sender.photo === ""? "/photo/default.png" : "/photo/"+data.sender.photo;
+            chatContent.innerHTML += `<div class="chat-message-left pb-4">
+                    <div>
+                        <img src="${ppict}" class="rounded-circle mr-1" style="height: 45px !important; width: 45px !important;" alt="${data.sender.firstName} ${data.sender.lastName}" width="40" height="40">
+                    </div>
+                    <div class="flex-shrink-1 bg-light-user text-primary round-border py-2 px-3 ml-3">
+                        <div class="font-weight-bold mb-1">${data.sender.firstName} ${data.sender.lastName}</div>
+                        <h5 class="mb-2">New Quotation</h5>
+                        <h6 class=""><b>${data.messageQuotation.requestTitle}</b></h6>
+                        <p class="mt-0 mb-1">$${data.messageQuotation.budget} / ${data.messageQuotation.budgetType}</p> 
+                        ${data.messageQuotation.budgetType ==='Per hour' ? ` 
+                            <p class="text-muted small">Time of completion</p>
+                            <p class="mt-0">${data.messageQuotation.timeOfCompletion}</p>` 
+                            : ""}
+                        <hr />
+                        <p class="mt-1">${data.messageQuotation.requestDescription}</p> 
+                        <div class="row mt-1 pl-1">
+                            <div class="col-6">
+                                <p class="text-muted small">Category</p>
+                                <p class="mt-0">${data.messageQuotation.requestCategory}</p> 
+                            </div>
+                            <div class="col-6">
+                                <p class="text-muted small">Deadline</p>
+                                <p class="mt-0">${data.messageQuotation.deadline}</p> 
+                            </div>
+                        </div>
+                        <div class="text-muted text-petit small text-wrap my-2">${new Date(data.messageQuotation.createdAt).toLocaleDateString('us-EN', { month: 'short', day: 'numeric', year: 'numeric' })+' at '+new Date(data.messageQuotation.createdAt).toLocaleTimeString('us-EN')}</div>
+                        <div class="row justify-content-center">
+                            <button class="btn-job btn-primary-job mr-3" onClick="acceptQuotation('${data.messageQuotation._id}')">Accept</button>
+                            <button class="btn-job btn-primary-job-inv-dgr " onClick="rejectQuotation('${data.messageQuotation._id}')">Reject</button>
+                        </div>
+                    </div>
+                </div>`;
+
+            chatContent.scrollTop = chatContent.scrollHeight;
+        }
+    });
+    socket.on("messageToClient", function(data) {
+        const params = new URLSearchParams(document.location.search);
+        const proId = params.get("id");
+
+        const chatContent = document.getElementById('chat-content');
+        if (proId === data.sender._id) {
+            let attachmentsEls = "";
+            data.attachments.forEach(attch => {
+                attachmentsEls +=`<div class="mr-4" onclick="downloadFile('${attch}')">
+                        <b class="fa fa-file-text mb-1 file-icon" aria-hidden="true"></b>
+                        <span class="pr-2">${attch}</span>
+                    </div>`;
+            });
+            const propict = data.sender.photo.includes("https://")? data.sender.photo : data.sender.photo === ""? "/photo/default.png" : "/photo/"+data.sender.photo;
+            chatContent.innerHTML += ` <div class="chat-message-left pb-4">
+                <div>
+                    <img src="${propict}" class="rounded-circle mr-1" style="height: 45px !important; width: 45px !important;" alt="${data.sender.firstName} ${data.sender.lastName}" width="40" height="40">
+                   
+                </div>
+                <div class="flex-shrink-1 bg-light-user text-primary round-border py-2 px-3 ml-3">
+                    <div class="font-weight-bold mb-1">${data.sender.firstName} ${data.sender.lastName}</div>
+                    ${data.message}
+                    <div class="text-muted text-petit text-wrap mt-2">${new Date(data.createdAt).toLocaleDateString('us-EN', { month: 'short', day: 'numeric', year: 'numeric' })+' at '+new Date(data.createdAt).toLocaleTimeString('us-EN')}</div>
+                    <div>
+                        ${attachmentsEls}
+                    </div>
+                </div>
+                
+            </div>`;
+
+            chatContent.scrollTop = chatContent.scrollHeight;
+        }
+
+        //console.log("Receive message from server", data);
+    });
+
+<% if(firstCor != 'none') { %>
+        setCorrespondentId('<%=firstCor._id%>')
+<% }  %>
+ </script>
+<%- include('partials/chatQuotationModal') %>
+<%- include('partials/footer') %>

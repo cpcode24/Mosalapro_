@@ -1,0 +1,165 @@
+
+<%- include('partials/header') %>
+<section class="<%=bg%> padt-8" id="wsection">
+    <div class="container pb-4" id="whole-qr-contnr">
+        <div class="custom-container" id="qr-cust-container">
+            <nav aria-label="breadcrumb" class="main-breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/"><%= t('Home') %></a></li>
+                    <li class="breadcrumb-item"><a href="/quotations"><%= t('Quotations') %></a></li>
+                    <li class="breadcrumb-item active" aria-current="page"><%=qr.requestTitle %></li>
+                </ol>
+            </nav>
+            <div class="row mt-1" id="sr-container">
+                <div class="col-lg-8 col-md-12 col-sm-12 col-12">
+                    <div class="card-u-pro-set p-4">
+                        <div class="card-body-u-pro-set tab-content px-4">
+                            <div class="tab-pane active" id="request">
+                                <h5><%=qr.requestTitle %></h5>
+                                <span id="reqMessage" class=""></span>
+                                <div class="form-group mt-4">
+                                    <label for="fullName"><%= t('RequestTitle') %></label>
+                                    
+                                    <input type="text" class="form-control" id="requestTitle" aria-describedby="Request title"  value="<%=qr.requestTitle%>" readonly>
+                                
+                                </div>
+                                <div class="form-group">
+                                    <label for="requestDesc"><%= t('RequestDescription') %></label>
+                                    <textarea type="text" class="form-control" id="requestDesc" name="requestDesc"  readonly><%=qr.requestDescription%></textarea>
+                                    
+                                </div>
+                                
+                                  <div class="form-group">
+                                    <label for="deadline"><%= t('Deadline') %></label>
+                                        
+                                    <input class="form-control" id="qrDeadline" name="qrDeadline"  value="<%=qr.deadline%>" readonly>
+                                  </div>
+                                <div class="form-group" id="sr-budget">
+                                    <label for="qrBudget"><%= t('QuoteBudget') %></label>
+                                    <% if(qr.status == 'new' || qr.status == "rejected" ) { %>
+                                        <div class="row mt-1">
+                                            
+                                            <div class="col-lg-4 col-md-4 col-12">
+                                                <div class="form-group">
+                                                    <input type="number" min="1" step=".01" oninput="validity.valid||(value='');" placeholder="<%= t('AmountToChargeClient') %>" id="qrBudget" class="form-control" name="qrbudget" >
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-4 col-md-4 col-12">
+                                                <div class="form-group">
+                                                    <select name="qrBudgetCurrency" id="qrBudgetCurrency" class="form-control" >
+                                                        <option value="<%=usr.currency%>"> <%=usr.currency%></option>
+                                                        <% if(usr.currency != 'XAF') { %> <option value="XAF"> FCFA</option> <% } %>
+                                                        <% if(usr.currency != 'USD') { %> <option value="USD"> USD </option> <% } %>
+                                                        <% if(usr.currency != 'EUR') { %> <option value="XAF"> EUR</option> <% } %>
+                                                        <% if(usr.currency != 'GBP') { %> <option value="GBP"> GBP</option> <% } %>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-4 col-md-4 col-12">
+                                                <div class="form-group">
+                                                    <select name="budgetType" id="qrBudgetType" class="form-control" value="Per project" >
+                                                    <option value="Per project"> <%= t('PerProject') %></option>
+                                                    <option value="Per hour"> <%= t('PerHour') %></option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="quotationDetails"><%= t('QuoteDetails') %></label>
+                                            <textarea class="form-control" id="quotationDetails" name="quotationDetails" rows="3" oninput="this.className = 'form-control'" placeholder="<%= t('QuotationDetailsPlaceholder') %>"></textarea>
+                                        </div>
+                                        
+                                    <%} else if(qr.status == 'completed'){ %>
+
+                                        <div class="row mt-1">
+                                            <div class="col-lg-6 col-md-6 col-12">
+                                            <div class="form-group">
+                                                <input class="form-control" id="requestBudget" name="budget" value="<%=qr.budget%> <%=qr.currency%>" readonly>
+                                            </div>
+                                            </div>
+                                            <div class="col-lg-6 col-md-6 col-12">
+                                                <div class="form-group">
+                                                    <input class="form-control" id="requestBudgetType" name="budgetType" value="<%=qr.budgetType%>" readonly>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    <% } %>
+                                </div>
+                                
+                                <div class="form-group mb-4">
+                                    <label for="file"><%= t('Files') %></label>
+                                    <% if ( qr.file && qr.file != 'no file'){ %>
+                                        <div class="row mt-1">
+                                            <div class="col">
+                                                <div title="Download file <%=qr.file%>" data-toggle="tooltip" data-placement="bottom"  class=" col-sm-4 col-lg-2 tooltips cursor mb-4" >
+                                                
+                                                    <div class="d-flex justify-content-center px-4 px-auto" onClick="downloadFile('<%= qr.file%>')" >
+                                                        <b class="fa fa-file-text fa-3x mb-1 file-icon" aria-hidden="true"></b>
+                                                        <span class="post-modern-time"> <span class="text-petit"><%= t('AttachedFile') %></span> </span>
+                                                    </div>
+                                                    
+                                                  </div>
+                                            </div>  
+                                        </div>
+                                    <% } else { %>
+                                        <p class="mt-1 text-petit"><i ><%= t('NoRequirementDocument') %></i></p>
+                                    
+                                    <% } %>
+                                </div>
+                                <% if(qr.status == "new" || qr.status == "rejected" ) {%>
+                                    <div class="d-flex justify-content-center mt-2">
+                                        <button onClick ="showConfModal('#confSendingQuoteModalCta')" class="btn-job btn-primary-job-inv" id="send-quote-btn"><%= t('SendQuote') %></button>
+                                        <button onClick="showRejModal('#confDeclineQuotationRequestModalCta')" type="reset" class="btn-job btn-primary-job-inv-blue ml-3" id="decline-req-btn"><%= t('DeclineRequest') %></button>
+                                        
+                                    </div>
+                                <% } %>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-12 col-sm-12 col ">
+                    <div class="container shadow-sm mb-5 pb-2 bg-white rounded ">
+                      <div class="row border-top">
+                        <div class="w-100 d-flex justify-content-center align-items-center border-bottom border-dark p-3">
+                          <h6><%= t('Customer') %></h6>
+                        </div>
+                      </div>
+                    <div class="row " tooltip="View provider profile">
+                        <div class=" col">
+                            <div class="card">
+                                <div class="card-body p-4 d-flex align-items-center gap-3">
+                                    <img src="<%=customer?.photo %>"  alt="" class="rounded-circle" style="height:45px !important; width:45px !important;">
+                                    <div class="ml-3">
+                                        <h6 class="fw-semibold mb-0"><a href="#"><%=customer?.firstName %> <%=customer?.lastName %> </a></h6>
+                                        <span class="fs-2 d-flex align-items-center"><i class="ti ti-map-pin text-primary fs-3 me-1"> </i> 
+                                        <%=customer?.city%>, <%=customer?.country%></span>
+                                      </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div> 
+                       
+                    
+
+                      <% if(qr.status == 'completed') { %> 
+                        
+                        <div class="d-flex justify-content-center mt-3 mb-3"><a href="/invoice?sr=<%=qr.requestId%>&p=<%=usr._id%>">
+                            <button type="reset" class="btn-job btn-primary-job-inv-blue ml-3"><%= t('ViewInvoice') %></button></a>
+                        </div>
+                      <% } %>
+                    </div>
+                    
+                </div>
+            </div>
+            
+        
+        </div>
+</div>
+</section>
+
+<%- include('partials/confSendingQuoteModal') %>
+<%- include('partials/confDeclineQuotationRequestModal') %>
+<script src="js/manageQuotationRequest.js"></script>
+<%- include('partials/footer') %>
+                                    

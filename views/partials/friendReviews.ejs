@@ -1,0 +1,449 @@
+<div class="friend-reviews-container">
+  <div class="friend-reviews-header mb-3">
+    <h5 class="d-flex align-items-center">
+      <% if (locale === 'fr') { %>
+        Avis des amis Facebook
+      <% } else { %>
+        Reviews from Facebook friends
+      <% } %>
+      <span class="badge badge-primary ml-2" id="friend-count">0</span>
+    </h5>
+    <% if (usr) { %>
+      <% if (typeof usr.facebookAccessToken === 'undefined' || !usr.facebookAccessToken) { %>
+       
+      <% } else { %>
+        <% if (!usr.friendsSynced) { %>
+          <div class="alert alert-warning">
+            <% if (locale === 'fr') { %>
+              <strong>Synchroniser vos amis</strong> pour voir leurs avis.
+            <% } else { %>
+              <strong>Sync your friends</strong> to see their reviews.
+            <% } %>
+            <button class="btn btn-warning btn-sm ml-2" id="sync-friends-btn">
+              <b class="fas fa-sync mr-1"></b>
+              <% if (locale === 'fr') { %>Synchroniser<% } else { %>Sync Friends<% } %>
+            </button>
+          </div>
+        <% } %>
+      <% } %>
+    <% } %>
+  </div>
+
+  <div id="friend-reviews-content">
+    <div class="text-center py-4" id="loading-friends">
+      <div class="spinner-border text-primary" role="status">
+        <span class="sr-only">
+          <% if (locale === 'fr') { %>Chargement...<% } else { %>Loading...<% } %>
+        </span>
+      </div>
+    </div>
+
+    <div id="friend-reviews-list" style="display: none;">
+      <!-- Friend reviews will be loaded here -->
+    </div>
+
+    <div id="no-friend-reviews" style="display: none;" class="text-center py-4">
+      <div class="mt-2">
+        <b class="fas fa-users fa-2x text-muted mb-2"></b>
+        <p class="mb-0">
+          <% if (locale === 'fr') { %>
+            Personne n'a encore évalué ce prestataire sur Facebook.
+          <% } else { %>
+            No one has reviewed this provider on Facebook yet.
+          <% } %>
+        </p>
+      </div>
+    </div>
+
+    <div id="friend-reviews-error" style="display: none;" class="alert alert-danger">
+      <% if (locale === 'fr') { %>
+        Erreur lors du chargement des avis des amis.
+      <% } else { %>
+        Error loading friend reviews.
+      <% } %>
+    </div>
+  </div>
+
+  <!-- Provider Reviews Summary with Friend Context -->
+  <div id="provider-summary" class="mt-4" style="display: none;">
+    <div class="card">
+      <div class="card-body">
+        <h6 class="card-title">
+          <% if (locale === 'fr') { %>Résumé des évaluations<% } else { %>Review Summary<% } %>
+        </h6>
+        <div class="row">
+          <div class="col-md-6">
+            <div class="stat-item">
+              <span class="stat-label">
+                <% if (locale === 'fr') { %>Avis d'amis :<% } else { %>Friend Reviews:<% } %>
+              </span>
+              <span class="stat-value" id="friend-review-count">0</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">
+                <% if (locale === 'fr') { %>Publications d'amis :<% } else { %>Friend Posts :<% } %>
+              </span>
+              <span class="stat-value" id="friend-post-count">0</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">
+                <% if (locale === 'fr') { %>Note moyenne (amis) :<% } else { %>Average Rating (friends):<% } %>
+              </span>
+              <span class="stat-value" id="friend-average-rating">0.0</span>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="stat-item">
+              <span class="stat-label">
+                <% if (locale === 'fr') { %>Total des avis :<% } else { %>Total Reviews:<% } %>
+              </span>
+              <span class="stat-value" id="total-review-count">0</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">
+                <% if (locale === 'fr') { %>Amis communs :<% } else { %>Mutual Friends:<% } %>
+              </span>
+              <span class="stat-value" id="mutual-friends-count">0</span>
+            </div>
+          </div>
+        </div>
+        <div id="mutual-friends-list" class="mt-3" style="display: none;">
+          <!-- Mutual friends will be displayed here -->
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+.friend-reviews-container .stat-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.friend-reviews-container .stat-label {
+  font-weight: 500;
+}
+
+.friend-reviews-container .stat-value {
+  font-weight: bold;
+  color: #007bff;
+}
+
+.friend-review-item {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 15px;
+  background: #fff;
+  position: relative;
+}
+
+.friend-review-item .friend-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: #1877f2;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+}
+
+.mutual-friend-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  margin-right: 5px;
+}
+
+.review-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.review-actions button {
+  background: none;
+  border: none;
+  color: #666;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.review-actions button:hover {
+  color: #007bff;
+}
+
+.friend-post-item {
+  border-left: 4px solid #1877f2;
+}
+
+.post-engagement {
+  background-color: #f8f9fa;
+  padding: 8px 12px;
+  border-radius: 6px;
+  margin-top: 10px;
+}
+
+.post-engagement .d-flex {
+  gap: 15px;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const providerId = '<%= typeof providerId !== "undefined" ? providerId : "" %>';
+  
+  if (providerId) {
+    loadFriendReviews(providerId);
+    loadProviderSummary(providerId);
+  }
+
+  // Sync friends button
+  document.getElementById('sync-friends-btn')?.addEventListener('click', function() {
+    syncFacebookFriends();
+  });
+});
+
+function loadFriendReviews(providerId) {
+  fetch(`/api/provider/${providerId}/friend-reviews`)
+    .then(response => response.json())
+    .then(data => {
+      document.getElementById('loading-friends').style.display = 'none';
+      
+      if (data.friendReviews && data.friendReviews.length > 0) {
+        displayFriendReviews(data.friendReviews);
+        document.getElementById('friend-count').textContent = data.friendReviews.length;
+      } else {
+        document.getElementById('no-friend-reviews').style.display = 'block';
+      }
+    })
+    .catch(error => {
+      console.error('Error loading friend reviews:', error);
+      document.getElementById('loading-friends').style.display = 'none';
+      document.getElementById('friend-reviews-error').style.display = 'block';
+    });
+}
+
+function loadProviderSummary(providerId) {
+  fetch(`/api/provider/${providerId}/reviews-summary`)
+    .then(response => response.json())
+    .then(data => {
+      document.getElementById('provider-summary').style.display = 'block';
+      document.getElementById('friend-review-count').textContent = data.friendStats.reviewCount;
+      document.getElementById('friend-post-count').textContent = data.friendStats.friendPostCount || 0;
+      document.getElementById('friend-average-rating').textContent = data.friendStats.averageRating;
+      document.getElementById('total-review-count').textContent = data.overallStats.reviewCount;
+      document.getElementById('mutual-friends-count').textContent = data.mutualFriendsCount;
+      
+      if (data.mutualFriends && data.mutualFriends.length > 0) {
+        displayMutualFriends(data.mutualFriends);
+      }
+    })
+    .catch(error => {
+      console.error('Error loading provider summary:', error);
+    });
+}
+
+function displayFriendReviews(reviews) {
+  const container = document.getElementById('friend-reviews-list');
+  container.innerHTML = '';
+  
+  reviews.forEach(item => {
+    const element = item.type === 'post' ? createPostElement(item) : createReviewElement(item);
+    container.appendChild(element);
+  });
+  
+  container.style.display = 'block';
+}
+
+function createReviewElement(review) {
+  const div = document.createElement('div');
+  div.className = 'friend-review-item';
+  
+  const stars = getStarHTML(review.rating);
+  const timeAgo = new Date(review.createdAt).toLocaleDateString();
+  
+  div.innerHTML = `
+    <div class="friend-badge">
+      <i class="fab fa-facebook-f"></i> Friend Review
+    </div>
+    <div class="row">
+      <div class="col-2 col-md-1">
+        <img src="${review.reviewer.photo}" class="rounded-circle" style="width: 45px; height: 45px;">
+      </div>
+      <div class="col-10 col-md-11">
+        <div class="mb-2">
+          <strong>${review.ratingTitle || 'Review'}</strong>
+          <div class="rating-stars">${stars}</div>
+        </div>
+        <p>${review.userComment}</p>
+        <small class="text-muted">
+          <strong>${review.reviewer.name}</strong> • ${timeAgo}
+        </small>
+        <div class="review-actions">
+          <button onclick="markHelpful('${review._id}')">
+            <i class="fas fa-thumbs-up"></i> Helpful (${review.helpfulVotes || 0})
+          </button>
+          <button onclick="reportReview('${review._id}')">
+            <i class="fas fa-flag"></i> Report
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+  
+  return div;
+}
+
+function createPostElement(post) {
+  const div = document.createElement('div');
+  div.className = 'friend-review-item friend-post-item';
+  
+  const timeAgo = new Date(post.created_time).toLocaleDateString();
+  const friendName = post.friendInfo.name;
+  const friendPhoto = post.friendInfo.photo;
+  
+  div.innerHTML = `
+    <div class="friend-badge" style="background-color: #1877f2;">
+      <i class="fab fa-facebook-f"></i> #mosalapro Post
+    </div>
+    <div class="row">
+      <div class="col-2 col-md-1">
+        <img src="${friendPhoto}" class="rounded-circle" style="width: 45px; height: 45px;">
+      </div>
+      <div class="col-10 col-md-11">
+        <div class="mb-2">
+          <strong>Facebook Post with #mosalapro</strong>
+        </div>
+        <p>${post.content}</p>
+        <small class="text-muted">
+          <strong>${friendName}</strong> • ${timeAgo}
+        </small>
+        <div class="post-engagement mt-2">
+          <div class="d-flex gap-3">
+            <span class="text-muted">
+              <i class="fas fa-thumbs-up text-primary"></i> ${post.engagement.likes} Likes
+            </span>
+            <span class="text-muted">
+              <i class="fas fa-comment text-primary"></i> ${post.engagement.comments} Comments
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+  
+  return div;
+}
+
+function displayMutualFriends(mutualFriends) {
+  const container = document.getElementById('mutual-friends-list');
+  container.innerHTML = `
+    <small class="text-muted mb-2 d-block">
+      <% if (locale === 'fr') { %>Amis communs :<% } else { %>Mutual friends:<% } %>
+    </small>
+  `;
+  
+  const friendsHTML = mutualFriends.map(friend => 
+    `<img src="${friend.photo}" class="mutual-friend-avatar" title="${friend.firstName} ${friend.lastName}">`
+  ).join('');
+  
+  container.innerHTML += friendsHTML;
+  container.style.display = 'block';
+}
+
+function getStarHTML(rating) {
+  const fullStars = Math.floor(rating);
+  const hasHalfStar = rating % 1 >= 0.5;
+  let html = '';
+  
+  for (let i = 0; i < fullStars; i++) {
+    html += '<i class="fas fa-star text-warning"></i>';
+  }
+  
+  if (hasHalfStar) {
+    html += '<i class="fas fa-star-half-alt text-warning"></i>';
+  }
+  
+  const emptyStars = 5 - Math.ceil(rating);
+  for (let i = 0; i < emptyStars; i++) {
+    html += '<i class="far fa-star text-warning"></i>';
+  }
+  
+  return html;
+}
+
+function syncFacebookFriends() {
+  const button = document.getElementById('sync-friends-btn');
+  const originalText = button.innerHTML;
+  
+  button.disabled = true;
+  button.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i>Syncing...';
+  
+  fetch('/api/sync-facebook-friends', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      location.reload(); // Reload to show synced friends
+    } else {
+      alert('Error syncing friends: ' + data.error);
+    }
+  })
+  .catch(error => {
+    console.error('Error syncing friends:', error);
+    alert('Error syncing friends');
+  })
+  .finally(() => {
+    button.disabled = false;
+    button.innerHTML = originalText;
+  });
+}
+
+function markHelpful(reviewId) {
+  fetch(`/api/review/${reviewId}/helpful`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      location.reload(); // Reload to show updated count
+    }
+  })
+  .catch(error => {
+    console.error('Error marking review as helpful:', error);
+  });
+}
+
+function reportReview(reviewId) {
+  const reason = prompt('<% if (locale === "fr") { %>Raison du signalement :<% } else { %>Reason for reporting:<% } %>');
+  if (reason) {
+    fetch(`/api/review/${reviewId}/report`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ reason })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        alert('<% if (locale === "fr") { %>Avis signalé avec succès<% } else { %>Review reported successfully<% } %>');
+      }
+    })
+    .catch(error => {
+      console.error('Error reporting review:', error);
+    });
+  }
+}
+</script>

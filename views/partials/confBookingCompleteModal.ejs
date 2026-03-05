@@ -1,0 +1,75 @@
+<div class="modal fade" id="confBookingCompleteModalCta" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-md modal-dialog-centered" role="document">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content pt-1 mb-1">
+          <div class="modal-header mt-1">
+            <h5 class="text-center"> Complete and submit booking</h5>
+            </div>
+        <div class="form-container">
+                    
+                    <span name="error" id="booking-comp-err"></span>
+                    <div class="row mt-1">
+                        <div class="col-lg-12 col-md-12 col-12">
+                            <div class="form-group">
+                            <span class="text-petit text-primary">Be sure to meet all the customer's requirements before completing and submitting the booking. Once submitted, the customer will evaluate you based on the work you have done.</span>
+                            </div>
+                        </div>
+                    </div>
+                   
+                    <div class="row mt-1">
+                        
+                        <div class="col">
+                            <h6 class="mb-1">Comments</h6>
+                            <span class="text-petit">This will help understand your work and rate you accordingly. Enter at least 20 characters. </span> 
+                            <div class="input-field">
+                                <textarea type="text" id="submissionComment" class="input-field-textarea" name="submissionComment" oninput="this.className = 'input-field-textarea'"
+                                    placeholder="Comments for customer..."  required maxlength="2000" onkeyup="countChars()"></textarea>
+                                <span class="char-limit" id="cbCharCount">0/2,000</span> 
+                            </div>
+                            <span class="text-petit">Submit any impportant documents for the customer</b> </span> 
+                            <label for="submission-file" class="attach-btn">
+                                <i class="fas fa-paperclip"></i> Attach submission documents
+                            </label>
+                            <pre class="output">Selected file:</pre>  
+                            <input id="submission-file" name="file" type="file" accept=
+                            "application/msword, application/vnd.ms-excel, application/vnd.ms-powerpoint,
+                            text/plain, application/pdf, image/*" style="display: none;" > 
+
+                            </div>
+                    </div>
+                    <div class="row mt-1">
+                        <div class="col d-flex justify-content-center mb-1">
+                            <input type="button" onClick="completeBooking('<%=booking._id %>', '<%=customer._id %>')" name="submit" class="btn-job btn-primary-job" value="Complete  and submit job">
+                            <input type="button" onClick="hideModal('#confBookingCompleteModalCta')" data-dismiss="modal" name="cancel" class="btn-job btn-primary-job-inv-blue ml-3" value="Cancel">
+                        </div>
+                    </div>
+
+              </div>
+  
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+        const output = document.querySelector(".output");
+        const fileInput = document.querySelector("#submission-file");
+        const attach_err_msg = document.getElementById("booking-comp-err");
+        if(fileInput){
+            fileInput.addEventListener("change", async () => {
+                if(fileInput.files.length > 0){
+                    const fileSize = fileInput.files[0].size;
+                    const fileSizeInMB = fileSize / (1024*1024);
+                    if(fileSizeInMB > 10){
+                        attach_err_msg.classList.add("error_message");
+                        attach_err_msg.innerHTML = "The file's size is too large. Upload a file with size less than 10MB.";
+                        await new Promise(r => setTimeout(r, 3500));
+                        attach_err_msg.innerHTML = "";
+                        return;
+                    }
+                }
+            for (const file of fileInput.files) {
+                output.innerText += `\n${file.name}`;
+            }
+            });
+        }
+    </script>

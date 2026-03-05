@@ -1,0 +1,150 @@
+
+
+<%- include('partials/header') %>
+<%
+    let totalProjects = 0;
+    let activeProjects = 0;
+    let completedProjects = 0;
+
+    if (bookings) { bookings.forEach(b=>{
+        if(b.status == "active" || b.status == "pending" || b.status == "in-progress" || b.status == "booked")
+            activeProjects++;
+        if(b.status == "completed" || b.status == "accepted" || b.status == "accepted & rated")
+            completedProjects++;
+    });}
+    totalProjects = activeProjects + completedProjects;
+%>
+<section class="section <%=bg%> search-pro-section">
+<div class="container pad-4">
+
+    <div class="container">
+        <div class="row row-cols-1 row-cols-md-2 row-cols-xl-4">
+        <div class="col">
+        <div class="card radius-10 border-start border-0 border-3 border-info">
+        <div class="card-body">
+        <div class="d-flex align-items-center">
+        <div>
+        <p class="mb-0 job-details"><%= t('TotalProjects') %></p>
+        <% if(totalProjects <= 100000) { %> 
+            <h4 class="my-1 text-info"><%= totalProjects %></h4>
+        <% } else if(totalProjects > 100000  && totalProjects < 1000000) {
+            totalProjects /= 1000; %>
+            <h4 class="my-1 text-info"><%= totalProjects %> K</h4>
+        <% } else if(totalProjects >= 1000000  && totalProjects < 1000000000) { 
+            totalProjects /= 1000000; %>
+            <h4 class="my-1 text-info"><%= totalProjects %> M</h4>
+        <% } else { 
+            totalProjects /= 1000000000; %>
+            <h4 class="my-1 text-info"><%= totalProjects %> B</h4>
+        <% } %>
+        <p class="mb-0 font-13"><%= t('TotalNumberOfProjects') %></p>
+        </div>
+        <div class="widgets-icons-2 rounded-circle bg-gradient-scooter text-white ms-auto"><b class="fa fa-shopping-cart"></b>
+        </div>
+        </div>
+        </div>
+        </div>
+        </div>
+        <div class="col">
+        <div class="card radius-10 border-start border-0 border-3 border-danger">
+        <div class="card-body">
+        <div class="d-flex align-items-center">
+        <div>
+        <p class="mb-0 job-details"><%= t('JobApplications') %></p>
+        <% if(ja.length <= 100000) { %> 
+            <h4 class="my-1 text-danger"><%= ja.length %></h4>
+        <% } else if(ja.length > 100000  && ja.length < 1000000) {
+            ja.length /= 1000; %>
+            <h4 class="my-1 text-danger"><%= ja.length %> K</h4>
+        <% } else if(ja.length >= 1000000  && ja.length < 1000000000) { 
+            ja.length /= 1000000; %>
+            <h4 class="my-1 text-danger"><%= ja.length %> M</h4>
+        <% } else { 
+            ja.length /= 1000000000; %>
+            <h4 class="my-1 text-danger"><%= ja.length %> B</h4>
+        <% } %>
+        <p class="mb-0 font-13"><%= t('TotalJobApplications') %></p>
+        </div>
+        <div class="widgets-icons-2 rounded-circle bg-gradient-bloody text-white ms-auto"><b class="fa-id-badge"></b>
+        </div>
+        </div>
+        </div>
+        </div>
+        </div>
+        <div class="col">
+        <div class="card radius-10 border-start border-0 border-3 border-success">
+        <div class="card-body">
+        <div class="d-flex align-items-center">
+        <div>
+        <p class="mb-0 job-details"><%= t('ActiveProjects') %></p>
+        <% if(activeProjects <= 100000) { %> 
+            <h4 class="my-1 text-success"><%= activeProjects %></h4>
+        <% } else if(activeProjects > 100000  && activeProjects < 1000000) {
+            activeProjects /= 1000; %>
+            <h4 class="my-1 text-success"><%= activeProjects %> K</h4>
+        <% } else if(activeProjects >= 1000000  && activeProjects < 1000000000) { 
+            activeProjects /= 1000000; %>
+            <h4 class="my-1 text-success"><%= activeProjects %> M</h4>
+        <% } else { 
+            activeProjects /= 1000000000; %>
+            <h4 class="my-1 text-success"><%= activeProjects %> B</h4>
+        <% } %> 
+        <p class="mb-0 font-13"><%= t('AllActiveProjects') %></p>
+        </div>
+        <div class="widgets-icons-2 rounded-circle bg-gradient-ohhappiness text-white ms-auto"><b class="fa fa-bar-chart"></b>
+        </div>
+        </div>
+        </div>
+        </div>
+        </div>
+        <div class="col">
+        <div class="card radius-10 border-start border-0 border-3 border-warning">
+        <div class="card-body">
+        <div class="d-flex align-items-center">
+        <div>
+        <p class="mb-0 job-details"><%= t('CompletedProjects') %></p>
+        <% if(completedProjects <= 100000) { %> 
+            <h4 class="my-1 text-warning"><%= completedProjects %></h4>
+        <% } else if(completedProjects > 100000  && completedProjects< 1000000) {
+            completedProjects /= 1000; %>
+            <h4 class="my-1 text-warning"><%= completedProjects %> K</h4>
+        <% } else if(completedProjects >= 1000000  && completedProjects< 1000000000) { 
+            completedProjects /= 1000000; %>
+            <h4 class="my-1 text-warning"><%= completedProjects %> M</h4>
+        <% } else { 
+            completedProjects /= 1000000000; %>
+            <h4 class="my-1 text-warning"><%= completedProjects %> B</h4>
+        <% } %>
+        <p class="mb-0 font-13"><%= t('AllCompletedProjects') %></p>
+        </div>
+        <div class="widgets-icons-2 rounded-circle bg-gradient-blooker text-white ms-auto"><b class="fa fa-users"></b>
+        </div>
+        </div>
+        </div>
+        </div>
+        </div>
+        </div>
+        </div>
+</div>
+
+</section>
+
+<!--%- include('partials/providerRecentApp') %-->
+
+<% if(ja.length > 0) { %>
+<%- include('partials/recentJobApplications') %>
+<% }else{ %>
+    <%- include('partials/proSample') %>
+<% } %>
+<% if(ja.length > 0) { %>
+    <%- include('partials/providerTasks') %>
+<% }else{ %>
+        <%- include('partials/providerNoTask') %> 
+<% } %>
+
+
+<%- include('partials/footer') %>
+
+
+
+

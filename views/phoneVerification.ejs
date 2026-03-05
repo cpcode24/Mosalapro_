@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify Phone Number - <%= title %></title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <style>
+        body {
+            background: linear-gradient(135deg, #d3f7df 0%, #f5fbf6 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .verification-container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            max-width: 500px;
+            width: 100%;
+        }
+        
+        .verification-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .verification-icon {
+            width: 80px;
+            height: 80px;
+            background: #4CAF50;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            color: white;
+            font-size: 2rem;
+        }
+        
+        .otp-input-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 2rem 0;
+        }
+        
+        .otp-input {
+            width: 50px;
+            height: 50px;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            background: #f8f9fa;
+            transition: all 0.3s ease;
+        }
+        
+        .otp-input:focus {
+            outline: none;
+            border-color: #5A9E2F;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .verify-btn {
+            background: linear-gradient(135deg, #5A9E2F 0%, #539f23 100%);
+            border: none;
+            border-radius: 25px;
+            padding: 12px 2rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+        }
+        
+        .verify-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+        
+        .resend-link {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .resend-link:hover {
+            color: #764ba2;
+            text-decoration: underline;
+        }
+        
+        .error-message {
+            color: #dc3545;
+            background: #f8d7da;
+            border: 1px solid #f5c2c7;
+            border-radius: 8px;
+            padding: 0.75rem;
+            margin: 1rem 0;
+        }
+        
+        .success-message {
+            color: #0f5132;
+            background: #d1e7dd;
+            border: 1px solid #badbcc;
+            border-radius: 8px;
+            padding: 0.75rem;
+            margin: 1rem 0;
+        }
+        
+        .phone-display {
+            background: #f8f9fa;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            display: inline-block;
+            margin: 0.5rem 0;
+            font-weight: 600;
+            color: #495057;
+        }
+    </style>
+</head>
+<body>
+    <div class="verification-container">
+        <div class="verification-header">
+            <img class="brand-logo-dark" src="images/mosalapro-logo-h.png" alt="Mosalapro Logo" width="146" height="80"/>
+            
+            <h2 class="mb-3"><%= t('VerifyPhoneNumber') %></h2>
+            <p class="text-muted"><%= t('OTPSentTo') %>:</p>
+            <div class="phone-display">
+                <%= phone %>
+            </div>
+        </div>
+        
+        <div id="messageContainer"></div>
+        
+        <form id="otpVerificationForm">
+            <div class="otp-input-container">
+                <input type="text" class="form-control otp-input" id="otp1" maxlength="1" pattern="[0-9]">
+                <input type="text" class="form-control otp-input" id="otp2" maxlength="1" pattern="[0-9]">
+                <input type="text" class="form-control otp-input" id="otp3" maxlength="1" pattern="[0-9]">
+                <input type="text" class="form-control otp-input" id="otp4" maxlength="1" pattern="[0-9]">
+                <input type="text" class="form-control otp-input" id="otp5" maxlength="1" pattern="[0-9]">
+                <input type="text" class="form-control otp-input" id="otp6" maxlength="1" pattern="[0-9]">
+            </div>
+            
+            <div class="d-grid gap-2">
+                <button type="submit" class="btn btn-primary verify-btn" id="verifyBtn">
+                    <%= t('VerifyPhone') %>
+                </button>
+            </div>
+        </form>
+        
+        <div class="text-center mt-4">
+            <p class="text-muted"><%= t('DidNotReceiveCode') %></p>
+            <a href="#" class="resend-link" id="resendCode"><%= t('ResendOTP') %></a>
+            <div class="mt-2">
+                <small class="text-muted"><%= t('CodeExpiresIn')%> <span id="countdown">15:00</span></small>
+            </div>
+        </div>
+        
+        <div class="text-center mt-4">
+            <a href="/" class="text-muted">← <%= t('BackHome') %></a>
+        </div>
+    </div>
+    
+    <!-- Hidden form for authentication -->
+    <form action="/" method="post" name="theForm" style="display: none;">
+        <input name="iddl" value="" id="iddl" />
+    </form>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        const phone = '<%= phone %>';
+        const userId = '<%= userId %>';
+        let countdownTimer;
+        let countdownSeconds = 15 * 60; // 15 minutes in seconds
+        
+        // OTP Input handling
+        const otpInputs = document.querySelectorAll('.otp-input');
+        
+        otpInputs.forEach((input, index) => {
+            input.addEventListener('input', function(e) {
+                // Only allow numbers
+                this.value = this.value.replace(/[^0-9]/g, '');
+                
+                // Move to next input if current is filled
+                if (this.value.length === 1 && index < otpInputs.length - 1) {
+                    otpInputs[index + 1].focus();
+                }
+            });
+            
+            input.addEventListener('keydown', function(e) {
+                // Handle backspace - move to previous input if current is empty
+                if (e.key === 'Backspace' && this.value.length === 0 && index > 0) {
+                    otpInputs[index - 1].focus();
+                }
+            });
+            
+            input.addEventListener('paste', function(e) {
+                e.preventDefault();
+                const pastedData = e.clipboardData.getData('text');
+                const digits = pastedData.replace(/[^0-9]/g, '').slice(0, 6);
+                
+                digits.split('').forEach((digit, i) => {
+                    if (i < otpInputs.length) {
+                        otpInputs[i].value = digit;
+                    }
+                });
+                
+                // Focus on the next empty input or the last one
+                const nextEmptyIndex = Math.min(digits.length, otpInputs.length - 1);
+                otpInputs[nextEmptyIndex].focus();
+            });
+        });
+        
+        // Get OTP value
+        function getOtpValue() {
+            return Array.from(otpInputs).map(input => input.value).join('');
+        }
+        
+        // Display message
+        function showMessage(message, type = 'error') {
+            const messageContainer = document.getElementById('messageContainer');
+            const messageClass = type === 'success' ? 'success-message' : 'error-message';
+            messageContainer.innerHTML = `<div class="${messageClass}">${message}</div>`;
+        }
+        
+        // Clear message
+        function clearMessage() {
+            document.getElementById('messageContainer').innerHTML = '';
+        }
+        
+        // Countdown timer
+        function startCountdown() {
+            const countdownElement = document.getElementById('countdown');
+            
+            countdownTimer = setInterval(() => {
+                const minutes = Math.floor(countdownSeconds / 60);
+                const seconds = countdownSeconds % 60;
+                
+                countdownElement.textContent = 
+                    `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                
+                if (countdownSeconds <= 0) {
+                    clearInterval(countdownTimer);
+                    showMessage('Verification code has expired. Please request a new code.', 'error');
+                    document.getElementById('resendCode').style.display = 'inline';
+                }
+                
+                countdownSeconds--;
+            }, 1000);
+        }
+        
+        // Form submission
+        document.getElementById('otpVerificationForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const otp = getOtpValue();
+            if (otp.length !== 6) {
+                showMessage('Please enter the complete 6-digit verification code.');
+                return;
+            }
+            
+            const verifyBtn = document.getElementById('verifyBtn');
+            verifyBtn.disabled = true;
+            verifyBtn.innerHTML = 'Verifying...';
+            
+            try {
+                const response = await fetch('/verify-phone-otp', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        phone: phone,
+                        otp: otp,
+                        userId: userId
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showMessage('Phone number verified successfully! Redirecting...', 'success');
+                    clearInterval(countdownTimer);
+                    window.location.href = '/';
+                    // setTimeout(() => {
+                    //     document.getElementById('iddl').value = data.userId || userId;
+                    //     document.theForm.submit();
+                    // }, 1500);
+                } else {
+                    showMessage(data.message || 'Verification failed. Please try again.');
+                    verifyBtn.disabled = false;
+                    verifyBtn.innerHTML = 'Verify Phone Number';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showMessage('An error occurred. Please try again.');
+                verifyBtn.disabled = false;
+                verifyBtn.innerHTML = 'Verify Phone Number';
+            }
+        });
+        
+        // Resend code
+        document.getElementById('resendCode').addEventListener('click', async function(e) {
+            e.preventDefault();
+            
+            this.innerHTML = 'Sending...';
+            this.style.pointerEvents = 'none';
+            
+            try {
+                const response = await fetch('/resend-phone-otp', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        phone: phone,
+                        userId: userId
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showMessage('Verification code sent successfully!', 'success');
+                    countdownSeconds = 15 * 60; // Reset countdown
+                    startCountdown();
+                    
+                    // Clear OTP inputs
+                    otpInputs.forEach(input => input.value = '');
+                    otpInputs[0].focus();
+                } else {
+                    showMessage(data.message || 'Failed to resend code. Please try again.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showMessage('An error occurred. Please try again.');
+            }
+            
+            this.innerHTML = 'Resend Code';
+            this.style.pointerEvents = 'auto';
+        });
+        
+        // Initialize countdown on page load
+        startCountdown();
+        
+        // Focus on first input
+        otpInputs[0].focus();
+    </script>
+</body>
+</html>

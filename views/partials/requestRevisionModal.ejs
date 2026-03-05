@@ -1,0 +1,32 @@
+<div class="modal fade" id="requestRevisionModalCta" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-md modal-dialog-centered" role="document">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content pt-1 mb-1">
+          <div class="modal-header mt-1">
+            <h5 class="mt-1 mb-1 text-center"> Request revision</h5>
+            </div>
+                <div class="form-container">
+                    <span name="error" id="message"></span>
+                    <div class="row mt-2">
+                        <div class="col">
+                            <h6 class="mb-1">Reason</h6> 
+                            <div class="input-field">
+                                <textarea type="text" id="revisionReason" class="input-field-textarea" name="revisionReasone" oninput="this.className = 'input-field-textarea'"
+                                    placeholder="Comments for provider..."  maxlength="2000" onkeyup="countRevChars()" required></textarea>
+                                <span class="char-limit" id="revCharCount">0/2,000</span> 
+                            </div>
+                     
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col d-flex justify-content-center mb-2">
+                            <input type="button" onClick="requestRevision('<%=request._id%>', '<%=request.providerId%>')" name="submit" class="btn-job btn-primary-job" value="Submit ">
+                            <input type="button" onClick="hideModal('#requestRevisionModalCta')" data-dismiss="modal" name="cancel" class="btn-job btn-primary-job-inv-blue ml-3" value="Cancel">
+                        </div>
+                    </div>
+              </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    

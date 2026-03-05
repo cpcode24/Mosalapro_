@@ -1,0 +1,123 @@
+<section class="<%=bg%>" >
+    <div class="container p-4">
+        <div class="card-box card-u-pro-set mt-4">
+            <div class="row">
+                <div class="col-md-6 col-lg-6 "><h5 class="header-title  ml-3"><%= t('ProviderTasksMyTasks') %></h5></div>
+                <div class="col-md-6 col-lg-6 d-flex justify-content-end"><a href="/service-requests"><button type="button" class="simple-btn" ><%= t('ProviderTasksApplyForRequests') %></button></a></div>
+            <div class="table-responsive mt-3" style="max-height: 25em;">
+                <table class="table table-hover">
+                    <thead style="position: sticky; top: 0; background: white;">
+                        <tr class="text-primary card-header medium">
+                        <th>#</th>
+                        <th><%= t('ProviderTasksTitle') %></th>
+                        <th class="sm-scr"><%= t('ProviderTasksDatePosted') %></th>
+                        <th class="sm-scr"><%= t('ProviderTasksDueDate') %></th>
+                        <th><%= t('ProviderTasksStatus') %></th>
+                        <th class="sm-scr"><%= t('ProviderTasksClient') %></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    <% let i = 1;
+                        if (bookings) { bookings.forEach(b=>{ 
+                            if(b.status != "cancelled") {
+                                let status = b.status;
+                                let backgd = "badge-green";
+                                if(b.status == "active" || b.status == "pending"){
+                                    status = lang === "fr" ? "en-attente":"pending";
+                                    backgd = "badge-dark";
+                                }else if(b.status == "cancelled"){
+                                    status = lang === "fr" ? "annulée" : "cancelled";
+                                    backgd = "badge-red";
+                                }else if(b.status == "booked"){
+                                    status = lang === "fr" ? "reservée" : status;
+                                    backgd = "badge-blue";
+                                }else if(b.status == "in-progress"){
+                                    status = lang === "fr" ? "en-cours" : status;
+                                    backgd = "badge-yellow";
+                                }
+                                else if(b.status == "accepted"){
+                                    status = lang === "fr" ? "acceptée" : status;
+                                }
+                                else if(b.status == "accepted & rated"){
+                                    status = lang === "fr" ? "acceptée et evaluée" : status;
+                                }
+                                else if(b.status == "completed"){
+                                    status = lang === "fr" ? "achevée" : status;
+                                }
+
+                            %>
+                        <tr id="project_row" class=" job-details cursor" onclick='window.location="/booking?b=<%=b._id%>"' >
+                        <td><%= i %></td>
+                        <td><a href="#requestModalCta<%=i%>" data-toggle="modal" data-caption-animate="fadeInUp" ><%=b.bookingTitle %></a></td>
+                        <td class="sm-scr"><%=b.createdAt.getUTCMonth() + 1 %>/<%= b.createdAt.getUTCDate()%>/<%= b.createdAt.getUTCFullYear() %></td>
+                        <td class="sm-scr"><%=b.deadline %></td>
+                        <td><span class="badge <%=backgd%> text-white"><%=status%></span></td>
+                        <td class="sm-scr"> <%= b.usr %></td>
+                        </tr>
+
+
+                        <div class="modal fade" id="requestModalCta<%=i%>" tabindex="-1" role="dialog" aria-hidden="true">
+                            <div class="modal-dialog modal-md modal-dialog-centered" role="document">
+                              <div class="modal-dialog" role="document">
+                                <div class="modal-content pt-1 mb-1">
+                                  <div class="modal-header mt-1">
+                                    <h4 class="mt-1 mb-1 text-center"> <%= b.bookingTitle %></h4>
+                                    <button type="button" class="close pr-1" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                    </div>
+                                        <div class="form-container">
+                                            
+                                            <div class="row border-bottom mt-1">
+                                                <div class="col">
+                                                    <h6><%= t('ProviderTasksCategory') %></h6><span class="job-details"><%=b.category %></span> 
+                                                </div>
+                                            </div>
+                                            <div class="row border-bottom mt-1">
+                                                <div class="col">
+                                                    <h6><%= t('ProviderTasksBudget') %></h6> <span class="job-details">$ <%=b.budget%> </span>
+                                                </div>
+                                            </div>
+                
+                                            <div class="row border-bottom mt-1">
+                                                <div class="col">
+                                                    <h6><%= t('ProviderTasksDeadline') %></h6><span class="job-details"><%=b.deadline%></span>
+                                                </div>
+                                            </div>
+                
+                                            <div class="row border-bottom mt-1">
+                                                <div class="col p-2">
+                                                    <h6>Description</h6>
+                                                    <span class="job-details"><%=b.bookingDescription%></span>
+                                                </div>
+                                            </div>
+                                            <h6 class="mt-2"><%= t('ProviderTasksFiles') %></h6>
+                                            <div class="row border-bottom p-3 mt-1">
+                                                
+                                                    <% let j = 0; b.files.forEach(file=>{ j++; %>
+                
+                                                    
+                                                    <div class="col-sm-4 col-lg-2">
+                                                        <!-- Post Modern-->
+                                                        <a href="/postAttachments/<%=file%>" download="<%=file%>" class="d-flex justify-content-center px-4" >
+                                                            <b class="fa fa-file-text-o fa-4x mb-1 file-icon" aria-hidden="true"></b>
+                                                        </a>
+                                                        
+                                                      </div>
+                
+                                                    <% }) %>
+                                                </div>
+
+                                        </div>
+                          
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+
+                    <% i++; } });} %>
+                    
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>

@@ -1,0 +1,55 @@
+
+
+
+<%- include('partials/header') %>
+
+<section class=" swiper-container  swiper-slider swiper-slider-1 ">
+        <div class="google-map-container google-map-container-2"  data-center="9870 St Vincent Place, Glasgow, DC 45 Fr 45." data-zoom="5" data-icon="images/gmap_marker.png" data-icon-active="images/gmap_marker_active.png" data-styles="[{&quot;featureType&quot;:&quot;landscape&quot;,&quot;stylers&quot;:[{&quot;saturation&quot;:-100},{&quot;lightness&quot;:60}]},{&quot;featureType&quot;:&quot;road.local&quot;,&quot;stylers&quot;:[{&quot;saturation&quot;:-100},{&quot;lightness&quot;:40},{&quot;visibility&quot;:&quot;on&quot;}]},{&quot;featureType&quot;:&quot;transit&quot;,&quot;stylers&quot;:[{&quot;saturation&quot;:-100},{&quot;visibility&quot;:&quot;simplified&quot;}]},{&quot;featureType&quot;:&quot;administrative.province&quot;,&quot;stylers&quot;:[{&quot;visibility&quot;:&quot;off&quot;}]},{&quot;featureType&quot;:&quot;water&quot;,&quot;stylers&quot;:[{&quot;visibility&quot;:&quot;on&quot;},{&quot;lightness&quot;:30}]},{&quot;featureType&quot;:&quot;road.highway&quot;,&quot;elementType&quot;:&quot;geometry.fill&quot;,&quot;stylers&quot;:[{&quot;color&quot;:&quot;#ef8c25&quot;},{&quot;lightness&quot;:40}]},{&quot;featureType&quot;:&quot;road.highway&quot;,&quot;elementType&quot;:&quot;geometry.stroke&quot;,&quot;stylers&quot;:[{&quot;visibility&quot;:&quot;off&quot;}]},{&quot;featureType&quot;:&quot;poi.park&quot;,&quot;elementType&quot;:&quot;geometry.fill&quot;,&quot;stylers&quot;:[{&quot;color&quot;:&quot;#b6c54c&quot;},{&quot;lightness&quot;:40},{&quot;saturation&quot;:-40}]},{}]">
+                <div class="google-map"></div>
+                <ul class="google-map-markers">
+                  <li data-location="9870 St Vincent Place, Glasgow, DC 45 Fr 45." data-description="9870 St Vincent Place, Glasgow"></li>
+                </ul>
+        
+        <!--Swiper Pagination-->
+            <div class="swiper-pagination-wrap">
+            <div class="container">
+                <div class="row searh_box">
+                <!--div class="col-md-2 col-lg-2 offset-md-1 offset-xxl-0">
+                    <div class="swiper-pagination"></div>
+                </div-->
+
+                <div class="col">
+
+                    <%- include('partials/searching_box') %>
+                </div>
+                </div>
+            </div>
+            </div>
+        </div>
+      </section>
+      <!--Icon List 2-->
+      <section >
+        <div class="container">
+          <div class="row row-30">
+
+            <div class="caroussel">
+              <div class="slide-track">
+                <% categories.forEach(cat=>{ %>
+                <div class="col-md-4  slide ">
+                  <div class="box-icon-2">
+                    <div class="icon novi-icon <%= cat.icon %>"></div>
+                    <h5 class="title"><%= cat.name %></h5>
+                    <p class="text"><%= cat.description %></p>
+                  </div>
+                </div>
+                <% }) %>
+              </div>
+            </div>
+            
+          </div>
+        </div>
+      </section>
+      <!--Searching box-->
+      
+      
+<%- include('partials/footer') %>

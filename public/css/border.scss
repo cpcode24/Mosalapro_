@@ -1,0 +1,36 @@
+$url: url(img/shark.jpg);
+$b: 1.5em; // border-width
+$blur: blur(9px);
+$rect: inset(0);
+
+.blurred {
+	position: relative;
+	border: solid $b rgba(#000, .03);
+	height: 50vmin;
+	max-width: 13em;
+	max-height: 7em;
+	background: $url 50%/ cover
+			 border-box /* background-origin */
+			 padding-box /* background-clip */;
+	font-size: 2em;
+
+	&:before {
+		position: absolute;
+		z-index: -1; /* put it *behind* parent */
+		/* go outside padding-box by
+		 * a border-width ($b) in every direction */
+		top: -$b; right: -$b; bottom: -$b; left: -$b;
+		border: inherit;
+		border-color: transparent;
+		background: inherit;
+		background-clip: border-box;
+		/* -webkit-prefixed version
+		 * still needed for
+		 * some mobile browsers */
+		-webkit-filter: $blur;
+			   filter: $blur;
+		-webkit-clip-path: $rect;
+			   clip-path: $rect;
+		content: '';
+	}
+}

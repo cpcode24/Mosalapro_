@@ -1,0 +1,227 @@
+<%- include('partials/header') %>
+
+<%
+// Helper function to get translated notification content
+function getTranslatedNotification(notification, locale, field) {
+    // Return translated content if available for the current locale
+    if (notification.translations &&
+        notification.translations[locale] &&
+        notification.translations[locale][field]) {
+        return notification.translations[locale][field];
+    }
+
+    // Fallback to default English content
+    return notification[field];
+}
+%>
+
+<section class="<%=bg%> padt-8">
+   <div class="container pad-4">
+
+    <div class="row">
+
+        <div class="col pad-4">
+
+            <nav aria-label="breadcrumb" class="main-breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/"><%= t('Home') %></a></li>
+                    <% if(usr.accountType == "user") { %> 
+                        <li class="breadcrumb-item"><a href="javascript:void(0)"><%= t('User') %></a></li>
+                      <% } else { %>
+                        <li class="breadcrumb-item"><a href="javascript:void(0)"><%= t('Provider') %></a></li>
+                      <% } %>
+                    <li class="breadcrumb-item active" aria-current="page"><%= t('Notifications') %></li>
+                </ol>
+            </nav>
+            <% let unreads = [];
+                let reads = [];
+                notifications.forEach(notif=>{
+                if(notif.status == "unread")
+                    unreads.push(notif);
+                else
+                    reads.push(notif);
+                });
+                let lim = 0; let rlim = 0;
+                if(unreads.length <= 12)
+                    lim = unreads.length;
+                else    
+                    lim = 12;
+                if(reads.length <= 12)
+                    rlim = reads.length;
+                else    
+                    rlim = 12; %>
+            <div class="box shadow-sm rounded bg-white mb-3">
+            <div class="box-title border-bottom p-3">
+            <h6 class="m-0"><%= t('Recent') %></h6>
+            </div>
+            <div class="box-body p-0" id="unreadNotifs">
+                <% if(unreads.length > 0){ 
+                    for(let j = 0; j < lim; j++) { %>
+                        <div class="unread border-top" id="notif-container<%=j%>">
+                                <div class="notif_header" data-bs-toggle="collapse" data-bs-target="#collapseOne<%=j%>" aria-expanded="true" aria-controls="collapseOne<%=j%>">
+
+                                    <div onClick="readNotification('<%=unreads[j]._id%>', '<%=j%>')"  class="px-3 d-flex align-items-center osahan-post-header">
+                                        <div class="dropdown-list-image mr-3">
+                                                <b class="fa <%=unreads[j].icon%> fa-2x rounded-circle file-icon"></b>
+                                        </div>
+                                        <div class="font-weight-bold mr-2">
+                                                <div class="text-wrap"><%=getTranslatedNotification(unreads[j], locale, 'title')%></div>
+                                                <div class="small" id="tmp_content<%=j%>"><%=getTranslatedNotification(unreads[j], locale, 'content')%></div>
+                                        </div>
+                                        <span class="ml-auto mb-auto">
+                        
+                                            <br/>
+                                            <div class="text-right text-muted pt-1"><%- getTimeAgo(unreads[j].createdAt, locale) %></div>
+                                        </span>
+                                    </div>
+                        
+                            </div>
+                            <div id="collapseOne<%=j%>" class="collapse hide" data-bs-parent="#accordion">
+                                    <div class="row mt-0">
+                                        <div class="col d-flex justify-content-center mb-3">
+                                            <% if (unreads[j].title == "You have a new message.") { %>
+                                                <a href="/messages?id=<%=unreads[j].causedByUserId%>" class="noti-lnk"> <%= t('ReadAndReplyMessage') %> </a>
+                                            <% } 
+                                             if (usr.accountType == "user"){ 
+                                                if( unreads[j].title.includes("provider has applied")) { %>
+                                                    <a href="/applicant?p=<%=unreads[j].causedByUserId%>&j=<%=unreads[j].causedByItem%>" class="noti-lnk"> <%= t('CheckProviderProfile') %> </a>
+                                                    <span class="ml-3 delete-noti" onClick="deleteUnreadAlert('<%=unreads[j]._id%>')"><%= t('DeleteAlert') %></span> 
+                                                <% } 
+                                                else if ( unreads[j].title.includes('have a quote for your request')  || unreads[j].title.includes(' request.') ||
+                                                        unreads[j].title.includes("booking has been confirmed")  || unreads[j].title.includes('Your booking request has been cancelled')
+                                                        || unreads[j].title.includes("Deadline extension request") || unreads[j].title.includes('You have a new quotation')
+                                                        || unreads[j].title.includes("Your task has been completed") || unreads[j].title.includes('service provider has provided a quotation for your booking') 
+                                                        || unreads[j].title.includes("Your quotation request was rejected")) { %>
+                                                    <a href="/manage-request?rq=<%=unreads[j].causedByItem%>" class="noti-lnk"> <%= t('ViewBookingUpdate') %> </a>
+                                                    <span class="ml-3 delete-noti" onClick="deleteUnreadAlert('<%=unreads[j]._id%>')"><%= t('DeleteAlert') %></span> 
+                                                <% }
+                                             } if(usr.accountType == "provider" ) { 
+                                                if(unreads[j].title.includes('Congratulations! You have been hired.')){ %>
+                                                    <a href="/booking?b=<%=unreads[j].bookingId%>" class="noti-lnk"> <%= t('ViewBookingDetails') %> </a>
+                                                    <span class="ml-3 delete-noti" onClick="deleteUnreadAlert('<%=unreads[j]._id%>')"><%= t('DeleteAlert') %></span> 
+                                                <% } 
+                                                else if(unreads[j].title.includes('your booking')  || unreads[j].title.includes(' request ') 
+                                                    || unreads[j].title.includes("quote has been accepted.") || unreads[j].title.includes("booked for a service.") || unreads[j].title.includes("has booked you")
+                                                    || unreads[j].title.includes("Your deadline extension request") || unreads[j].title.includes('You have a revision request')
+                                                    || unreads[j].title.includes("Your delivery has been accepted") || unreads[j].title.includes('A user has provided a feedback for your')){ %>
+                                                    <a href="/booking?b=<%=unreads[j].bookingId%>" class="noti-lnk"> <%= t('ViewBookingDetails') %> </a>
+                                                    <span class="ml-3 delete-noti" onClick="deleteUnreadAlert('<%=unreads[j]._id%>')"><%= t('DeleteAlert') %></span> 
+                                                <% } 
+                                                else if(unreads[j].title.includes("has requested a quote") || unreads[j].title.includes("Your quote was rejected")) { %> 
+                                                    <a href="/quotation?q=<%=unreads[j].causedByItem%>" class="noti-lnk"> <%= t('ViewQuotationRequest') %> </a>
+                                                    <span class="ml-3 delete-noti" onClick="deleteUnreadAlert('<%=unreads[j]._id%>')"><%= t('DeleteAlert') %></span>
+                                                <% } else if(unreads[j].title.includes("Your job application has been rejected") ) { %>
+                                                    <a href="/job-application/<%=unreads[j].causedByItem%>" class="noti-lnk"> <%= t('ViewJobApplication') %></a>
+                                                    <span class="ml-3 delete-noti" onClick="deleteUnreadAlert('<%=unreads[j]._id%>')"><%= t('DeleteAlert') %></span>
+                                            <%} else if(unreads[j].title.includes("Your application's quote was rejected")) { %> 
+                                                <a href="/sr-details/<%=unreads[j].causedByItem%>" class="noti-lnk"> <%= t('ResubmitJobApplication') %></a>
+                                                    <span class="ml-3 delete-noti" onClick="deleteUnreadAlert('<%=unreads[j]._id%>')"><%= t('DeleteAlert') %></span>
+                                            <% } }%>
+                                            
+                                        </div>
+                                    </div>
+                            </div>
+                        </div>
+                
+            <% } } else { %>
+                <div class="m-4 p-4"> <span ><%= t('NoRecentNotificationsFound') %></span></div>
+            <% } %>
+                <input id="limit" class="d-none" value="6" >
+            </div>
+            <!-- <% if( lim != unreads.length  ){ %>
+                <div class="px-auto d-flex justify-content-center"><button type="button" onClick="loadMoreUnread()" class="btn btn-outline-success btn-sm mt-2 mb-2">Load More...</button></div>
+            <% } %> -->
+            </div>
+
+
+
+            <div class="box shadow-sm rounded bg-white mb-3">
+                <div class="box-title border-bottom p-3">
+                    <h6 class="m-0"><%= t('Earlier') %></h6>
+                </div>
+                <div class="box-body p-0"  id="readNotifs">
+                    <% if(reads.length > 0){ 
+                        
+                        for(let j = 0; j < rlim; j++) { 
+                            
+                            if(reads[j]) { %>
+                            <div class="p-3 d-flex align-items-center read border-bottom osahan-post-header">
+                                <div class="dropdown-list-image mr-3">
+                                    <b class="fa <%=reads[j].icon%> fa-2x rounded-circle file-icon"></b>
+                                </div>
+                                <div class="font-weight-bold mr-2">
+                                    <div class="text-wrap"><%=getTranslatedNotification(reads[j], locale, 'title')%></div>
+                                    <div class="small"><%=getTranslatedNotification(reads[j], locale, 'content')%></div>
+                                </div>
+                                <span class="ml-auto mb-auto">
+                                    <div class="btn-group">
+                                        <button type="button" class="btn btn-light btn-sm rounded" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            <i class="mdi mdi-dots-vertical"></i>
+                                        </button>
+                                        <div class="dropdown-menu dropdown-menu-right" style>
+                                            <% if(reads[j].title == "You have a new message.") { %>
+                                                <a href="/messages?id=<%=reads[j].causedByUserId%>"> <button class="dropdown-item" type="button" ><i class="mdi mdi-message"></i>Read and reply message </button></a>
+                                            <% } %>
+
+                                            <% if(usr.accountType == "user"){  %>
+                                                <% if(reads[j].title.includes('provider has applied') ) { %>
+                                                    <a href="/applicant?p=<%=reads[j].causedByUserId%>&j=<%=reads[j].causedByItem%>" class="noti-lnk"> <i class="mdi mdi-check"></i> <%= t('CheckProviderProfile') %> </a>
+                                                    <button class="dropdown-item delete-noti" type="button" onClick="deleteReadAlert('<%=reads[j]._id%>')" ><i class="mdi mdi-close"></i> <%= t('DeleteAlert') %></button>
+                                                <% } else if(reads[j].title.includes('have a quote for your request')  || reads[j].title.includes(' request.') ||
+                                                        reads[j].title.includes("booking has been confirmed")  || reads[j].title.includes('Your booking request has been cancelled')
+                                                        || reads[j].title.includes("Deadline extension request") || reads[j].title.includes('You have a new quotation')
+                                                        || reads[j].title.includes("Your task has been completed") || reads[j].title.includes('service provider has provided a quotation for your booking')) { %>
+                                                    <a href="/manage-request?rq=<%=reads[j].causedByItem%>" class="noti-lnk"> <i class="mdi mdi-check"></i> <%= t('ViewBookingUpdate') %> </a>
+                                                    <button class="dropdown-item delete-noti" type="button" onClick="deleteReadAlert('<%=reads[j]._id%>')" ><i class="mdi mdi-close"></i> <%= t('DeleteAlert') %></button>
+                                                <% } %> 
+                                           <% } else if(usr.accountType == 'provider') { %>
+                                               <% if(reads[j].title.includes('Congratulations! You have been hired.') ) { %>
+                                                <a href="/booking?b=<%=reads[j].bookingId%>" class="noti-lnk"><button class="dropdown-item" type="button" ><i class="mdi mdi-check"></i> <%= t('BookingDetails') %> </a>
+                                                    <button class="dropdown-item delete-noti" type="button" onClick="deleteReadAlert('<%=reads[j]._id%>')" ><i class="mdi mdi-close"></i> <%= t('DeleteAlert') %></button>
+                                            <% } else if(reads[j].title.includes('your booking')  || reads[j].title.includes(' request ') || reads[j].title.includes('Your booking has')
+                                                    || reads[j].title.includes("quote has been accepted.") || reads[j].title.includes("booked for a service.") || reads[j].title.includes("has booked you") 
+                                                    || reads[j].title.includes("Your deadline extension request") || reads[j].title.includes('You have a revision request')
+                                                    || reads[j].title.includes("Your delivery has been accepted") || reads[j].title.includes('A user has provided a feedback for your')) { %> 
+                                                        <a href="/booking?b=<%=reads[j].bookingId%>" class="noti-lnk"><button class="dropdown-item noti-lnk" type="button" ><i class="mdi mdi-check"></i> <%= t('BookingDetails') %> </button></a>
+                                                        <button class="dropdown-item delete-noti" type="button" onClick="deleteReadAlert('<%=reads[j]._id%>')" ><i class="mdi mdi-close"></i> <%= t('DeleteAlert') %></button>
+                                            <%  } else if(reads[j].title.includes("has requested a quote") || reads[j].title.includes("Your quote was rejected")) { %>
+                                                    <a href="/quotation?q=<%=reads[j].causedByItem%>" class="noti-lnk"><button class="dropdown-item noti-lnk" type="button" ><i class="mdi mdi-check"></i>View quotation request </button></a> 
+                                                    <span class="ml-3 delete-noti" onClick="deleteReadAlert('<%=reads[j]._id%>')"><i class="mdi mdi-close"></i><%= t('DeleteAlert') %></span>
+                                            <% } else if(reads[j].title.includes("Your job application has been rejected.") ) { %>
+                                                    <a href="/job-application/<%=reads[j].causedByItem%>" ><button class="dropdown-item noti-lnk" type="button" ><i class="mdi mdi-check"></i>Job application</button></a>
+                                                    <span class="ml-3 delete-noti" onClick="deleteReadAlert('<%=reads[j]._id%>')"><i class="mdi mdi-close"></i><%= t('DeleteAlert') %></span>
+                                        
+                                            <%} else if(reads[j].title.includes("Your application's quote was rejected")) { %> 
+                                                    <a href="/sr-details/<%=reads[j].causedByItem%>" class="noti-lnk"> <%= t('Resubmit') %></a>
+                                                    <span class="ml-3 delete-noti" onClick="deleteReadAlert('<%=reads[j]._id%>')"><%= t('DeleteAlert') %></span>
+                                            <% } }%>
+                                        </div>
+                                    </div>
+                                    <br/>
+                                    <div class="text-right text-muted pt-1"><%- getTimeAgo(reads[j].createdAt, locale) %></div>
+                                </span>
+                            </div>
+                    <% } }  } 
+                    else { %>
+                        <div class="m-4 p-4"><span><%= t('NoNotificationsFound') %></span></div>
+                    <% } %>
+            
+                </div>
+                <!-- if( rlim != reads.length  ){ -->
+                    <!--div class="px-auto d-flex justify-content-center"><button type="button" onClick="loadMoreRead()" class="btn btn-outline-success btn-sm mt-2 mb-2">Load More...</button></div>
+                <-- } -->
+            </div>
+            </div>
+
+
+            
+    </div>
+
+
+   </div>
+
+</section>
+
+
+
+<%- include('partials/footer') %>

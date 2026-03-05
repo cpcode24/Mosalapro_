@@ -1,0 +1,967 @@
+<%
+// Helper function to get translated notification content
+function getTranslatedNotification(notification, locale, field) {
+    // Return translated content if available for the current locale
+    if (notification.translations &&
+        notification.translations[locale] &&
+        notification.translations[locale][field]) {
+        return notification.translations[locale][field];
+    }
+
+    // Fallback to default English content
+    return notification[field];
+}
+%>
+<!DOCTYPE html>
+<html class="wide wow-animation" lang="en">
+  <head>
+    <title><%= t('SiteTitle') %></title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta property="og:type"          content="website" />
+    <meta property="og:title"         content="<%= t('SiteTitle') %>" />
+    <meta property="og:description"   content="<%= t('SiteDescription') %>" />
+
+    <base href="/" />
+    <link rel="icon" href="images/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Lato:300,300i,400,400i,700,900">
+    <link rel="stylesheet" href="css/bootstrap.css">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/fonts.css">
+    <link rel="stylesheet" href="css/input.css">
+    <link rel="stylesheet" href="css/searchpro.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/toggle.css">
+    <link rel="stylesheet" href="css/job.css">
+    <link rel="stylesheet" href="css/chat.css">
+    <link rel="stylesheet" href="css/notification.css">
+    <link rel="stylesheet" href="css/invoice.css">
+    <link rel="stylesheet" href="css/rating.css">
+    <link rel="stylesheet" href="css/slidetrack.css">
+    <link rel="stylesheet" href="css/chatWidget.css">
+    <link href="https://unpkg.com/gijgo@1.9.14/css/gijgo.min.css" rel="stylesheet" type="text/css" />
+    <script src="https://js.stripe.com/v3/"></script>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    <script src="js/home.js"></script>
+    <script src="js/onlineStatus.js"></script>
+    <script src="js/autocomplete.js"></script>
+    <!--script src="https://unpkg.com/jspdf@latest/dist/jspdf.umd.min.js"></script-->
+    <!--script src="jspdf.js"></script>
+    <script src="jspdf.plugin.from_html.js"></script>
+    <script src="jspdf.plugin.split_text_to_size.js"></script>
+    <script src="jspdf.plugin.standard_fonts_metrics.js"></script-->
+      
+  </head>
+  <body id="whole_bd_pg">
+    <div id="fb-root"></div>
+    <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v17.0&appId=816417526759341&autoLogAppEvents=1" nonce="WebJTIjJ"></script>
+
+
+    <!--div class="ie-panel"><a href="http://windows.microsoft.com/en-US/internet-explorer/"><img src="images/ie8-panel/warning_bar_0000_us.jpg" height="42" width="820" alt="You are using an outdated browser. For a faster, safer browsing experience, upgrade for free today."></a></div-->
+    <div class="preloader" id="preloader">
+      <div class="preloader-body">
+        <div class="loader">
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+        </div>
+        <p><%= t('Loading') %></p>
+      </div>
+    </div>
+       
+    <div class="page" id="whole_page">
+      <header class="section page-header rd-navbar-transparent-wrap" id="whole_header">
+        <!--RD Navbar-->
+        <div class="rd-navbar-wrap" >
+          <nav class="rd-navbar rd-navbar-transparent" data-layout="rd-navbar-fixed" data-sm-layout="rd-navbar-fixed" data-md-layout="rd-navbar-fixed" data-md-device-layout="rd-navbar-fixed" data-lg-layout="rd-navbar-static" data-lg-device-layout="rd-navbar-static" data-xl-layout="rd-navbar-static" data-xl-device-layout="rd-navbar-static" data-lg-stick-up-offset="20px" data-xl-stick-up-offset="20px" data-xxl-stick-up-offset="20px" data-lg-stick-up="true" data-xl-stick-up="true" data-xxl-stick-up="true">
+            <div class="rd-navbar-collapse-toggle rd-navbar-fixed-element-1" data-rd-navbar-toggle=".rd-navbar-collapse"><b class="fas fa-bars"></b><!--span></span--></div>
+            <div class="rd-navbar-aside-outer rd-navbar-collapse">
+              <div class="rd-navbar-aside">
+                <div class="rd-navbar-info sm-scr" title="<%= t('SiteDescription') %>" style="text-transform: uppercase;">
+                  <%= t('SiteTitle') %>
+                  
+                </div>
+                
+                    <ul class="list-lined sm-scr">
+                      <li class="ml-2 mb-2 ">
+                          <a data-toggle="dropdown" href="#" > 
+                              <img src="images/translation_.png" width="15" height="15" class="mr-1 mb-1 " ><%= t('SwitchLanguage') %>
+                          </a>
+
+                          <ul class="dropdown-menu ul-none" aria-labelledby="Dropdown">
+                              <li>
+                                  <a class="dropdown-item text-small" href="/lang/en" ><img src="images/united-kingdom.png" width="15" height="15" class="mr-2 mb-1"> <%= t('English') %> <% if(i18n.language === 'en') { %><span class="fa fa-check text-success ml-1"></span><% } %></a>
+                              </li>
+                              <li><hr class="dropdown-divider" /></li>
+                              <li>
+                                  <a class="dropdown-item text-small" href="/lang/fr" ><img src="images/france.png" width="15" height="15" class="mr-2 mb-1"> <%= t('French') %> <% if(i18n.language === 'fr') { %><span class="fa fa-check text-success ml-1"></span><% } %></a>
+                              </li>
+                              
+                          </ul>
+                      </li>
+
+                    <% if(usr){ %>
+                      <li>
+                        <div class="btn-group sm-scr">
+                        
+                             <span class="mr-3" style="text-transform: none;"><%= t('Hello') %> <%= usr.firstName %></span>
+                           
+                          
+                        </div>
+                        <div class="btn-group open sm-scr-show">
+                          
+                          <a class="btn position-relative" data-toggle="dropdown" href="#" class="text-transform-none"><b class="fa fa-user fa-fw ">
+                            <% let unread = 0;
+                             let notifStr = "";
+                            
+                              if(notifications) 
+                                notifications.forEach(notif=>{
+                                  if(notif.status == "unread")
+                                    unread++;
+                                });  
+                              notifStr = unread > 99 ? "99+": unread+"";
+                              if (unread >  0) {  %>
+                            <span class="position-absolute top-0 start-100  badge rounded-pill-notification" id="unread_notifs_top"> <%=notifStr %>
+                            </span>
+                            <% } %>
+                            </b> <%=usr.firstName %>
+                            <span class="fa fa-caret-down ml-1" title="Toggle dropdown menu"></span></a>
+                            <ul class="dropdown-menu ul-none">
+                              <% if(usr.accountType=="provider"){ %>
+                                <li><a href="/p-profile"><b class="fa fa-user-circle mr-2"></b>  <%= t('Profile') %></a></li>
+                                <li><a href="/applications"><b class="fa fa-bar-chart mr-1"></b>  <%= t('MyApplications') %></a></li>
+                              <%}else{%>
+                                <li><a href="/profile"><b class="fa fa-user-circle mr-2"></b>  <%= t('Profile') %></a></li>
+                                <li><a href="/myrequests"><b class="fa fa-tasks mr-2"></b>  <%= t('MyRequests') %></a></li>
+                                <% if(usr.registeredAsPro) { %>
+                                  <li><a href="/switch-account"><b class="fa fa-id-card-o mr-1"></b> <%= t('SwitchToPro') %></a></li>
+                                <% } else { %>
+                                  <li><a href="/professionals"><b class="fa fa-id-card-o mr-1"></b> <%= t('JoinAsPro') %></a></li>
+                              <%} }%>
+                              <% if (unread >  0) { %>
+                              <li id='notif_dd'><a href="/notifications"><b class="fa fa-bell mr-2"></b> <%= t('Notifications') %>(<%=notifStr%>)</a></li>
+                              <% } else { %>
+                              <li><a href="/notifications"><b class="fa fa-bell mr-2"></b> <%= t('Notifications') %></a></li>
+                              <% } %>
+                              <li><a href="/logout"><b class="fa fa-sign-out mr-2"></b>  <%= t('Logout') %> </a></li>
+                            </ul>
+                          
+                        </div>
+                      </li>
+                      <% } else { %>
+
+                        
+
+                      <li class="ml-2 mb-2">
+                        <!--To keep modal up even when the user clicks away, uncomment link below and use it-->
+                        <!--<a href="#logModalCta" data-controls-modal="#logModalCta" data-backdrop="static" data-keyboard="false" data-toggle="modal" data-caption-animate="fadeInUp"> -->
+                        <a href="#logModalCta" data-toggle="modal" data-caption-animate="fadeInUp"> 
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-lock mr-1 mb-1" viewBox="0 0 16 16">
+                          <path d="M11 5a3 3 0 1 1-6 0 3 3 0 0 1 6 0ZM8 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm0 5.996V14H3s-1 0-1-1 1-4 6-4c.564 0 1.077.038 1.544.107a4.524 4.524 0 0 0-.803.918A10.46 10.46 0 0 0 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h5ZM9 13a1 1 0 0 1 1-1v-1a2 2 0 1 1 4 0v1a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1v-2Zm3-3a1 1 0 0 0-1 1v1h2v-1a1 1 0 0 0-1-1Z"/>
+                        </svg> <%= t('Login') %></a></li>
+                      <li class="ml-2"><a href="#regModalCta" data-toggle="modal" data-caption-animate="fadeInUp">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-add mr-1 mb-1" viewBox="0 0 16 16">
+                          <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Zm.5-5v1h1a.5.5 0 0 1 0 1h-1v1a.5.5 0 0 1-1 0v-1h-1a.5.5 0 0 1 0-1h1v-1a.5.5 0 0 1 1 0Zm-2-6a3 3 0 1 1-6 0 3 3 0 0 1 6 0ZM8 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"/>
+                          <path d="M8.256 14a4.474 4.474 0 0 1-.229-1.004H3c.001-.246.154-.986.832-1.664C4.484 10.68 5.711 10 8 10c.26 0 .507.009.74.025.226-.341.496-.65.804-.918C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4s1 1 1 1h5.256Z"/>
+                        </svg><%= t('Register') %></a></li>
+                      <% } %>
+                  </ul>
+
+                  <ul class="sm-scr-show">
+                  <% if(usr) { %>
+                    <li class="ml-2 mb-2"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-clipboard-data mr-2 mb-1" viewBox="0 0 16 16">
+                      <path d="M4 11a1 1 0 1 1 2 0v1a1 1 0 1 1-2 0zm6-4a1 1 0 1 1 2 0v5a1 1 0 1 1-2 0zM7 9a1 1 0 0 1 2 0v3a1 1 0 1 1-2 0z"/>
+                      <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1z"/>
+                      <path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0z"/>
+                    </svg><a class="" href="/"><%= t('Dashboard') %></a> </li>
+                    <li class="ml-2 mb-2"><a class="" href="/find-services">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search mr-2 mb-1" viewBox="0 0 16 16">
+                        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
+                      </svg>
+                      Find providers</a></li>
+                      <% if(usr.accountType=="provider"){  %>
+                        <li class="ml-2 mb-2"><a class="" href="/service-requests">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-earmark-ruled mr-2 mb-1" viewBox="0 0 16 16" >
+                            <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2M9.5 3A1.5 1.5 0 0 0 11 4.5h2V9H3V2a1 1 0 0 1 1-1h5.5zM3 12v-2h2v2zm0 1h2v2H4a1 1 0 0 1-1-1zm3 2v-2h7v1a1 1 0 0 1-1 1zm7-3H6v-2h7z"/>
+                          </svg>
+                          <%= t('ServiceRequests') %></a></li>
+                        <li class="ml-2 mb-2"><a class="" href="/mybookings">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-calendar2-check mr-2 mb-1" viewBox="0 0 16 16" >
+                            <path d="M10.854 8.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 0 1 .708-.708L7.5 10.793l2.646-2.647a.5.5 0 0 1 .708 0"/>
+                            <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5M2 2a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1z"/>
+                            <path d="M2.5 4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5H3a.5.5 0 0 1-.5-.5z"/>
+                          </svg>
+                          <%= t('MyBookings') %></a></li>
+                        <li class="ml-2 mb-2"><a class="" href="/quotations">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-receipt mr-2 mb-1" viewBox="0 0 16 16" >
+                            <path d="M1.92.506a.5.5 0 0 1 .434.14L3 1.293l.646-.647a.5.5 0 0 1 .708 0L5 1.293l.646-.647a.5.5 0 0 1 .708 0L7 1.293l.646-.647a.5.5 0 0 1 .708 0L9 1.293l.646-.647a.5.5 0 0 1 .708 0l.646.647.646-.647a.5.5 0 0 1 .708 0l.646.647.646-.647a.5.5 0 0 1 .801.13l.5 1A.5.5 0 0 1 15 2v12a.5.5 0 0 1-.053.224l-.5 1a.5.5 0 0 1-.8.13L13 14.707l-.646.647a.5.5 0 0 1-.708 0L11 14.707l-.646.647a.5.5 0 0 1-.708 0L9 14.707l-.646.647a.5.5 0 0 1-.708 0L7 14.707l-.646.647a.5.5 0 0 1-.708 0L5 14.707l-.646.647a.5.5 0 0 1-.708 0L3 14.707l-.646.647a.5.5 0 0 1-.801-.13l-.5-1A.5.5 0 0 1 1 14V2a.5.5 0 0 1 .053-.224l.5-1a.5.5 0 0 1 .367-.27m.217 1.338L2 2.118v11.764l.137.274.51-.51a.5.5 0 0 1 .707 0l.646.647.646-.646a.5.5 0 0 1 .708 0l.646.646.646-.646a.5.5 0 0 1 .708 0l.646.646.646-.646a.5.5 0 0 1 .708 0l.646.646.646-.646a.5.5 0 0 1 .708 0l.646.646.646-.646a.5.5 0 0 1 .708 0l.509.509.137-.274V2.118l-.137-.274-.51.51a.5.5 0 0 1-.707 0L12 1.707l-.646.647a.5.5 0 0 1-.708 0L10 1.707l-.646.647a.5.5 0 0 1-.708 0L8 1.707l-.646.647a.5.5 0 0 1-.708 0L6 1.707l-.646.647a.5.5 0 0 1-.708 0L4 1.707l-.646.647a.5.5 0 0 1-.708 0z"/>
+                            <path d="M3 4.5a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5m8-6a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5"/>
+                          </svg>
+                          <%= t('Quotations') %></a></li>
+                        <% if(!usr.strictlyPro) { %>
+                        <li class="ml-2 mb-2"><a  href="/switch-account">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 2048 2048" class="mr-2 mb-1">
+                            <path fill="currentColor" d="M1339 1152h-187q-83-63-181-95t-203-33q-88 0-170 23t-153 64t-129 100t-100 130t-65 153t-23 170H0q0-120 35-231t101-205t156-167t204-115q-56-35-100-82t-76-104t-47-119t-17-129q0-106 40-199t110-162T569 41T768 0t199 40t162 110t110 163t41 199q0 66-16 129t-48 119t-75 103t-101 83q86 32 162 84t137 122M384 512q0 80 30 149t82 122t122 83t150 30q79 0 149-30t122-82t83-122t30-150q0-79-30-149t-82-122t-123-83t-149-30q-80 0-149 30t-122 82t-83 123t-30 149m768 768h554l-85-85l86-86l236 235l-236 235l-86-86l85-85h-554zm299 299l-85 85h554v128h-554l85 85l-86 86l-236-235l236-235z"/></svg>
+                            <%=t('SwitchToUser')%>
+                          </a></li>
+                        <% } }
+                        else { %>
+                          <li class="ml-2 mb-2"><a href="/myrequests"><b class="fa fa-tasks mr-2"></b>  <%= t('MyRequests') %></a></li>
+                          <% if(usr.registeredAsPro) { %>
+                          <li class="ml-2 mb-2">
+                            <a class="" href="/switch-account" >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 2048 2048" class="mr-2 mb-1">
+                              <path fill="currentColor" d="M1339 1152h-187q-83-63-181-95t-203-33q-88 0-170 23t-153 64t-129 100t-100 130t-65 153t-23 170H0q0-120 35-231t101-205t156-167t204-115q-56-35-100-82t-76-104t-47-119t-17-129q0-106 40-199t110-162T569 41T768 0t199 40t162 110t110 163t41 199q0 66-16 129t-48 119t-75 103t-101 83q86 32 162 84t137 122M384 512q0 80 30 149t82 122t122 83t150 30q79 0 149-30t122-82t83-122t30-150q0-79-30-149t-82-122t-123-83t-149-30q-80 0-149 30t-122 82t-83 123t-30 149m768 768h554l-85-85l86-86l236 235l-236 235l-86-86l85-85h-554zm299 299l-85 85h554v128h-554l85 85l-86 86l-236-235l236-235z"/></svg>
+                              <%= t('SwitchToPro') %>
+                            </a>
+                          </li>
+                        <% } else { %>
+                          <li class="ml-2 mb-2"><a href="/professionals"><b class="fa fa-id-card-o mr-1"></b> <%=t('JoinAsPro')%></a></li>
+                    <% } } %>
+                    <li class="ml-2 mb-2">
+                      <a class="" href="/messages">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="1.5em" height="1.5em" viewBox="0 0 24 24" class="mr-2 mb-1">
+                            <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9h8m-8 4h6m-5 5H6a3 3 0 0 1-3-3V7a3 3 0 0 1 3-3h12a3 3 0 0 1 3 3v8a3 3 0 0 1-3 3h-3l-3 3z"></path>
+                        </svg><%= t('Messages') %></a>
+                    </li>
+                  <% } else { %>
+                     <li class="ml-2 mb-2"><a href="/">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-house mr-2 mb-1" viewBox="0 0 16 16">
+                      <path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L2 8.207V13.5A1.5 1.5 0 0 0 3.5 15h9a1.5 1.5 0 0 0 1.5-1.5V8.207l.646.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.707 1.5ZM13 7.207V13.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V7.207l5-5 5 5Z"/>
+                    </svg><%= t('Home') %></a></li>
+                    <li class="ml-2 mb-2"><a class="" href="/find-services">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search mr-2 mb-1" viewBox="0 0 16 16">
+                        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
+                      </svg>
+                      <%= t('FindProviders') %></a></li>
+                    <li class="ml-2 mb-2"><a href="/about-us">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info-circle mr-2 mb-1" viewBox="0 0 16 16">
+                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                        <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
+                      </svg> <%= t('AboutUs') %></a></li>
+                    <li class="ml-2 mb-2"><a href="/professionals">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-vcard mr-2 mb-1" viewBox="0 0 16 16">
+                        <path d="M5 8a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm4-2.5a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1h-4a.5.5 0 0 1-.5-.5ZM9 8a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1h-4A.5.5 0 0 1 9 8Zm1 2.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5Z"/>
+                        <path d="M2 2a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H2ZM1 4a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H8.96c.026-.163.04-.33.04-.5C9 10.567 7.21 9 5 9c-2.086 0-3.8 1.398-3.984 3.181A1.006 1.006 0 0 1 1 12V4Z"/>
+                      </svg><%= t('JoinAsPro') %></a></li>
+                    <% } %>
+                    <li class="ml-2 mb-2"><a  href="/contact-us">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-envelope-at mr-2 mb-1" viewBox="0 0 16 16">
+                        <path d="M2 2a2 2 0 0 0-2 2v8.01A2 2 0 0 0 2 14h5.5a.5.5 0 0 0 0-1H2a1 1 0 0 1-.966-.741l5.64-3.471L8 9.583l7-4.2V8.5a.5.5 0 0 0 1 0V4a2 2 0 0 0-2-2H2Zm3.708 6.208L1 11.105V5.383l4.708 2.825ZM1 4.217V4a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v.217l-7 4.2-7-4.2Z"/>
+                        <path d="M14.247 14.269c1.01 0 1.587-.857 1.587-2.025v-.21C15.834 10.43 14.64 9 12.52 9h-.035C10.42 9 9 10.36 9 12.432v.214C9 14.82 10.438 16 12.358 16h.044c.594 0 1.018-.074 1.237-.175v-.73c-.245.11-.673.18-1.18.18h-.044c-1.334 0-2.571-.788-2.571-2.655v-.157c0-1.657 1.058-2.724 2.64-2.724h.04c1.535 0 2.484 1.05 2.484 2.326v.118c0 .975-.324 1.39-.639 1.39-.232 0-.41-.148-.41-.42v-2.19h-.906v.569h-.03c-.084-.298-.368-.63-.954-.63-.778 0-1.259.555-1.259 1.4v.528c0 .892.49 1.434 1.26 1.434.471 0 .896-.227 1.014-.643h.043c.118.42.617.648 1.12.648Zm-2.453-1.588v-.227c0-.546.227-.791.573-.791.297 0 .572.192.572.708v.367c0 .573-.253.744-.564.744-.354 0-.581-.215-.581-.8Z"/>
+                      </svg><%= t('ContactUs') %></a></li>
+
+                      <li class="ml-2 mb-2"><a href="/term-of-use">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-shield-exclamation mr-2 mb-1" viewBox="0 0 16 16">
+                          <path d="M5.338 1.59a61 61 0 0 0-2.837.856.48.48 0 0 0-.328.39c-.554 4.157.726 7.19 2.253 9.188a10.7 10.7 0 0 0 2.287 2.233c.346.244.652.42.893.533q.18.085.293.118a1 1 0 0 0 .101.025 1 1 0 0 0 .1-.025q.114-.034.294-.118c.24-.113.547-.29.893-.533a10.7 10.7 0 0 0 2.287-2.233c1.527-1.997 2.807-5.031 2.253-9.188a.48.48 0 0 0-.328-.39c-.651-.213-1.75-.56-2.837-.855C9.552 1.29 8.531 1.067 8 1.067c-.53 0-1.552.223-2.662.524zM5.072.56C6.157.265 7.31 0 8 0s1.843.265 2.928.56c1.11.3 2.229.655 2.887.87a1.54 1.54 0 0 1 1.044 1.262c.596 4.477-.787 7.795-2.465 9.99a11.8 11.8 0 0 1-2.517 2.453 7 7 0 0 1-1.048.625c-.28.132-.581.24-.829.24s-.548-.108-.829-.24a7 7 0 0 1-1.048-.625 11.8 11.8 0 0 1-2.517-2.453C1.928 10.487.545 7.169 1.141 2.692A1.54 1.54 0 0 1 2.185 1.43 63 63 0 0 1 5.072.56"/>
+                          <path d="M7.001 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0M7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.553.553 0 0 1-1.1 0z"/>
+                        </svg>Terms of use</a></li>
+                      <li class="ml-2 mb-2"><a href="/privacy-policy">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-lock mr-2 mb-1" viewBox="0 0 16 16">
+                          <path d="M8 5a1 1 0 0 1 1 1v1H7V6a1 1 0 0 1 1-1m2 2.076V6a2 2 0 1 0-4 0v1.076c-.54.166-1 .597-1 1.224v2.4c0 .816.781 1.3 1.5 1.3h3c.719 0 1.5-.484 1.5-1.3V8.3c0-.627-.46-1.058-1-1.224M6.105 8.125A.64.64 0 0 1 6.5 8h3a.64.64 0 0 1 .395.125c.085.068.105.133.105.175v2.4c0 .042-.02.107-.105.175A.64.64 0 0 1 9.5 11h-3a.64.64 0 0 1-.395-.125C6.02 10.807 6 10.742 6 10.7V8.3c0-.042.02-.107.105-.175"/>
+                          <path d="M4 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm0 1h8a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1"/>
+                        </svg>Privacy policy</a></li>
+                      <li class="ml-2 mb-2"><a href="/do-not-sell">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-database-fill-lock mr-2 mb-1" viewBox="0 0 16 16">
+                          <path d="M8 1c-1.573 0-3.022.289-4.096.777C2.875 2.245 2 2.993 2 4s.875 1.755 1.904 2.223C4.978 6.711 6.427 7 8 7s3.022-.289 4.096-.777C13.125 5.755 14 5.007 14 4s-.875-1.755-1.904-2.223C11.022 1.289 9.573 1 8 1"/>
+                          <path d="M3.904 9.223C2.875 8.755 2 8.007 2 7v-.839c.457.432 1.004.751 1.49.972C4.722 7.693 6.318 8 8 8s3.278-.307 4.51-.867c.486-.22 1.033-.54 1.49-.972V7c0 .424-.155.802-.411 1.133a4.5 4.5 0 0 0-1.364-.125 3 3 0 0 0-2.197.731 4.5 4.5 0 0 0-1.254 1.237A12 12 0 0 1 8 10c-1.573 0-3.022-.289-4.096-.777M8 14c-1.682 0-3.278-.307-4.51-.867-.486-.22-1.033-.54-1.49-.972V13c0 1.007.875 1.755 1.904 2.223C4.978 15.711 6.427 16 8 16q.134 0 .266-.003A2 2 0 0 1 8 15zm0-1.5q0 .15.01.3A2 2 0 0 0 8 13c-1.573 0-3.022-.289-4.096-.777C2.875 11.755 2 11.007 2 10v-.839c.457.432 1.004.751 1.49.972C4.722 10.693 6.318 11 8 11q.13 0 .257-.002A4.5 4.5 0 0 0 8 12.5"/>
+                          <path d="M9 13a1 1 0 0 1 1-1v-1a2 2 0 1 1 4 0v1a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1zm3-3a1 1 0 0 0-1 1v1h2v-1a1 1 0 0 0-1-1"/>
+                        </svg>Do not sell</a></li>
+                  </ul>
+
+              </div>
+            </div>
+            <div class="rd-navbar-main-outer">
+              <div class="rd-navbar-main-inner">
+                <div class="rd-navbar-main">
+                  <!--RD Navbar Panel-->
+                  <div class="rd-navbar-panel">
+                    <!--RD Navbar Toggle-->
+                    <!--RD Navbar Brand-->
+                    <div class="rd-navbar-brand">
+                      <!--Brand--><a class="brand" title="Professional Service Finder" href="/"><img class="brand-logo-dark" src="images/mosalapro-logo-h.png" alt="Mosalapro Logo" width="146" height="22"/><img class="brand-logo-light" src="images/mosalapro-logo-h.png" alt="" width="155" height="22"/></a>
+                    </div>
+                  </div>
+                  <div class="rd-navbar-main-element">
+                    <div class="rd-navbar-nav-wrap">
+                      <ul class="rd-navbar-nav">
+                        <% if(usr){ %>
+                          <li class="rd-nav-item active">
+                            <% if(currtab && currtab === 'dash') { %><a class="rd-nav-link" style="color:#5A9E2F" href="/"><%= t('Dashboard') %></a> 
+                            <% } else { %> <a class="rd-nav-link" href="/"><%= t('Dashboard') %></a>  <% } %>
+                          </li>
+                          <li class="rd-nav-item">
+                            <% if(currtab && currtab === 'find-pro') { %><a class="rd-nav-link" style="color:#5A9E2F" href="/find-services"><%= t('FindProviders') %></a>
+                            <% } else { %><a class="rd-nav-link" href="/find-services"><%= t('FindProviders') %></a> <% } %>
+                          </li>
+                          <!--li class="rd-nav-item"><a class="rd-nav-link" href="/about-us">About us</a></li-->
+                          <% if(usr.accountType=="provider"){  %>
+                            <li class="rd-nav-item">
+                              <% if(currtab && currtab === 'requests') { %><a class="rd-nav-link" style="color:#5A9E2F" href="/service-requests"><%= t('ServiceRequests') %></a>
+                              <% } else { %><a class="rd-nav-link" href="/service-requests"><%= t('ServiceRequests') %></a> <% } %>
+                            </li>
+                            <li class="rd-nav-item">
+                              <% if(currtab && currtab === 'mybookings') { %><a class="rd-nav-link" style="color:#5A9E2F" href="/mybookings"><%= t('MyBookings') %></a>
+                              <% } else { %><a class="rd-nav-link" href="/mybookings"><%= t('MyBookings') %></a><% } %>
+                            </li>
+                            <li class="rd-nav-item">
+                              <% if(currtab && currtab === 'quotations') { %><a class="rd-nav-link" style="color:#5A9E2F"  href="/quotations"><%= t('Quotations') %></a>
+                              <% } else { %><a class="rd-nav-link" href="/quotations"><%= t('Quotations') %></a> <% } %>
+                            </li>
+                            <% if(!usr.strictlyPro) { %>
+                            <li class="rd-nav-item"><a class="rd-nav-link" href="/switch-account" data-placement="top" data-toggle="tooltip"  title="<%= t('SwitchToUser') %>"> 
+                              <svg xmlns="http://www.w3.org/2000/svg" width="1.5em" height="1.5em" viewBox="0 0 2048 2048">
+                                <path fill="currentColor" d="M1339 1152h-187q-83-63-181-95t-203-33q-88 0-170 23t-153 64t-129 100t-100 130t-65 153t-23 170H0q0-120 35-231t101-205t156-167t204-115q-56-35-100-82t-76-104t-47-119t-17-129q0-106 40-199t110-162T569 41T768 0t199 40t162 110t110 163t41 199q0 66-16 129t-48 119t-75 103t-101 83q86 32 162 84t137 122M384 512q0 80 30 149t82 122t122 83t150 30q79 0 149-30t122-82t83-122t30-150q0-79-30-149t-82-122t-123-83t-149-30q-80 0-149 30t-122 82t-83 123t-30 149m768 768h554l-85-85l86-86l236 235l-236 235l-86-86l85-85h-554zm299 299l-85 85h554v128h-554l85 85l-86 86l-236-235l236-235z"/></svg>
+                            </a></li>
+                            
+                          <% } } else { %>
+                            <li class="rd-nav-item">
+                              <% if(currtab && currtab === 'pros') { %> <a class="rd-nav-link" style="color:#5A9E2F" href="/professionals"><%= t('JoinAsPro') %></a>
+                              <% }else{ %> <a class="rd-nav-link" href="/professionals"><%= t('JoinAsPro') %></a> <% } %>
+                            </li>
+                            <li class="rd-nav-item">
+                              <% if(currtab && currtab === 'myrequests') { %><a class="rd-nav-link" style="color:#5A9E2F" href="/myrequests"><%= t('MyRequests') %></a>
+                              <% }else{ %><a class="rd-nav-link" href="/myrequests"><%= t('MyRequests') %></a> <% } %>
+                            </li>
+                            <li class="rd-nav-item">
+                              <% if(usr.registeredAsPro) { %>
+                              <a class="zindex-tooltip" href="/switch-account" data-placement="top" data-toggle="tooltip"  title="<%= t('SwitchToPro') %>">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="1.5em" height="1.5em" viewBox="0 0 2048 2048">
+                                <path fill="currentColor" d="M1339 1152h-187q-83-63-181-95t-203-33q-88 0-170 23t-153 64t-129 100t-100 130t-65 153t-23 170H0q0-120 35-231t101-205t156-167t204-115q-56-35-100-82t-76-104t-47-119t-17-129q0-106 40-199t110-162T569 41T768 0t199 40t162 110t110 163t41 199q0 66-16 129t-48 119t-75 103t-101 83q86 32 162 84t137 122M384 512q0 80 30 149t82 122t122 83t150 30q79 0 149-30t122-82t83-122t30-150q0-79-30-149t-82-122t-123-83t-149-30q-80 0-149 30t-122 82t-83 123t-30 149m768 768h554l-85-85l86-86l236 235l-236 235l-86-86l85-85h-554zm299 299l-85 85h554v128h-554l85 85l-86 86l-236-235l236-235z"/></svg>
+                              </a>
+                            </li>
+                          <% } } %>
+
+                          <% let unreads = [];
+                              let reads = [];
+                              let newMessages = 0;
+                              let unReadsUser = 0;
+                              let unReadsPro = 0;
+                              notifications.forEach(notif=>{
+                              if(notif.status == "unread"){
+                                if(notif.title == "You have a new message."){
+                                  newMessages++;
+                                  unReadsPro++;
+                                  unReadsUser++;
+                                }
+                                else if(notif.accountType == "pro"){
+                                  unReadsPro++;
+                                }
+                                else if(notif.accountType == "user"){
+                                  unReadsUser++;
+                                }
+                                unreads.push(notif);
+                              }
+                              else
+                                reads.push(notif);
+                              });
+                              let lim = 0; let rlim = 0;
+                              if(unreads.length <= 50)
+                                  lim = unreads.length;
+                              else    
+                                  lim = 50;
+                              if(reads.length <= (50 - lim))
+                                rlim = reads.length;
+                              else
+                                rlim = 50 - lim;
+                              %>
+
+                          
+                          <li class="rd-nav-item" id="notifMsg">
+                            <% if(currtab && currtab === 'messages') { %>
+                            <a class="zindex-tooltip" style="color: #5A9E2F;" href="/messages" data-placement="top" data-toggle="tooltip"  title="Messages">
+                            <% } else { %> <a class="zindex-tooltip" href="/messages" data-placement="top" data-toggle="tooltip"  title="Messages"> <% } %>
+                              <svg xmlns="http://www.w3.org/2000/svg" width="1.5em" height="1.5em" viewBox="0 0 24 24">
+                                  <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9h8m-8 4h6m-5 5H6a3 3 0 0 1-3-3V7a3 3 0 0 1 3-3h12a3 3 0 0 1 3 3v8a3 3 0 0 1-3 3h-3l-3 3z"/></svg>
+                                  <% if(newMessages > 0) { %>
+                                    <span class="position-absolute top-0 start-100  badge rounded-pill-notification" style="margin-top: -5px; margin-left: -15px;" id="unread_notifs_top_msg">
+                                    <%=newMessages%>
+                                    </span>  
+                                  <% } %>
+                                </a>
+
+                            </li>
+                            
+                            
+                            <li class="rd-nav-item" id="unreadNotifsContent"><a  title="Notifications" data-toggle="dropdown" href="#"><svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0,0,256,256">
+                              <g fill="#3d3d3d" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" font-family="none" font-weight="none" font-size="none" text-anchor="none" style="mix-blend-mode: normal"><g transform="scale(10.66667,10.66667)"><path d="M12,2c-0.828,0 -1.5,0.672 -1.5,1.5v0.69531c-2.58682,0.66678 -4.5,3.00949 -4.5,5.80469v6l-2,2v1h6.26953c-0.17609,0.30389 -0.26905,0.64878 -0.26953,1c0,1.10457 0.89543,2 2,2c1.10457,0 2,-0.89543 2,-2c-0.00107,-0.35139 -0.09471,-0.6963 -0.27148,-1h6.27148v-1l-2,-2v-6c0,-2.7952 -1.91318,-5.1379 -4.5,-5.80469v-0.69531c0,-0.828 -0.672,-1.5 -1.5,-1.5zM12,6c2.206,0 4,1.794 4,4v6v0.82813l0.17188,0.17188h-8.34375l0.17188,-0.17187v-0.82812v-6c0,-2.206 1.794,-4 4,-4z"></path></g></g>
+                              </svg>
+                              <% if(unReadsPro > 0 && usr.accountType == 'provider') { %>
+                              <span class="position-absolute top-0 start-100  badge rounded-pill-notification" style="margin-top: -5px; margin-left: -15px;" id="unread_notifs_top_bell">
+                                  <%= unReadsPro %>
+                              </span>
+                              <% } %>
+                              <% if(unReadsUser > 0 && usr.accountType == 'user') { %>
+                                <span class="position-absolute top-0 start-100  badge rounded-pill-notification" style="margin-top: -5px; margin-left: -15px;" id="unread_notifs_top_bell">
+                                    <%= unReadsUser %>
+                                </span>
+                                <% } %>
+                            </a>
+                            <% if(unreads.length > 0 || reads.length > 0) { %>
+                              <ul class="dropdown-menu ul-none dropdown-notif pt-0 border-top" style="top:10px;">
+                                
+                                <div class="box-body p-0" style="width: 40em; height: 50em; overflow: scroll;" >
+                                  <% if(unreads.length > 0){ 
+                                      for(let j = 0; j < lim; j++) { %>
+
+                                        
+                                            <% if (unreads[j].title == "You have a new message.") { %>
+                                              <div class="unread border-top" id="notif-container<%=j%>">
+                                                <div class="notif_header py-2" onClick="readNotification('<%=unreads[j]._id%>', '<%=j%>')" >
+                                                  <a href="/messages?id=<%=unreads[j].causedByUserId%>" > 
+                                                    <div  class="px-3 d-flex align-items-center osahan-post-header">
+                                                
+                                                      <div class="dropdown-list-image mr-3">
+                                                          <b class="fa <%=unreads[j].icon%> fa-2x rounded-circle file-icon"></b>
+                                                      </div>
+                                                      <div class="mr-2">
+                                                        <div class="text-wrap "><b><%=getTranslatedNotification(unreads[j], locale, 'title')%></b></div>
+                                                        <div class="text-small text-wrap" id="tmp_content<%=j%>"><%=getTranslatedNotification(unreads[j], locale, 'content')%></div>
+                                                      </div>
+                                                      <span class="ml-auto mb-auto">
+                                          
+                                                              <br/>
+                                                              <div class="text-right text-muted pt-1"><%- getShortTimeAgo(unreads[j].createdAt) %></div>
+                                                      </span>
+                                                  </div>
+                                                  </a>
+                                                </div>
+                                              </div>
+                                            <% } 
+                                            if (usr.accountType == "user"){ 
+                                              if( unreads[j].title.includes("provider has applied")) { %>
+                                                <div class="unread border-top" id="notif-container<%=j%>">
+                                                  <div class="notif_header py-2" onClick="readNotification('<%=unreads[j]._id%>', '<%=j%>')" >
+                                                    
+                                                  <a href="/applicant?p=<%=unreads[j].causedByUserId%>&j=<%=unreads[j].causedByItem%>">
+                                                      <div  class="px-3 d-flex align-items-center osahan-post-header">
+                                                
+                                                        <div class="dropdown-list-image mr-3">
+                                                            <b class="fa <%=unreads[j].icon%> fa-2x rounded-circle file-icon"></b>
+                                                        </div>
+                                                        <div class="mr-2">
+                                                          
+                                                          <div class="text-wrap "><b><%=getTranslatedNotification(unreads[j], locale, 'title')%></b></div>
+                                                          
+                                                          <div class="text-small text-wrap" id="tmp_content<%=j%>"><%=getTranslatedNotification(unreads[j], locale, 'content')%></div>
+                                                        </div>
+                                                        <span class="ml-auto mb-auto">
+                                            
+                                                                <br/>
+                                                                <div class="text-right text-muted pt-1"><%- getShortTimeAgo(unreads[j].createdAt) %></div>
+                                                        </span>
+                                                    </div>
+                                                  </a>
+                                                  </div>
+                                                </div>
+                                              <% }
+                                              else if ( unreads[j].title.includes('have a quote for your request')  || unreads[j].title.includes(' request.') ||
+                                                                                unreads[j].title.includes("booking has been confirmed")  || unreads[j].title.includes('Your booking request has been cancelled')
+                                                                                || unreads[j].title.includes("Deadline extension request") || unreads[j].title.includes('You have a new quotation')
+                                                                                || unreads[j].title.includes("Your task has been completed") || unreads[j].title.includes('service provider has provided a quotation for your booking') 
+                                                                                || unreads[j].title.includes("Your quotation request was rejected")) { %>
+                                                <div class="unread border-top" id="notif-container<%=j%>">
+                                                  <div class="notif_header py-2" onClick="readNotification('<%=unreads[j]._id%>', '<%=j%>')" >
+                                                                                      
+                                                  <a href="/manage-request?rq=<%=unreads[j].causedByItem%>">
+                                                    <div  class="px-3 d-flex align-items-center osahan-post-header">
+                                              
+                                                      <div class="dropdown-list-image mr-3">
+                                                          <b class="fa <%=unreads[j].icon%> fa-2x rounded-circle file-icon"></b>
+                                                      </div>
+                                                      <div class="mr-2">
+                                                        
+                                                        <div class="text-wrap "><b><%=getTranslatedNotification(unreads[j], locale, 'title')%></b></div>
+                                                        
+                                                        <div class="text-small text-wrap" id="tmp_content<%=j%>"><%=getTranslatedNotification(unreads[j], locale, 'content')%></div>
+                                                      </div>
+                                                      <span class="ml-auto mb-auto">
+                                          
+                                                              <br/>
+                                                              <div class="text-right text-muted pt-1"><%- getShortTimeAgo(unreads[j].createdAt) %></div>
+                                                      </span>
+                                                  </div>
+                                                </a>
+                                                </div>
+                                              </div>
+                                                    
+                                              <% } 
+                                              } else if(usr.accountType == "provider" ) { 
+                                                if(unreads[j].title.includes('Congratulations! You have been hired.')){ %>
+                                                  <div class="unread border-top" id="notif-container<%=j%>">
+                                                    <div class="notif_header py-2" onClick="readNotification('<%=unreads[j]._id%>', '<%=j%>')" >
+                                                      
+                                                        <a href="/booking?b=<%=unreads[j].bookingId%>"> 
+                                                          <div  class="px-3 d-flex align-items-center osahan-post-header">
+                                                  
+                                                            <div class="dropdown-list-image mr-3">
+                                                                <b class="fa <%=unreads[j].icon%> fa-2x rounded-circle file-icon"></b>
+                                                            </div>
+                                                            <div class="mr-2">
+                                                             
+                                                              <div class="text-wrap "><b><%=getTranslatedNotification(unreads[j], locale, 'title')%></b></div>
+                                                              <div class="text-small text-wrap" id="tmp_content<%=j%>"><%=getTranslatedNotification(unreads[j], locale, 'content')%></div>
+                                                            </div>
+                                                            <span class="ml-auto mb-auto">
+                                                
+                                                                    <br/>
+                                                                    <div class="text-right text-muted pt-1"><%- getShortTimeAgo(unreads[j].createdAt) %></div>
+                                                            </span>
+                                                        </div>
+                                                      </a>
+                                                    </div>
+                                                  </div>
+                                                <% } 
+                                                else if(unreads[j].title.includes('your booking')  || unreads[j].title.includes("quote was rejected")
+                                                                            || unreads[j].title.includes("quote has been accepted.") || unreads[j].title.includes("booked for a service.") || unreads[j].title.includes("has booked you")
+                                                                            || unreads[j].title.includes("Your deadline extension request") || unreads[j].title.includes('You have a revision request')
+                                                                            || unreads[j].title.includes("Your delivery has been accepted") || unreads[j].title.includes('A user has provided a feedback for your')){ %>
+                                                  <div class="unread border-top" id="notif-container<%=j%>">
+                                                    <div class="notif_header py-2" onClick="readNotification('<%=unreads[j]._id%>', '<%=j%>')" >
+                                                      <a href="/booking?b=<%=unreads[j].bookingId%>"> 
+                                                        <div  class="px-3 d-flex align-items-center osahan-post-header">
+                                              
+                                                          <div class="dropdown-list-image mr-3">
+                                                              <b class="fa <%=unreads[j].icon%> fa-2x rounded-circle file-icon"></b>
+                                                          </div>
+                                                          <div class="mr-2">
+                                                            <div class="text-wrap "><b><%=getTranslatedNotification(unreads[j], locale, 'title')%></b></div>
+                                                            <div class="text-small text-wrap" id="tmp_content<%=j%>"><%=getTranslatedNotification(unreads[j], locale, 'content')%></div>
+                                                          </div>
+                                                          <span class="ml-auto mb-auto">
+                                              
+                                                                  <br/>
+                                                                  <div class="text-right text-muted pt-1"><%- getShortTimeAgo(unreads[j].createdAt) %></div>
+                                                          </span>
+                                                      </div>
+                                                    </a>
+                                                  </div>
+                                                </div>
+                                                <% } else if(unreads[j].title.includes("has requested a quote") || unreads[j].title.includes("Your quote was rejected")) { %>
+                                                  <div class="unread border-top" id="notif-container<%=j%>">
+                                                    <div class="notif_header py-2" onClick="readNotification('<%=unreads[j]._id%>', '<%=j%>')" >
+                                                  
+                                                      <a href="/quotation?q=<%=unreads[j].causedByItem%>" >
+                                                        <div class="p-3 d-flex align-items-center osahan-post-header">
+                                                          <div class="dropdown-list-image mr-3">
+                                                              <b class="fa <%=unreads[j].icon%> fa-2x rounded-circle file-icon"></b>
+                                                          </div>
+                                                          <div class="  mr-2">
+                                                           
+                                                            <div class="text-wrap "><b><%=getTranslatedNotification(unreads[j], locale, 'title')%></b></div>
+                                                            
+                                                            <div class="text-small text-wrap" id="tmp_content<%=j%>"><%=getTranslatedNotification(unreads[j], locale, 'content')%></div>
+                                                          </div>
+                                                          <span class="ml-auto mb-auto">
+                                                                  
+                                                              <br/>
+                                                              <div class="text-right text-muted pt-1"><%- getShortTimeAgo(unreads[j].createdAt) %></div>
+                                                          </span>
+                                                        </div>
+                                                      </a>
+                                                    </div>
+                                                  </div>
+                                                <% } else if(unreads[j].title.includes("Your job application has been rejected") ) { %>
+                                                  <div class="unread border-top" id="notif-container<%=j%>">
+                                                    <div class="notif_header py-2" onClick="readNotification('<%=unreads[j]._id%>', '<%=j%>')" >
+                                                    <a href="/job-application/<%=unreads[j].causedByItem%>"> 
+                                                      <div  class="px-3 d-flex align-items-center osahan-post-header">
+                                                
+                                                        <div class="dropdown-list-image mr-3">
+                                                            <b class="fa <%=unreads[j].icon%> fa-2x rounded-circle file-icon"></b>
+                                                        </div>
+                                                        <div class="mr-2">
+                                                          <
+                                                          <div class="text-wrap "><b><%=getTranslatedNotification(unreads[j], locale, 'title')%></b></div>
+                                                        
+                                                          <div class="text-small text-wrap" id="tmp_content<%=j%>"><%=getTranslatedNotification(unreads[j], locale, 'content')%></div>
+                                                        </div>
+                                                        <span class="ml-auto mb-auto">
+                                            
+                                                                <br/>
+                                                                <div class="text-right text-muted pt-1"><%- getShortTimeAgo(unreads[j].createdAt) %></div>
+                                                        </span>
+                                                    </div>
+                                                </a>
+                                              </div>
+                                              </div>
+                                              <% } else if(unreads[j].title.includes("Your application's quote was rejected")) { %> 
+                                                <div class="unread border-top" id="notif-container<%=j%>">
+                                                  <div class="notif_header py-2" onClick="readNotification('<%=unreads[j]._id%>', '<%=j%>')" >
+                                                      <a href="/sr-details/<%=unreads[j].causedByItem%>"> 
+                                                        <div  class="px-3 d-flex align-items-center osahan-post-header">
+                                                  
+                                                          <div class="dropdown-list-image mr-3">
+                                                              <b class="fa <%=unreads[j].icon%> fa-2x rounded-circle file-icon"></b>
+                                                          </div>
+                                                          <div class="mr-2">
+                                                           
+                                                            <div class="text-wrap "><b><%=getTranslatedNotification(unreads[j], locale, 'title')%></b></div>
+                                                            
+                                                            <div class="text-small text-wrap" id="tmp_content<%=j%>"><%=getTranslatedNotification(unreads[j], locale, 'content')%></div>
+                                                          </div>
+                                                          <span class="ml-auto mb-auto">
+                                              
+                                                                  <br/>
+                                                                  <div class="text-right text-muted pt-1"><%- getShortTimeAgo(unreads[j].createdAt) %></div>
+                                                          </span>
+                                                      </div>
+                                                    </a>
+                                                  </div>
+                                                </div>
+                                              <% } } %>
+                                          
+                                              
+                              <% } } %>
+
+
+                            <% if(rlim > 0){ 
+                        
+                                for(let j = 0; j < rlim; j++) { 
+                                    if(reads[j]) { %>
+
+                                      <% if(reads[j].title == "You have a new message.") { %>
+                                      
+                                        <a href="/messages?id=<%=reads[j].causedByUserId%>">
+                                          <div class="p-3 d-flex align-items-center read border-top osahan-post-header">
+                                            <div class="dropdown-list-image mr-3">
+                                                <b class="fa <%=reads[j].icon%> fa-2x rounded-circle file-icon"></b>
+                                            </div>
+                                            
+                                            <div class="  mr-2">
+                                             
+                                              <div class="text-wrap "><b><%=getTranslatedNotification(reads[j], locale, 'title')%></b></div>
+                                              <div class="small text-wrap" ><%=getTranslatedNotification(reads[j], locale, 'content')%></div>
+                                            </div>
+                                            <span class="ml-auto mb-auto">
+                                                <div class="btn-group">
+                                                    
+                                                    <div class="dropdown-menu dropdown-menu-right" style>
+                                                        
+                                                    </div>
+                                                </div>
+                                                <br/>
+                                                <div class="text-right text-muted pt-1"><%- getShortTimeAgo(reads[j].createdAt) %></div>
+                                            </span>
+                                          </div>
+                                        </a>
+                                    <% } %>
+                                    <% if(usr.accountType == "user"){  %>
+                                        <% if(reads[j].title.includes('provider has applied') ) { %>
+                                            <a href="/applicant?p=<%=reads[j].causedByUserId%>&j=<%=reads[j].causedByItem%>">
+                                              <div class="p-3 d-flex align-items-center read border-top osahan-post-header">
+                                                <div class="dropdown-list-image mr-3">
+                                                    <b class="fa <%=reads[j].icon%> fa-2x rounded-circle file-icon"></b>
+                                                </div>
+                                                <div class="  mr-2">
+                                                  
+                                                  <div class="text-wrap "><b><%=getTranslatedNotification(reads[j], locale, 'title')%></b></div>
+                                                  
+                                                  <div class="small text-wrap" ><%=getTranslatedNotification(reads[j], locale, 'content')%></div>
+                                                </div>
+                                                <span class="ml-auto mb-auto">
+                                                    <div class="btn-group">
+                                                        
+                                                        <div class="dropdown-menu dropdown-menu-right" style>
+                                                            
+                                                        </div>
+                                                    </div>
+                                                    <br/>
+                                                    <div class="text-right text-muted pt-1"><%- getShortTimeAgo(reads[j].createdAt) %></div>
+                                                </span>
+                                              </div>
+                                            </a>
+                                        <% } else if(reads[j].title.includes('have a quote for your request')  || reads[j].title.includes(' request.') ||
+                                                reads[j].title.includes("booking has been confirmed")  || reads[j].title.includes('Your booking request has been cancelled')
+                                                || reads[j].title.includes("Deadline extension request") || reads[j].title.includes('You have a new quotation')
+                                                || reads[j].title.includes("Your task has been completed") || reads[j].title.includes('service provider has provided a quotation for your booking')) { %>
+                                            <a href="/manage-request?rq=<%=reads[j].causedByItem%>" > 
+                                              <div class="p-3 d-flex align-items-center read border-top osahan-post-header">
+                                                <div class="dropdown-list-image mr-3">
+                                                    <b class="fa <%=reads[j].icon%> fa-2x rounded-circle file-icon"></b>
+                                                </div>
+                                                <div class="  mr-2">
+                                                 
+                                                  <div class="text-wrap "><b><%=getTranslatedNotification(reads[j], locale, 'title')%></b></div>
+                                                 
+                                                  <div class="small text-wrap" ><%=getTranslatedNotification(reads[j], locale, 'content')%></div>
+                                                </div>
+                                                <span class="ml-auto mb-auto">
+                                                    <div class="btn-group">
+                                                        
+                                                        <div class="dropdown-menu dropdown-menu-right" style>
+                                                            
+                                                        </div>
+                                                    </div>
+                                                    <br/>
+                                                    <div class="text-right text-muted pt-1"><%- getShortTimeAgo(reads[j].createdAt) %></div>
+                                                </span>
+                                              </div>
+                                            </a>
+                                        <% } %> 
+                                  <% } else if(usr.accountType == 'provider') { %>
+                                      <% if(reads[j].title.includes('Congratulations! You have been hired.') ) { %>
+                                        <a href="/booking?b=<%=reads[j].bookingId%>" >
+                                          <div class="p-3 d-flex align-items-center read border-top osahan-post-header">
+                                            <div class="dropdown-list-image mr-3">
+                                                <b class="fa <%=reads[j].icon%> fa-2x rounded-circle file-icon"></b>
+                                            </div>
+                                            <div class="  mr-2">
+                                              
+                                              <div class="text-wrap "><b><%=getTranslatedNotification(reads[j], locale, 'title')%></b></div>
+                                             
+                                              <div class="small text-wrap" ><%=getTranslatedNotification(reads[j], locale, 'content')%></div>
+                                            </div>
+                                            <span class="ml-auto mb-auto">
+                                                <div class="btn-group">
+                                                    
+                                                    <div class="dropdown-menu dropdown-menu-right" style>
+                                                        
+                                                    </div>
+                                                </div>
+                                                <br/>
+                                                <div class="text-right text-muted pt-1"><%- getShortTimeAgo(reads[j].createdAt) %></div>
+                                            </span>
+                                          </div>
+                                        </a>
+                                    <% } else if(reads[j].title.includes('your booking')  || reads[j].title.includes(' request ') || reads[j].title.includes('Your booking has')
+                                            || reads[j].title.includes("quote has been accepted.") || reads[j].title.includes("booked for a service.") || reads[j].title.includes("has booked you") 
+                                            || reads[j].title.includes("Your deadline extension request") || reads[j].title.includes('You have a revision request')
+                                            || reads[j].title.includes("Your delivery has been accepted") || reads[j].title.includes('A user has provided a feedback for your')) { %> 
+                                                <a href="/booking?b=<%=reads[j].bookingId%>" >
+                                                  <div class="p-3 d-flex align-items-center read border-top osahan-post-header">
+                                                    <div class="dropdown-list-image mr-3">
+                                                        <b class="fa <%=reads[j].icon%> fa-2x rounded-circle file-icon"></b>
+                                                    </div>
+                                                    <div class="  mr-2">
+                                                     
+                                                      <div class="text-wrap "><b><%=getTranslatedNotification(reads[j], locale, 'title')%></b></div>
+                                                     
+                                                      <div class="small text-wrap" ><%=getTranslatedNotification(reads[j], locale, 'content')%></div>
+                                                    </div>
+                                                    <span class="ml-auto mb-auto">
+                                                        <div class="btn-group">
+                                                            
+                                                            <div class="dropdown-menu dropdown-menu-right" style>
+                                                                
+                                                            </div>
+                                                        </div>
+                                                        <br/>
+                                                        <div class="text-right text-muted pt-1"><%- getShortTimeAgo(reads[j].createdAt) %></div>
+                                                    </span>
+                                                  </div>
+                                                </a>
+                                    <%  } else if(reads[j].title.includes("has requested a quote") || reads[j].title.includes("Your quote was rejected")) { %>
+                                            <a href="/quotation?q=<%=reads[j].causedByItem%>" >
+                                              <div class="p-3 d-flex align-items-center read border-top osahan-post-header">
+                                                <div class="dropdown-list-image mr-3">
+                                                    <b class="fa <%=reads[j].icon%> fa-2x rounded-circle file-icon"></b>
+                                                </div>
+                                                <div class="  mr-2">
+                                                 
+                                                  <div class="text-wrap "><b><%=getTranslatedNotification(reads[j], locale, 'title')%></b></div>
+                                                 
+                                                  <div class="small text-wrap" ><%=getTranslatedNotification(reads[j], locale, 'content')%></div>
+                                                </div>
+                                                <span class="ml-auto mb-auto">
+                                                    <div class="btn-group">
+                                                        
+                                                        <div class="dropdown-menu dropdown-menu-right" style>
+                                                            
+                                                        </div>
+                                                    </div>
+                                                    <br/>
+                                                    <div class="text-right text-muted pt-1"><%- getShortTimeAgo(reads[j].createdAt) %></div>
+                                                </span>
+                                              </div>
+                                            </a>
+                                    <% } else if(reads[j].title.includes("Your job application has been rejected.") ) { %>
+                                            <a href="/job-application/<%=reads[j].causedByItem%>" >
+                                              <div class="p-3 d-flex align-items-center read border-top osahan-post-header">
+                                                <div class="dropdown-list-image mr-3">
+                                                    <b class="fa <%=reads[j].icon%> fa-2x rounded-circle file-icon"></b>
+                                                </div>
+                                                <div class="  mr-2">
+                                                  
+                                                  <div class="text-wrap "><b><%=getTranslatedNotification(reads[j], locale, 'title')%></b></div>
+                                                 
+                                                  <div class="small text-wrap" ><%=getTranslatedNotification(reads[j], locale, 'content')%></div>
+                                                </div>
+                                                <span class="ml-auto mb-auto">
+                                                    <div class="btn-group">
+                                                        
+                                                        <div class="dropdown-menu dropdown-menu-right" style>
+                                                            
+                                                        </div>
+                                                    </div>
+                                                    <br/>
+                                                    <div class="text-right text-muted pt-1"><%- getShortTimeAgo(reads[j].createdAt) %></div>
+                                                </span>
+                                              </div>
+                                            </a>
+                                
+                                    <%} else if(reads[j].title.includes("Your application's quote was rejected")) { %> 
+                                            <a href="/sr-details/<%=reads[j].causedByItem%>">
+                                              <div class="p-3 d-flex align-items-center read border-top osahan-post-header">
+                                                <div class="dropdown-list-image mr-3">
+                                                    <b class="fa <%=reads[j].icon%> fa-2x rounded-circle file-icon"></b>
+                                                </div>
+                                                <div class="  mr-2">
+                                                 
+                                                  <div class="text-wrap "><b><%=getTranslatedNotification(reads[j], locale, 'title')%></b></div>
+                                                 
+                                                  <div class="small text-wrap" ><%=getTranslatedNotification(reads[j], locale, 'content')%></div>
+                                                </div>
+                                                <span class="ml-auto mb-auto">
+                                                    <div class="btn-group">
+                                                        
+                                                        <div class="dropdown-menu dropdown-menu-right" style>
+                                                            
+                                                        </div>
+                                                    </div>
+                                                    <br/>
+                                                    <div class="text-right text-muted pt-1"><%- getShortTimeAgo(reads[j].createdAt) %></div>
+                                                </span>
+                                            </div>
+                                          </a>
+                                    <% } }%>
+
+                                <% } }  }  %>
+                                  <input id="limit" class="d-none" value="6" >
+                              </div>
+                              </ul>
+
+                            <% } else { %>
+
+                              <ul class="dropdown-menu ul-none dropdown-notif pt-0 border-top" style="top:10px;">
+                                
+                                <div class="box-body p-4 justify-content-center d-flex" style="width: 40em; height: 15em;" id="unreadNotifs">
+                                  <span>You don't have any notification at the moment.</span>
+                                </div>
+                              </ul>
+                            <% } %>
+                            </li>
+                          
+                        <% } else { %>
+                          <li class="rd-nav-item active">
+                            <% if(currtab && currtab === 'home') { %><a class="rd-nav-link" style="color: #5A9E2F;" href="/"><%= t('Home') %></a>
+                            <% } else { %><a class="rd-nav-link" href="/"><%= t('Home') %></a> <% } %>
+                          </li>
+                          <li class="rd-nav-item">
+                            <% if(currtab && currtab === 'find-pro') { %><a class="rd-nav-link" style="color: #5A9E2F;" href="/find-services"><%= t('FindProviders') %></a>
+                            <% } else { %> <a class="rd-nav-link" href="/find-services"><%= t('FindProviders') %></a> <% } %>
+                          </li>
+                          <li class="rd-nav-item">
+                            <% if(currtab && currtab === 'about-us') { %><a class="rd-nav-link" style="color: #5A9E2F;" href="/about-us"><%= t('AboutUs') %></a>
+                            <% } else { %><a class="rd-nav-link" href="/about-us"><%= t('AboutUs') %></a> <% } %>
+                          </li>
+                          <li class="rd-nav-item">
+                            <% if(currtab && currtab === 'pros') { %><a class="rd-nav-link" style="color: #5A9E2F;" href="/professionals"><%= t('JoinAsPro') %> </a>
+                            <% } else { %> <a class="rd-nav-link" href="/professionals"><%= t('JoinAsPro') %> </a> <% } %>
+                          </li>
+                          <li class="rd-nav-item">
+                            <% if(currtab && currtab === 'contact-us') { %> <a class="rd-nav-link" style="color: #5A9E2F;" href="/contact-us"><%= t('ContactUs') %></a>
+                            <% } else { %> <a class="rd-nav-link" href="/contact-us"><%= t('ContactUs') %></a>  <% } %>
+                          </li>
+                        <% } %>
+                        
+                        <li class="rd-nav-item">
+
+                          <div class="btn-group open ml-2"> 
+                            <% if(usr){ 
+                              usr.photo = usr.photo.includes("https://")  ? usr.photo : ("/photo/"+usr.photo);
+                              %>
+                                <a class="btn  position-relative mb-2 " data-toggle="dropdown" href="#">
+                                  <img src="<%=usr.photo%>"  alt="" class="rounded-circle " style="height:30px !important; width:30px !important;">
+                                  <!--img width="16" height="16" src="/photo/<%=usr.photo%>" class="thumb-sm member-thumb mx-auto rounded-circle img-profile-thumb" alt="profile-image"-->
+                                  <% let unread = 0;
+                                    let notifStr = "";
+                                    if(notifications) 
+                                      notifications.forEach(notif=>{
+                                        if(notif.status == "unread")
+                                          unread++;
+                                      }); 
+                                      notifStr = unread > 99 ? "99+": unread+"";
+                                    if (unread >  0) {  %>
+                                    
+                                    <% } %>
+                                  <span class="fa fa-caret-down ml-1" title="Toggle dropdown menu"></span></a>
+                                  <ul class="dropdown-menu ul-none">
+                                
+                                    <% if(usr.accountType=="provider"){ %>
+                                      <li><a href="/p-profile"><b class="fa fa-user-circle mr-2"></b>  <%= t('Profile') %></a></li>
+                                      <li><a href="/mybookings"><b class="fa fa-tasks mr-2"></b>  <%= t('MyBookings') %></a></li>
+                                      <li><a href="/applications"><b class="fa fa-bar-chart mr-1"></b>  <%= t('MyApplications') %></a></li>
+                                    <%}else{%>
+                                      <li><a href="/profile"><b class="fa fa-user-circle mr-2"></b>  <%= t('Profile') %></a></li>
+                                      <li><a href="/myrequests"><b class="fa fa-tasks mr-2"></b>  <%= t('MyRequests') %></a></li>
+                                      <% if(usr.registeredAsPro) { %>
+                                        <li><a href="/switch-account"><b class="fa fa-id-card-o mr-1"></b>  <%= t('ProviderMode') %></a></li>
+                                      <% } else { %>
+                                        <li><a href="/professionals"><b class="fa fa-id-card-o mr-1"></b>  <%=t('JoinAsPro')%></a></li>
+                                    <%} } %>
+                                    
+                                    <% if (unread > 0) { 
+                                      %>
+
+                                      <li id="notif_dd_bottom"><a href="/notifications"><b class="fa fa-bell mr-2"></b> Notifications(<%=notifStr%>)</a></li>
+                                      <% } else { %>
+                                      <li><a href="/notifications"><b class="fa fa-bell mr-2"></b>  Notifications</a></li>
+                                    <%}%>
+                                  <li><a href="/logout"><b class="fa fa-sign-out mr-2"></b> <%= t('Logout') %></a></li>
+                                <%} else{ %>
+
+                                  
+                                  <a class="btn" data-toggle="dropdown" href="#">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-fill-lock" viewBox="0 0 16 16">
+                                      <path d="M11 5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm-9 8c0 1 1 1 1 1h5v-1a1.9 1.9 0 0 1 .01-.2 4.49 4.49 0 0 1 1.534-3.693C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4Zm7 0a1 1 0 0 1 1-1v-1a2 2 0 1 1 4 0v1a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1v-2Zm3-3a1 1 0 0 0-1 1v1h2v-1a1 1 0 0 0-1-1Z"/>
+                                    </svg>
+                                    <span class="fa fa-caret-down ml-1" title="Toggle dropdown menu"></span></a>
+                                    <ul class="dropdown-menu ul-none">
+                                  <li><a href="#logModalCta" data-toggle="modal" data-caption-animate="fadeInUp">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-lock mr-2" viewBox="0 0 16 16">
+                                      <path d="M11 5a3 3 0 1 1-6 0 3 3 0 0 1 6 0ZM8 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm0 5.996V14H3s-1 0-1-1 1-4 6-4c.564 0 1.077.038 1.544.107a4.524 4.524 0 0 0-.803.918A10.46 10.46 0 0 0 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h5ZM9 13a1 1 0 0 1 1-1v-1a2 2 0 1 1 4 0v1a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1v-2Zm3-3a1 1 0 0 0-1 1v1h2v-1a1 1 0 0 0-1-1Z"/>
+                                    </svg>  <%=t('Login') %></a></li>
+                                  <li><a href="#regModalCta" data-toggle="modal" data-caption-animate="fadeInUp">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-add mr-2" viewBox="0 0 16 16">
+                                      <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Zm.5-5v1h1a.5.5 0 0 1 0 1h-1v1a.5.5 0 0 1-1 0v-1h-1a.5.5 0 0 1 0-1h1v-1a.5.5 0 0 1 1 0Zm-2-6a3 3 0 1 1-6 0 3 3 0 0 1 6 0ZM8 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"/>
+                                      <path d="M8.256 14a4.474 4.474 0 0 1-.229-1.004H3c.001-.246.154-.986.832-1.664C4.484 10.68 5.711 10 8 10c.26 0 .507.009.74.025.226-.341.496-.65.804-.918C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4s1 1 1 1h5.256Z"/>
+                                    </svg> <%= t('Register') %></a></li>
+                                <% } %>
+                              </ul>
+                            
+                          </div>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </nav>
+        </div>
+      </header>
+  
+<!--TODO: Check if user not logged in, then include-->
+<script>
+
+//location.reload();
+</script>
+
+<% if(usr) { %>
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js" integrity="sha384-2huaZvOR9iDzHqslqwpR87isEmrfxqyWOF7hr7BY6KG0+hVKLoEXMPUJw3ynWuhO" crossorigin="anonymous"></script>
+  <script>
+    var lnk = location.href.split("/");
+    var baseLnk = lnk[0]+"//"+lnk[2];
+    const socket = io.connect(baseLnk, {transports: ['websocket', 'polling', 'flashsocket'], 'force new connection': true });
+  </script>
+<% } %>
+
+        

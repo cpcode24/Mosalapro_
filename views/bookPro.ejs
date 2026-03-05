@@ -1,0 +1,480 @@
+<%- include('partials/header') %>
+<style>
+/* Initial tab visibility handled by JavaScript */
+.tab {
+    min-height: 400px;
+    display: none; /* Default hidden, JavaScript will show the active one */
+}
+
+/* Force JavaScript display control */
+.tab[style*="display: block"] {
+    display: block !important;
+    visibility: visible !important;
+}
+
+.tab[style*="display: none"] {
+    display: none !important;
+    visibility: hidden !important;
+}
+
+/* Improve form styling */
+#bookingForm {
+    background: transparent;
+}
+
+/* Ensure navigation buttons are visible and clickable */
+#prevBtn, #nextBtn {
+    display: inline-block !important;
+    cursor: pointer;
+    z-index: 1000;
+}
+
+#prevBtn[style*="display: none"] {
+    display: none !important;
+}
+</style>
+<section class="<%=bg%> post-request-section mb-0 pb-4">
+    <div class="container ">
+        <form id="bookingForm" novalidate>
+            <div class="tab">
+                <div class="tab-pane" id="request-desc">
+                    <div class="card-header border-bottom mt-4 p-4 d-flex d-md-none">
+                        <ul class="nav nav-gap-x-1" role="tablist">
+                            <li class="nav-item">
+                                <h6 class="numbering">1</h6><h6 class=" d-inline nav-link has-icon"><%= t('ProjectDescription') %> </h6>
+                            </li>
+                            <li class="nav-item">
+                                <svg width="8" height="16" viewBox="0 0 8 16" xmlns="http://www.w3.org/2000/svg"><path d="M0.772126 1.19065L0.153407 1.80934C0.00696973 1.95578 0.00696973 2.19322 0.153407 2.33969L5.80025 8L0.153407 13.6603C0.00696973 13.8067 0.00696973 14.0442 0.153407 14.1907L0.772126 14.8094C0.918563 14.9558 1.156 14.9558 1.30247 14.8094L7.84666 8.26519C7.99309 8.11875 7.99309 7.88131 7.84666 7.73484L1.30247 1.19065C1.156 1.04419 0.918563 1.04419 0.772126 1.19065Z"></path></svg>
+                            </li>
+                            <li class="nav-item ml-3">
+                                <h6 class="numbering">2</h6><h6 class=" d-inline nav-link has-icon"><%= t('Timeline') %> </h6>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="row-service ">
+                        <div class="col-md-6 col-sm-12 col-12 mb-3">
+                            <h3><%= t('DescribeYourProject') %> <br> <%= t('OrTaskTo') %> <%=pro.firstName %>.</h3>
+                            <h6 class="text-light mt-2"><%= t('ProvideWithBriefDescription', pro.firstName) %></h6>
+                            <img src="/images/project_desc.png" class="service-image" alt="image">
+                        </div>
+                        <div class="col-lg-6 col-md-6 col-sm-12 col-12 col-with-input">
+                            <input type="hidden" name="username" id="username" value="<%= usr.username %>" class="input-field-input">
+
+                            <h6 class="mt-4 mb-1"><%= t('TitleOfProjectTask') %></h6>
+                            <span><%= t('KeepItShortAndSimple') %></span> 
+                                <input type="text" id="requestTitle" name="requestTitle" class="input-field-input" oninput="this.className = 'input-field-input'"
+                                    placeholder="Example- create a wordPress website for my company" >
+                                <span class="char-limit">0/70</span> 
+                    
+
+                            <h6 class="mt-4 mb-1"><%= t('WhatAreLookingToDo') %></h6>
+                            <span><%- t('ThisWillHelpBrief') %></span> 
+                            <div class="input-field">
+                                <textarea type="text" id="requestDescription" onkeyup="countChars()" class="input-field-textarea" name="requestDescription" oninput="this.className = 'input-field-textarea'"
+                                    placeholder="<%= t('INeedPlaceholder') %>" maxlength="2000" minlength="20" ></textarea> 
+                                <span class="char-limit" id="bkCharCount">0/2000</span>
+                            </div>
+                            <span id="attach_err_msg"></span>
+                            <label for="file-input" class="attach-btn">
+                                <i class="fas fa-paperclip"></i> <%= t('AttachRequirementDocument') %>
+                            </label>
+                            <input id="file-input" name="file" accept=
+                            "application/msword, application/vnd.ms-excel, application/vnd.ms-powerpoint,
+                            text/plain, application/pdf, image/*" type="file" style="display: none;" >
+                            <pre class="output"><%= t('SelectedFile') %>:</pre>
+                           
+                            </div>
+                        </div>
+                </div>
+            </div>
+            <div class="tab">
+                <div class="tab-pane" id="requet-desc">
+                    <div class="card-header border-bottom mt-4 p-4 d-flex d-md-none">
+                        <ul class="nav nav-gap-x-1" role="tablist">
+                            <li class="nav-item">
+                                <b class="numbering fa fa-check" aria-hidden="true"></b><h6 class=" d-inline nav-link has-icon"><%= t('BriefDescription') %></h6>
+                            </li>
+                            <li class="nav-item">
+                                <svg width="8" height="16" viewBox="0 0 8 16" xmlns="http://www.w3.org/2000/svg"><path d="M0.772126 1.19065L0.153407 1.80934C0.00696973 1.95578 0.00696973 2.19322 0.153407 2.33969L5.80025 8L0.153407 13.6603C0.00696973 13.8067 0.00696973 14.0442 0.153407 14.1907L0.772126 14.8094C0.918563 14.9558 1.156 14.9558 1.30247 14.8094L7.84666 8.26519C7.99309 8.11875 7.99309 7.88131 7.84666 7.73484L1.30247 1.19065C1.156 1.04419 0.918563 1.04419 0.772126 1.19065Z"></path></svg>
+                            </li>
+                            <li class="nav-item ml-3">
+                                <h6 class="numbering">2</h6><h6 class=" d-inline nav-link has-icon">Timeline </h6>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="row-service ">
+                        <div class="col-lg-6 col-md-6 col-sm-12 col-12 mb-3">
+                            <h3>Tell <%=pro.firstName %> how soon you  <br> want your project done...</h3>
+                            <h6 class="text-light mt-2 pr-4">Give <%=pro.firstName %> an approximate deadline for your project. How soon do you want it done.</h6>
+                            <img src="/images/deadline_simple.png" class="service-image"
+                                alt="image">
+                        </div>
+
+                        <div class="col-lg-6 col-md-6 col-sm-12 col-12 col-with-input">
+                            <h6 class="mb-2">The budget I have for this is.. </h6> 
+                            <span id="err_msg"></span><br>
+                            <span><%- t('EnterAmountToSpend', usr.currency_symbol) %></span>
+                            <!--input type="number" placeholder="$" min="1" oninput="validity.valid||(value='');" id="requestBudget" class="form-control" name="requestBudget" oninput="this.className = 'input-field-input'"-->
+                            
+                            <div class="row mt-2">
+                                
+                              <div class="col-lg-4 col-md-4 col-12">
+                                    <div class="form-group">
+                                        <input type="number" step=".01" min="1" oninput="validity.valid||(value='');" placeholder="Amount" id="requestBudget" class="form-control" name="requestBudget" oninput="this.className = 'input-field-input'">
+                                    </div>
+                              </div>
+                              <div class="col-lg-4 col-md-4 col-12">
+                                <div class="form-group">
+                                    <select name="budgetCurrency" id="budgetCurrency" class="form-control" >
+                                        <option value="<%=usr.currency%>"> <%=usr.currency%></option>
+                                        <% if(usr.currency != 'XAF') { %> <option value="XAF"> FCFA</option> <% } %>
+                                        <% if(usr.currency != 'USD') { %> <option value="USD"> USD </option> <% } %>
+                                        <% if(usr.currency != 'EUR') { %> <option value="XAF"> EUR </option> <% } %>
+                                        <% if(usr.currency != 'GBP') { %> <option value="GBP"> GBP </option> <% } %>
+                                    </select>
+                                </div>
+                            </div>
+                              <div class="col-lg-4 col-md-4 col-12">
+                                  <div class="form-group">
+                                      <select name="budgetType" id="budgetType" class="form-control" >
+                                      <option value="Per project"><%= t('PerProject') %></option>
+                                      <option value="Per hour"><%= t('PerHour') %></option>
+                                      </select>
+                                  </div>
+                              </div>
+                          </div>
+                                <h6 class="mt-3 mb-2"><%=t('INeedItDoneBy')%> </h6> 
+                                <span><%=t('EnterDeadlineForTask')%> <b><%=t('GiveAtLeastOneDay')%></b> </span>
+                                <div class="form-group mb-4">
+                                    <div class="datepicker date input-group p-0 shadow-sm">
+                                        <input placeholder="<%= t('SelectDate') %>" id="datepicker" name="requestDeadline">
+                                        <!--div class="input-group-append"><span class="input-group-text px-4"><b class="fas fa-calendar"></b></span></div-->
+                    
+                                    </div>
+                                </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tab">
+                <div class="tab-pane" id="requet-desc">
+                    <div class="card-header border-bottom mt-4 p-4 d-flex d-md-none">
+                        <ul class="nav nav-gap-x-1" role="tablist">
+                            <li class="nav-item">
+                                <b class="numbering fa fa-check" aria-hidden="true"></b><h6 class=" d-inline nav-link has-icon"><%= t('BriefDescription') %></h6>
+                            </li>
+                            <li class="nav-item">
+                                <svg width="8" height="16" viewBox="0 0 8 16" xmlns="http://www.w3.org/2000/svg"><path d="M0.772126 1.19065L0.153407 1.80934C0.00696973 1.95578 0.00696973 2.19322 0.153407 2.33969L5.80025 8L0.153407 13.6603C0.00696973 13.8067 0.00696973 14.0442 0.153407 14.1907L0.772126 14.8094C0.918563 14.9558 1.156 14.9558 1.30247 14.8094L7.84666 8.26519C7.99309 8.11875 7.99309 7.88131 7.84666 7.73484L1.30247 1.19065C1.156 1.04419 0.918563 1.04419 0.772126 1.19065Z"></path></svg>
+                            </li>
+                            <li class="nav-item ml-3">
+                                <b class="numbering fa fa-check" aria-hidden="true"></b><h6 class=" d-inline nav-link has-icon"><%=t('Timeline')%> </h6>
+                            </li>
+                        </ul>
+                        <input type="hidden" id="proId" value="<%= pro._id%>" class="input-field-input">
+                    </div>
+                    <div class="row-service">
+                        <div class="col mt-2 mb-3" >
+                            <div class="d-flex flex-column justify-content-center align-items-center">
+                                <h3 class="mx-auto"> <%t('ServiceSuccessfullySent')%> <%=pro.firstName%>!</h3>
+                                <img  src="/images/done.png" class="service-image p-4 mx-auto"
+                                    alt="image">
+                                <h6 class="text-light mt-2 pr-4 mt-4 mx-auto"><%=t('ServiceRequestSubmittedTo') %> <%=pro.firstName%> <%t('')%></h6>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr>
+            <div class="d-flex justify-content-end mb-3">
+                <p></p>
+                <button type="button" class="button button-primary mr-4"  id="prevBtn" onclick="nextPrev(-1)"><%t('Previous')%>></button>
+                <button type="button" class="button button-primary ml-4"  id="nextBtn" onclick="nextPrev(1)"><%t('Next')%></button>
+            </div>
+        </form>
+            
+    </div>
+</section>
+<%- include('partials/footer') %>
+
+<!-- Booking Form Scripts -->
+<script src="https://unpkg.com/gijgo@1.9.14/js/gijgo.min.js" type="text/javascript"></script>
+<script>
+$(document).ready(function() {
+    console.log('Document ready, initializing booking form...');
+    
+    // Initialize datepicker
+    var date = new Date();
+    var minD = new Date(date.getFullYear(), date.getMonth(), date.getDate()+1, 0, 0, 0, 0);
+    $('#datepicker').datepicker({ 
+        minDate: minD,
+        uiLibrary: 'bootstrap4'
+    }); 
+
+    // File input handler
+    const output = document.querySelector(".output");
+    const fileInput = document.querySelector("#file-input");
+    const attach_err_msg = document.getElementById("attach_err_msg");
+    if(fileInput){
+        fileInput.addEventListener("change", async () => {
+            if(fileInput.files.length > 0){
+                const fileSize = fileInput.files[0].size;
+                const fileSizeInMB = fileSize / (1024*1024);
+                if(fileSizeInMB > 10){
+                    attach_err_msg.classList.add("error_message");
+                    attach_err_msg.innerHTML = "The file's size is too large. Upload a file with size less than 10MB.";
+                    await new Promise(r => setTimeout(r, 3500));
+                    attach_err_msg.innerHTML = "";
+                    return;
+                }
+            }
+            for (const file of fileInput.files) {
+                output.innerText += `\n${file.name}`; 
+            }
+        });
+    }
+
+    // Form navigation variables
+    var currentTab = 0;
+
+    // Form navigation functions
+    window.showTab = function(n) {
+        console.log('showTab called with n =', n);
+        var x = document.getElementsByClassName("tab");
+        console.log('Found', x.length, 'tabs');
+        
+        if (x.length === 0) {
+            console.error('No tabs found!');
+            return;
+        }
+        
+        // Hide all tabs first with explicit logging
+        for (var i = 0; i < x.length; i++) {
+            x[i].style.display = "none";
+            x[i].style.visibility = "hidden";
+            console.log('Hiding tab', i);
+        }
+        
+        // Show the current tab
+        if (x[n]) {
+            x[n].style.display = "block";
+            x[n].style.visibility = "visible";
+            console.log('Showing tab', n, '- display:', x[n].style.display);
+        } else {
+            console.error('Tab', n, 'not found');
+            return;
+        }
+        
+        // Get button elements
+        var prevBtn = document.getElementById("prevBtn");
+        var nextBtn = document.getElementById("nextBtn");
+        
+        if (!prevBtn || !nextBtn) {
+            console.error('Navigation buttons not found');
+            return;
+        }
+        
+        // Handle Previous/Next buttons
+        if (n == 0) {
+            prevBtn.style.display = "none";
+            console.log('Hiding previous button (first tab)');
+        } else {
+            prevBtn.style.display = "inline";
+            console.log('Showing previous button');
+        }
+        
+        if (n == (x.length - 2)) {
+            nextBtn.innerHTML = "Submit";
+            console.log('Setting next button to Submit');
+        } else if(n == (x.length - 1)){
+            prevBtn.style.display = "none";
+            nextBtn.innerHTML = "Start a new request";
+            console.log('Final tab - hiding prev, showing start new request');
+        }
+        else {
+            nextBtn.innerHTML = "Next";
+            console.log('Setting next button to Next');
+        }
+    };
+
+    window.nextPrev = async function(n) {
+        console.log('nextPrev called with n =', n, ', currentTab =', currentTab);
+        
+        try {
+            var x = document.getElementsByClassName("tab");
+            
+            if (x.length === 0) {
+                console.error('No tabs found in nextPrev!');
+                return false;
+            }
+            
+            // Validate form if going forward
+            if (n == 1 && !validateForm()) {
+                console.log('Form validation failed');
+                return false;
+            }
+            
+            // Handle submission logic
+            if ((currentTab+n) == x.length-1) {
+                const requestDeadline = document.getElementById("datepicker").value;
+                const err_msg = document.getElementById("err_msg");
+                if(!requestDeadline.includes("/") || requestDeadline.length < 6){
+                    err_msg.classList.add("error_message");
+                    err_msg.innerHTML = "Invalid deadline. Enter a valid upcoming date.";
+                    await new Promise(r => setTimeout(r, 2000));
+                    err_msg.innerHTML = "";
+                    return  false;
+                }
+                const currentDate = new Date();
+                const dateArr = currentDate.toLocaleDateString("en-US").split("/");
+                const rqDateArr= requestDeadline.split("/");
+                const reqDate = new Date(rqDateArr[2], rqDateArr[0], rqDateArr[1], 0, 0, 0, 0);
+                
+                if(reqDate < currentDate){
+                    err_msg.classList.add("error_message");
+                    err_msg.innerHTML = "Invalid deadline. Enter a valid upcoming date.";
+                    await new Promise(r => setTimeout(r, 3500));
+                    err_msg.innerHTML = "";
+                    return  false;
+                }
+                else
+                    onSubmit();
+            }
+
+            // Hide current tab and move to next
+            if (x[currentTab]) {
+                x[currentTab].style.display = "none";
+                console.log('Hiding current tab', currentTab);
+            }
+            
+            currentTab = currentTab + n;
+            console.log('New currentTab =', currentTab);
+            
+            // Check bounds
+            if (currentTab > x.length-1) {
+                console.log('Reached end of form, reloading');
+                window.location.reload();
+                return;
+            }
+            
+            if (currentTab < 0) {
+                currentTab = 0;
+                console.log('Corrected currentTab to 0');
+            }
+            
+            // Show new tab
+            showTab(currentTab);
+            
+        } catch (error) {
+            console.error('Error in nextPrev function:', error);
+            return false;
+        }
+    };
+
+    // Form validation function
+    function validateForm() {
+        var x, y, z, valid = true;
+        x = document.getElementsByClassName("tab");
+        y = x[currentTab].getElementsByTagName("input");
+        
+        // Check all input fields in current tab
+        for (var i = 0; i < y.length; i++) {
+            if (y[i].value.trim() == "" && y[i].name != "file") {
+                y[i].className += " invalid";
+                valid = false;
+            }
+        }
+        
+        // Check description
+        z = document.getElementById("requestDescription");
+        if (z && (z.value.trim() == "" || z.value.length < 20)){
+            z.className += " invalid";
+            valid = false;
+        }
+        
+        return valid;
+    }
+
+    // Character counting function
+    window.countChars = function(){
+        const desc = document.getElementById("requestDescription");
+        const charCount = document.getElementById("bkCharCount");
+        if (desc && charCount) {
+            charCount.innerHTML = desc.value.length+"/2000";
+        }
+    };
+
+    // Form submission function
+    async function onSubmit() {
+        const requestTitle = document.getElementById("requestTitle").value;
+        const requestDescription = document.getElementById("requestDescription").value;
+        const file = document.querySelector("#file-input").files.item(0);
+        const username = document.getElementById("username").value;
+        const requestDeadline = document.getElementById("datepicker").value;
+        const requestBudget = document.getElementById("requestBudget").value;
+        const requestBudgetType = document.getElementById("budgetType").value;
+        const currency = document.getElementById("budgetCurrency").value;
+        const providerId = document.getElementById("proId").value;
+
+        const formData = new FormData();
+        formData.append("bookingTitle", requestTitle);
+        formData.append("bookingDescription", requestDescription);
+        formData.append("file", file);
+        formData.append("username", username);
+        formData.append("bookingDeadline", requestDeadline);
+        formData.append("bookingBudget", requestBudget);
+        formData.append("bookingBudgetType", requestBudgetType);
+        formData.append("budgetCurrency", currency);
+        formData.append("providerId", providerId);
+
+        try {
+            const response = await fetch("/submitBooking", {
+                method: "POST",
+                body: formData,
+            });
+            
+            if (!response.ok) {
+                throw new Error("Network response was not ok");
+            }
+            
+            console.log("Booking submitted successfully");
+            
+            socket.emit("pushNotification", { 
+                "title": "New booking request.",
+                "content": "A client has booked you for a service.\n"+requestTitle,
+                "userId": providerId,
+                "notifType": "pro"
+            });
+            
+        } catch (error) {
+            console.error("Booking submission error:", error);
+        }
+    }
+
+    // Debug function to check tab states
+    window.debugTabStates = function() {
+        console.log('=== TAB STATE DEBUG ===');
+        var tabs = document.getElementsByClassName("tab");
+        for (var i = 0; i < tabs.length; i++) {
+            console.log('Tab', i, ':', {
+                display: tabs[i].style.display,
+                visibility: tabs[i].style.visibility,
+                computed: window.getComputedStyle(tabs[i]).display
+            });
+        }
+        console.log('Current active tab:', currentTab);
+    };
+
+    // Initialize the form
+    showTab(currentTab);
+    
+    // Check initial state
+    setTimeout(function() {
+        console.log('Checking initial tab states after showTab...');
+        window.debugTabStates();
+    }, 100);
+    
+    console.log('Booking form initialization complete');
+});
+</script>
+

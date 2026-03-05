@@ -1,0 +1,59 @@
+
+<% if(usr) { %>
+    <div class="modal fade" id="payInvoiceModalCta" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="container mt-4">
+                <h3 class="text-center mb-2 text-light">Pay Invoice </h3>
+                <h6 class="text-center text-light" id="invPayment">Invoice amount: <b>$<%=((0.07 * job.budget)+ (0.05 * job.budget)+ job.budget)%></b></h6>
+                <div class="row justify-content-center">
+                    <div class="col-md-6">
+                        <form action="/charge" method="POST" id="invPaymentForm">
+                            <div class="form-group">
+                                <label for="cardNumber">Card Number</label>
+                                <input type="text" class="form-control" id="invCardNumber" name="cardNumber" placeholder="1234 5678 9012 3456" maxlength="19" required>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label for="cardExpiry">Expiration Month</label>
+                                    <input type="number" class="form-control" id="invCardExpiryMonth" name="expiryMonth" placeholder="MM" min="1" max="12" required>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label for="cardExpiryYear">Expiration Year</label>
+                                    <input type="number" class="form-control" id="invCardExpiryYear" name="expiryYear" placeholder="YYYY" min="2023" max="2043" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="cardCVC">CVC</label>
+                                <input type="number" class="form-control" id="invCardCvc" name="cvc" placeholder="123" min="100" max="999" required>
+                            </div>
+                            <input type="hidden" name="plan" id="invPlanInput" class="form-control">
+                            <div class="col d-flex flex-column justify-content-center align-items-center">
+                                <div class=" justify-content-center">
+                                  <div class="g-recaptcha " data-sitekey="<%=recaptchaKey%>" data-callback="enableSubmit"></div>
+                                </div>
+                              </div>
+    
+                            
+                            <button type="submit" id="inv_submit_payment" class="btn btn-block button-primary mt-3" onClick="submitHandler(event)" disabled="disabled">Pay Now</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+      </div>
+    </div>
+    <% }  %>
+    <!--div class="modal fade" id="payModalCta" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <p>you need to sign in your account</p>
+            </div>
+        </div>
+    </div-->
+    <script src="js/payment.js"></script>
+    <script>
+        function enableSubmit(){
+          document.getElementById("inv_submit_payment").disabled = false;
+        }
+    </script>

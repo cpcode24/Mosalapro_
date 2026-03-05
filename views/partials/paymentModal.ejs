@@ -1,0 +1,134 @@
+
+<% if(usr) { %>
+<div class="modal fade" id="payModalCta" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+    <div class="modal-content">
+        <div class="container mt-4">
+            <h3 class="text-center mb-2">Subscription</h3>
+            <h6 class="text-center" id="planName">Bronze plan / 50$</h6>
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <form id="paymentForm">
+                        <div id="payment-errors" class="alert alert-danger" style="display: none;"></div>
+                        <div id="payment-success" class="alert alert-success" style="display: none;"></div>
+                        
+                        <div class="form-group">
+                            <label for="cardNumber">Card Number</label>
+                            <input type="text" class="form-control" id="cardNumber" name="cardNumber" placeholder="1234 5678 9012 3456" maxlength="19" required>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="cardExpiry">Expiration Month</label>
+                                <input type="number" class="form-control" id="cardExpiryMonth" name="expiryMonth" placeholder="MM" min="1" max="12" required>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="cardExpiryYear">Expiration Year</label>
+                                <input type="number" class="form-control" id="cardExpiryYear" name="expiryYear" placeholder="YYYY" min="2024" max="2044" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="cardCVC">CVC</label>
+                            <input type="number" class="form-control" id="cardCvc" name="cvc" placeholder="123" min="100" max="999" required>
+                        </div>
+                        <input type="hidden" name="plan" id="planInput" class="form-control">
+                        <div class="col d-flex flex-column justify-content-center align-items-center">
+                            <div class=" justify-content-center">
+                              <div class="g-recaptcha " data-sitekey="<%=recaptchaKey%>" data-callback="enableSubmit"></div>
+                            </div>
+                          </div>
+
+                        
+                        <button type="submit" id="submit_payment" class="btn btn-block button-primary mt-3" disabled="disabled">
+                            <span id="button-text">Pay Now</span>
+                            <span id="button-spinner" class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+  </div>
+</div>
+<% }  %>
+<!--div class="modal fade" id="payModalCta" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <p>you need to sign in your account</p>
+        </div>
+    </div>
+</div-->
+<script>
+    function enableSubmit(){
+      document.getElementById("submit_payment").disabled = false;
+    }
+
+    // Handle payment form submission
+    document.getElementById('paymentForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const submitButton = document.getElementById('submit_payment');
+        const buttonText = document.getElementById('button-text');
+        const buttonSpinner = document.getElementById('button-spinner');
+        const errorDiv = document.getElementById('payment-errors');
+        const successDiv = document.getElementById('payment-success');
+        
+        // Hide previous messages
+        errorDiv.style.display = 'none';
+        successDiv.style.display = 'none';
+        
+        // Show loading state
+        submitButton.disabled = true;
+        buttonText.textContent = 'Processing...';
+        buttonSpinner.style.display = 'inline-block';
+        
+        try {
+            const formData = new FormData(this);
+            
+            // Add reCAPTCHA response
+            const recaptchaResponse = grecaptcha.getResponse();
+            formData.append('g-recaptcha-response', recaptchaResponse);
+            
+            const response = await fetch('/charge', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams(formData)
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                successDiv.textContent = result.message;
+                successDiv.style.display = 'block';
+                
+                // Redirect after success
+                setTimeout(() => {
+                    window.location.href = result.redirectUrl || '/p-profile';
+                }, 2000);
+            } else {
+                errorDiv.textContent = result.error || 'Payment failed. Please try again.';
+                errorDiv.style.display = 'block';
+            }
+        } catch (error) {
+            errorDiv.textContent = 'Network error. Please check your connection and try again.';
+            errorDiv.style.display = 'block';
+        } finally {
+            // Reset button state
+            submitButton.disabled = false;
+            buttonText.textContent = 'Pay Now';
+            buttonSpinner.style.display = 'none';
+            
+            // Reset reCAPTCHA
+            grecaptcha.reset();
+            submitButton.disabled = true; // Disable until reCAPTCHA is completed again
+        }
+    });
+
+    // Format card number input with spaces
+    document.getElementById('cardNumber').addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\s/g, '').replace(/[^0-9]/gi, '');
+        let formattedValue = value.match(/.{1,4}/g)?.join(' ') || value;
+        e.target.value = formattedValue;
+    });
+</script>

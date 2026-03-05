@@ -1,0 +1,30 @@
+.blurred {
+  position: relative;
+  border: solid 1.5em rgba(0, 0, 0, 0.03);
+  height: 50vmin;
+  max-width: 13em;
+  max-height: 7em;
+  background: url(img/shark.jpg) 50%/cover border-box padding-box;
+  font-size: 2em;
+}
+.blurred:before {
+  position: absolute;
+  z-index: -1; /* put it *behind* parent */
+  /* go outside padding-box by
+   * a border-width ($b) in every direction */
+  top: -1.5em;
+  right: -1.5em;
+  bottom: -1.5em;
+  left: -1.5em;
+  border: inherit;
+  border-color: transparent;
+  background: inherit;
+  background-clip: border-box;
+  /* -webkit-prefixed version
+   * still needed for
+   * some mobile browsers */
+  filter: blur(9px);
+  -webkit-clip-path: inset(0);
+  clip-path: inset(0);
+  content: "";
+}/*# sourceMappingURL=border.css.map */

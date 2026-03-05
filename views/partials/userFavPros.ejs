@@ -1,0 +1,34 @@
+
+
+<section class="<%=bg%>">
+    <div class="container px-4">
+        <h3 class="ml-4 mb-3 text-light tracking-wide"><%=t('PopularPros') %></h3>
+        <div class="row p-3">
+            <% 
+            let id = 0;
+            providers.forEach(provider=>{ 
+                if(provider.photo) {
+                    if(!provider.photo.includes("https://")) provider.photo = "/photo/"+provider.photo;
+                  } else provider.photo = "/photo/default.png"; 
+                %>
+                <!--div class="col-lg-3 col-md-3 col-sm-6 col-12 custom-px">
+                    <div class="text-center card-box-pro">
+                        <div class="member-card pt-2 pb-2"-->
+                            <div class=" col-md-6 col-xl-4 col-12">
+                                <div class="card">
+                                    <div class="card-body p-4 d-flex align-items-center gap-3">
+                                        <!--div class="thumb-lg member-thumb mx-auto"><img src="<%=provider.photo %> " class="rounded-circle img-thumbnail" alt="profile-image"></div-->
+                                        <img src="<%=provider.photo %>"  alt="" class="rounded-circle" style="height:45px !important; width:45px !important;">
+                                        <div class="ml-3">
+                                            <h6 class="fw-semibold mb-0"><a href="/pro-profile/<%=provider._id%>"><%=provider.firstName %> <%=provider.lastName %> </a></h6>
+                                            <span class="fs-2 d-flex align-items-center"><i class="ti ti-map-pin text-primary fs-3 me-1"><%=provider.role %> </i> -
+                                            <%=provider.city%>, <%=provider.country%></span>
+                                          </div>
+                                    </div>
+                                </div>
+                            </div>
+            <% id++;}); %>
+            </div>
+
+        </div>
+</section>

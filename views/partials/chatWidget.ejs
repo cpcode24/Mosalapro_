@@ -1,0 +1,94 @@
+<!-- AI Chat Support Widget -->
+<div id="aiChatWidget" class="ai-chat-widget">
+    <!-- Chat Button -->
+    <button id="chatToggleBtn" class="chat-toggle-btn" aria-label="<%= t('OpenChatSupport') || 'Open Chat Support' %>">
+        <svg class="chat-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+        </svg>
+        <svg class="close-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+    </button>
+
+    <!-- Chat Window -->
+    <div id="chatWindow" class="chat-window" style="display: none;">
+        <!-- Chat Header -->
+        <div class="chat-header">
+            <div class="chat-header-content">
+                <div class="chat-avatar">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                    </svg>
+                </div>
+                <div class="chat-header-text">
+                    <h4><%= t('ChatSupport') || 'Chat Support' %></h4>
+                    <p class="chat-status">
+                        <span class="status-dot"></span>
+                        <span id="chatStatus"><%= t('Loading') || 'Loading...' %></span>
+                    </p>
+                </div>
+            </div>
+            <button id="minimizeChat" class="minimize-btn" aria-label="<%= t('MinimizeChat') || 'Minimize' %>">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Chat Messages -->
+        <div id="chatMessages" class="chat-messages">
+            <!-- Welcome Message -->
+            <div class="message bot-message">
+                <div class="message-content">
+                    <p><strong><%= t('ChatWelcome') || 'Hello! How can I help you with MosalaPro today?' %></strong></p>
+                    <p class="text-muted small"><%= t('ChatWelcomeSubtext') || 'Ask me anything about posting service requests, hiring providers, payments, and more.' %></p>
+                </div>
+            </div>
+
+            <!-- Suggested Questions -->
+            <div id="suggestedQuestions" class="suggested-questions">
+                <!-- Will be populated dynamically -->
+            </div>
+        </div>
+
+        <!-- Typing Indicator -->
+        <div id="typingIndicator" class="typing-indicator" style="display: none;">
+            <div class="typing-dots">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+
+        <!-- Chat Input -->
+        <div class="chat-input-container">
+            <form id="chatForm">
+                <div class="chat-input-wrapper">
+                    <textarea
+                        id="chatInput"
+                        class="chat-input"
+                        placeholder="<%= t('TypeYourMessage') || 'Type your message...' %>"
+                        rows="1"
+                        maxlength="500"
+                    ></textarea>
+                    <button type="submit" id="sendBtn" class="send-btn" aria-label="<%= t('SendMessage') || 'Send' %>">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="22" y1="2" x2="11" y2="13"></line>
+                            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                        </svg>
+                    </button>
+                </div>
+            </form>
+            <p class="chat-footer-text">
+                <small class="text-muted"><%= t('ContactUsIfUnsatisfied') || 'Not satisfied with the answers?' %> <a href="/contact-us" class="text-primary"><%= t('ContactUs') || 'Contact us' %></a></small>
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- Chat Widget Script -->
+<script>
+    const CHAT_LANGUAGE = '<%= locale || "en" %>';
+</script>
+<script src="/js/chatWidget.js"></script>

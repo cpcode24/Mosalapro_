@@ -1,0 +1,161 @@
+<section class="<%=bg%> p-4">
+    <div class="container mt-page">
+        
+            <div class="row">
+                <div class="col-lx-12">
+                <div class="card">
+                <div class="card-body">
+                <div class="row justify-content-center mt-4">
+                <div class="col-xl-5 col-lg-8">
+                <div class="text-center">
+                <h4><%= t('FAQTitle') %></h4>
+                <p class="text-muted"><%= t('FAQDescription') %></p>
+                <div class="p-4">
+                <a href="/contact-us#contact_us" class="btn button-primary"><%= t('FAQContactUs') %></a>
+                </div>
+                </div>
+                </div>
+                
+                </div>
+                
+                <div class="row justify-content-center mt-5 pb-5">
+                <div class="col-9">
+                <ul class="nav nav-tabs  nav-tabs-custom nav-justified justify-content-center faq-tab-box" id="pills-tab" role="tablist">
+                <li class="nav-item " role="presentation">
+                <button class="nav-link mx-auto active" id="pills-genarel-tab" data-bs-toggle="pill" data-bs-target="#pills-genarel" type="button" role="tab" aria-controls="pills-genarel" aria-selected="true">
+                <span class="font-size-16"><%= t('FAQGeneralQuestions') %></span>
+                </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                <button class="nav-link mx-auto" id="pills-privacy_policy-tab" data-bs-toggle="pill" data-bs-target="#pills-privacy_policy" type="button" role="tab" aria-controls="pills-privacy_policy" aria-selected="false">
+                <span class="font-size-16"><%= t('FAQPrivacyPolicy') %></span>
+                </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                <button class="nav-link mx-auto" id="pills-teachers-tab" data-bs-toggle="pill" data-bs-target="#pills-pricing_plan" type="button" role="tab" aria-controls="pills-pricing_plan" aria-selected="false">
+                <span class="font-size-16"><%= t('FAQPricingPlans') %></span>
+                </button>
+                </li>
+                </ul>
+                </div>
+                <div class="col-lg-9">
+                <div class="tab-content pt-3" id="pills-tabContent">
+                <div class="tab-pane fade active show" id="pills-genarel" role="tabpanel" aria-labelledby="pills-genarel-tab">
+                <div class="row g-4 mt-2">
+                <div class="col-lg-6">
+                <h5><%= t('FAQHowItWorks') %></h5>
+                <p class="text-muted"><%= t('FAQHowItWorksAnswer') %></p>
+                </div>
+                <div class="col-lg-6">
+                <h5><%= t('FAQJoinAsUser') %></h5>
+                <p class="text-muted"><%= t('FAQJoinAsUserAnswer') %><br>
+                    
+                    <b><%= t('FAQAccessRegistration') %>:</b> <%= t('FAQAccessRegistrationDetails') %><br>
+                    
+                    <b><%= t('FAQChooseAccountType') %>:</b> <%= t('FAQChooseAccountTypeDetails') %><br>
+                    
+                    <b><%= t('FAQCompleteForm') %>:</b> <%= t('FAQCompleteFormDetails') %><br>
+                    
+                    <b><%= t('FAQSubmitInfo') %>:</b> <%= t('FAQSubmitInfoDetails') %></p>
+                </div>
+                <div class="col-lg-6 mt-2">
+                <h5><%= t('FAQJoinAsProvider') %></h5>
+                <p class="text-muted"><%= t('FAQJoinAsProviderAnswer') %><br>
+                    
+                    <b><%= t('FAQAccessRegistration') %>:</b> <%= t('FAQAccessRegistrationProviderDetails') %><br>
+                    
+                    <b><%= t('FAQAccountType') %>:</b> <%= t('FAQAccountTypeProviderDetails') %><br>
+                    
+                    <b><%= t('FAQCompleteForm') %>:</b> <%= t('FAQCompleteFormProviderDetails') %><br>
+                    
+                    <b><%= t('FAQAwaitApproval') %>:</b> <%= t('FAQAwaitApprovalDetails') %></p>
+                </div>
+                <div class="col-lg-6 mt-2">
+                <h5><%= t('FAQSubmitRequest') %></h5>
+                <p class="lg-base"><%= t('FAQSubmitRequestAnswer') %><br>
+                <b><%= t('FAQSearchProviders') %>:</b> <%= t('FAQSearchProvidersDetails') %><br>
+                    
+                    <b><%= t('FAQContactProviders') %>:</b> <%= t('FAQContactProvidersDetails') %><br>
+                    
+                    <b><%= t('FAQObtainQuotes') %>:</b> <%= t('FAQObtainQuotesDetails') %><br>
+                    
+                    <%= t('FAQNeedAssistance') %></p>
+                </div>
+                </div>
+                </div>
+                <div class="tab-pane fade" id="pills-privacy_policy" role="tabpanel" aria-labelledby="pills-privacy_policy-tab">
+                <div class="row g-4 mt-2">
+                <div class="col-lg-6">
+                <h5><%= t('FAQDataCollection') %></h5>
+                <p class="lg-base"><%= t('FAQDataCollectionAnswer') %><br>
+                <b><%= t('FAQPersonalInfo') %>:</b> <%= t('FAQPersonalInfoDetails') %><br>
+                        
+                        <b><%= t('FAQDeviceInfo') %>:</b> <%= t('FAQDeviceInfoDetails') %></p>
+                </div>
+                
+                <div class="col-lg-6">
+                <h5><%= t('FAQDataSelling') %></h5>
+                <p class="lg-base"><%= t('FAQDataSellingAnswer') %></p>
+                </div>
+                <div class="col-lg-6 mt-2">
+                <h5><%= t('FAQHowDoesUsePersonalInfo') %></h5>
+                <p class="lg-base">
+
+                    <%= t('FAQPersonalInfoUsage') %><br> 
+
+                    <b><%= t('FAQAccountCreation') %>:</b> <%= t('FAQAccountCreationDetails') %><br>
+
+                    <b><%= t('FAQServiceProvision') %>:</b> <%= t('FAQServiceProvisionDetails') %><br>
+
+                    <b><%= t('FAQPersonalization') %>:</b> <%= t('FAQPersonalizationDetails') %><br>
+
+                    <b><%= t('FAQCommunication') %>: </b> <%= t('FAQCommunicationDetails') %><br>
+
+                    <b><%= t('FAQAnalytics') %>: </b> <%= t('FAQAnalyticsDetails') %><br>
+
+                    <b><%= t('FAQSecurity') %>: </b> <%= t('FAQSecurityDetails') %><br>
+
+                </p>
+                </div>
+                <div class="col-lg-6 mt-2">
+                <h5><%= t('FAQDoProvidersAccessMyInfo') %></h5>
+                <p class="lg-base"><%= t('FAQDoProvidersAccessMyInfoAnswer') %><br>
+                    This typically includes details such as your name, contact information, and service requirements, necessary for service providers to perform the requested services and ensure effective communication and service delivery.
+                    
+                    Specific details are outlined in MosalaPro's <a href="/privacy-policy">Privacy Policy page</a>.</p>
+                </div>
+                </div>
+                </div>
+                <div class="tab-pane fade" id="pills-pricing_plan" role="tabpanel">
+                <div class="row g-4 mt-4">
+                <div class="col-lg-6">
+                <h5><%= t('FAQDoIPayForUserAccount') %></h5>
+                <p class="lg-base"><%= t('FAQDoIPayForUserAccountAnswer') %></p>
+                </div>
+                <div class="col-lg-6">
+                <h5><%= t('FAQWhyServiceProvidersGetPackage') %></h5>
+                <p class="lg-base">
+                    <%= t('FAQPackageDescription') %>
+
+                        <b><%= t('FAQIncreasedVisibility') %>:</b> <%= t('FAQIncreasedVisibilityDetails') %><br>
+
+                        <b><%= t('FAQClientLeads') %>:</b> <%= t('FAQClientLeadsDetails') %><br>
+
+                       <b><%= t('FAQMarketingTools') %>:</b> <%= t('FAQMarketingToolsDetails') %><br>
+
+                        <%= t('FAQPackagesSummary') %>
+                </p>
+                </div>
+                
+                </div>
+                </div>
+                </div>
+                </div>
+                </div>
+                </div>
+                </div>
+
+            </div>
+
+        </section>
+

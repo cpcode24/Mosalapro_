@@ -1,0 +1,219 @@
+<%- include('partials/header') %>
+
+<section class="<%=bg%> padt-8">
+   <div class="container pb-4">
+
+    <div class="row">
+
+        <div class="col pad-4">
+
+            <nav aria-label="breadcrumb" class="main-breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/"> <%= t('ApplicantProfileHome') %> </a></li>
+                    <% if(usr.accountType == "user") { %> 
+                      <li class="breadcrumb-item"><a href="javascript:void(0)"><%= usr.accountType == "user" ? t('ApplicantProfileUser') : t('ApplicantProfileProvider') %></a></li>
+                    <% } %>
+                    <li class="breadcrumb-item active" ><a href="/myrequests"><%= t('ApplicantProfileMyRequests') %></a></li>
+                    <li class="breadcrumb-item active" aria-current="page"><%= t('ApplicantProfileApplicant') %></li>
+                </ol>
+            </nav>
+                <h5><%= t('ApplicantProfileApplicationForJobRequest') %></h5>
+                <span id="notif-msg"></span>
+                <div class="row">
+                    <div class="col-lg-8 col-md-12 col-sm-12 col-12">
+                      <div class="shadow-sm p-4 mb-5 bg-white rounded " id="contentId">
+                        <div class="row">
+                          <div class="col-lg-4 col-md-12 col-sm-12 col-12">
+                            
+                            <div
+                              class="bg-image  w-100"
+                              style="
+                                background-image: url('<%=pro.photo %>');
+                                height: 300px;
+                              "
+                            ></div>
+                            
+                          </div>
+                          <div class="col-lg-8 col-md-12 col-sm-12 col-12">
+                            <div class="d-flex justify-content-between w-100 mt-2">
+                              <h6 class="text-muted"><%= t('ApplicantProfileServiceProviderProfileInfo') %></h6>
+                            </div>
+                            <h5 class="text-primary mt-2"><%=pro.firstName %> <%=pro.lastName %></h5>
+                            <p class="mt-1 mb-1 text-primary"><%=pro.role %></p>
+                            <div> 
+                              <span class="text-muted">(<%=pro.ratingCount%>)&nbsp;</span>
+                              <% let i = 0; 
+                                 let r = pro.rating < 1.5 ? 1: pro.rating < 2.5 ? 2: pro.rating < 3.5 ? 3 : pro.rating < 4.5 ? 4: 5; 
+                              
+                              for(i = 0; i < r; i++) { %>
+                                  <li class="d-inline"><b class="fa-star fa-sm rating-star-color fas "></b></li>
+                              <% } if(i < 5) while(i < 5) { %>
+                                  <li class="d-inline"><b class="fa-star-o fa-sm rating-star-color fas "></b></li>
+                              <% i++; } %>
+                            </div>
+                            <div class="d-flex w-100">
+              
+                              <div class="row">
+                                  <div class="col-lg-6 col-md-6 col-sm-12 col-12">
+                                      
+                                      <p class="mt-1 mb-1 ml-1 text-primary">$<%=pro.rate %> / USD / <%= t('ApplicantProfileHour') %></p>
+                                      <p class="mt-1 mb-1 ml-1 text-primary"><%=pro.city %>, <span class="profile-country"><%=pro.country %></span></p>
+                                      <p class="mt-1 mb-1 ml-1 text-primary"><%= t('ApplicantProfileLocalTime') %>: 11:12 PM </span>
+                                      <p class="mt-1 mb-1 ml-1 text-primary"><%= t('ApplicantProfileJoined') %> <%= new Date(pro.createdAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) %></p>
+                                     
+              
+                                      
+                                  </div>
+               
+                                  <div class="col-lg-6 col-md-6 col-sm-12 col-12">
+                                      <div class="mr-2">
+                                          <p class="text-primary"><span class="n-a "><%=postRequestsCompleted%></span> <%= t('ApplicantProfileJobsCompleted') %></p>
+                                      </div>
+                              </div>
+              
+                              </div>
+              
+                            
+                                
+                            </div>
+              
+                            <p class="mt-1 mb-1"><%=pro.description %></p>
+
+                            <% if(quotation) { %>
+                              <h6>New quote</h6>
+                              <b class="text-primary">$<%=quotation.budget %> / <%=quotation.budgetType %></b>
+                              <br />
+                              <% if(quotation.timeOfCompletion) {%>
+                                <b class="text-primary"><%= t('ApplicantProfileTimeOfCompletion') %>: <%=quotation.timeOfCompletion %> <%= t('ApplicantProfileHours') %></b>
+                              <% } %>
+                              <p><%=quotation.quotationDescription %></p>
+                            <% } %>
+                            <div class="row mt-2">
+                              <div class="col d-inline justify-content-between">
+                                <% if(checkBooking){ %>
+                                    <span class="ml-2 text-primary"> <%= t('ApplicantProfileAlreadyHired') %> </span>
+                               <% } else if(jobAppli && jobAppli.status != 'applied'){ %>
+                                    <span class="ml-2 text-primary"> <%= t('ApplicantProfileRejected') %> </span>
+                              <% } else { %>
+                                      <a href="#hireConfModalCta" data-toggle="modal" data-caption-animate="fadeInUp" class="simple-btn mr-3">
+                                          <b class="fa fa-envelope-o mr-1 mb-1" aria-hidden="true"></b><%= t('ApplicantProfileHire') %> <%=pro.firstName %>
+                                      </a>
+                                      <a class="simple-btn-inv-dgr mr-3" href="#rejectConfModalCta" data-toggle="modal" data-caption-animate="fadeInUp"><b class="fa fa-times mr-1 mb-1"></b> <%= t('ApplicantProfileRejectApplication') %></a>
+                                <% } %>
+                                      
+                                </div>
+                              </div>
+                          </div>
+                          
+                        </div>
+                      </div>
+                      <div class="container shadow-sm mb-5 bg-white rounded ">
+                        <div class="row">
+                          <div class="col p-4">
+                            
+                            <div class="row border-bottom mt-1">
+                              <div class="col">
+                                <h5><%= t('ApplicantProfileJobRequestDetails') %></h5> 
+                              </div>
+                            </div>
+                            <div class="row mt-3">
+                              <div class="col">
+                                <span > <%= t('ApplicantProfileRequestTitle') %>: <b> <%=job.requestTitle%> </b>
+                              </div>
+                            </div>
+                              
+                              <div class="row mt-1">
+                                <div class="col">
+                                <span > <%= t('ApplicantProfileCategory') %>: <b> <%=job.requestCategory %></b></span> 
+                                </div>
+                              </div>
+                                <div class="row mt-1">
+                                  <div class="col">
+                                    <span > <%= t('ApplicantProfileBudget') %>: <b> <%=job.budget %></b></span>
+                                  </div>
+                                </div>
+                                <div class="row mt-1">
+                                  <div class="col">
+                                  <span > <%= t('ApplicantProfileDeadline') %>: <b> <%=job.deadline %></b></span>
+                                  </div>
+                                </div>
+                                <div class="row mt-1">
+                                  <div class="col p-2">
+                                    <span > <%= t('ApplicantProfileDescription') %>: <b> <%=job.description %></b></span>
+                                  </div>
+                                </div>
+                                <div class="row p-3 mt-1">
+                                  <% if (job.files.length == 0){ %>
+                                                      <div class="col">
+                                                          <span class="text-muted text-small"> <%= t('ApplicantProfileNoAttachments') %> </span>
+                                                      </div>
+                                                  <% } else { %>
+                                                      <% let j = 0; job.files.forEach(file=>{ j++; %>
+                  
+                                                      <!--span class="d-none" id="file-"><%= file%></a></p-->
+                                                      <div title="Download file <%=j%>" data-toggle="tooltip" data-placement="bottom"  class=" col-sm-4 col-lg-2 tooltips cursor mb-4" >
+                                                      <!--span class="job-details"><%=job.files.length%></span-->
+                                                          <!-- Post Modern-->
+                                                          <div class="d-flex justify-content-center px-4 px-auto" onClick="downloadFile('<%= file%>')" >
+                                                              <b class="fa fa-file-text fa-3x mb-1 file-icon" aria-hidden="true"></b>
+                                                              <span class="post-modern-time">  <%= t('ApplicantProfileFile') %> <%=j%></span>
+                                                              
+                                                          </div>
+                                                          
+                                                        </div>
+                  
+                                                      <% }); } %>
+                                    </div>
+                                  
+                              </div>
+                         </div>
+                      </div>
+                    </div>
+                    <div class="col">
+                      <div class="container shadow-sm mb-5 pb-1 bg-white rounded ">
+                        <div class="row">
+                          <div class="w-100 d-flex justify-content-between align-items-center border-bottom border-dark p-3">
+                            <h6><%= t('ApplicantProfileVerification') %></h6>
+                          </div>
+                        </div>
+                          
+                          <div class="d-flex justify-content-between align-items-center my-3">
+                            <span><%= t('ApplicantProfileIdentityVerification') %></span>
+                            <span class="text-primary"><%= t('ApplicantProfileVerified') %></span>
+                          </div>
+                         
+                          <div class="d-flex justify-content-between align-items-center my-3">
+                            <span><%= t('ApplicantProfileEmailAddress') %></span>
+                            <span class="text-primary"><%= t('ApplicantProfileVerified') %></span>
+                          </div>
+              
+                          
+                        <p></p>
+                      </div>
+                      <div class="container shadow-sm mb-5 pb-3 bg-white rounded ">
+                        <div class="row">
+                          <div class="w-100 d-flex justify-content-between align-items-center border-bottom border-dark p-3">
+                            <h6><%= t('ApplicantProfileSkills') %></h6>
+                          </div>
+                        </div>
+                        <div class="mt-2">
+              
+                        <% if(pro.skills) pro.skills.forEach(skill => { %> 
+                          <p><%= skill %></p>
+                        <% }); %>
+                      </div>
+              
+                      </div>
+                    </div>
+                  </div>
+
+
+        </div>
+   </div>
+</div>
+</section>
+
+<%- include('partials/HireConfirmationModal') %>
+<%- include('partials/RejectConfirmationModal') %>
+<script src="js/notificationDetailHandler.js"></script>
+<%- include('partials/footer') %>

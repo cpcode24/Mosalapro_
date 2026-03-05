@@ -1,0 +1,386 @@
+<%- include('partials/header') %>
+<% let lim = 6; %>
+<style>
+/* Enhanced UI Styling for User Requests */
+.requests-header {
+    background: linear-gradient(135deg, rgba(8, 173, 91, 0.1) 0%, rgba(32, 209, 55, 0.05) 100%);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    border: 1px solid rgba(7, 91, 32, 0.1);
+}
+
+.requests-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(135deg, #5A9E2F 0%, #3f8215 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.requests-subtitle {
+    opacity: 0.8;
+    font-size: 1.1rem;
+    margin-bottom: 0;
+}
+
+.nav-pills .nav-link {
+    border-radius: 50px;
+    padding: 0.75rem 1.5rem;
+    margin: 0 0.25rem;
+    font-weight: 500;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background: rgba(255,255,255,0.1);
+    color: #666;
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+.nav-pills .nav-link:hover {
+    background: rgba(255,255,255,0.2);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+}
+
+.nav-pills .nav-link.active {
+    background: linear-gradient(135deg, #5A9E2F 0%, #3f8215 100%);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+}
+
+.card.bg-light-job {
+    background: rgba(255,255,255,0.95) !important;
+    border-radius: 20px;
+    border: 1px solid rgba(255,255,255,0.2);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+    position: relative;
+}
+
+.card.bg-light-job::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(135deg, #5A9E2F 0%, #3f8215 100%);
+}
+
+.card.bg-light-job:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+}
+
+.card-body {
+    position: relative;
+    z-index: 1;
+}
+
+.cat-job {
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    border: none;
+    padding: 0.4rem 1rem;
+}
+
+.btn-job {
+    border-radius: 25px;
+    padding: 0.5rem 1.5rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    display: inline-block;
+    text-align: center;
+    border: 2px solid transparent;
+}
+
+.btn-prim-job-inv {
+    background: linear-gradient(135deg, #5A9E2F 0%, #3f8215 100%);
+    color: white;
+}
+
+.btn-prim-job-inv:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+    color: white;
+    text-decoration: none;
+}
+
+.btn-prim-job-inv-blue {
+    background: linear-gradient(135deg, #5A9E2F 0%, #3f8215 100%);
+    color: white;
+}
+
+.btn-prim-job-inv-blue:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(79, 172, 254, 0.4);
+    color: white;
+    text-decoration: none;
+}
+
+.job-details {
+    color: #666;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+}
+
+.load-more-container {
+    text-align: center;
+    padding: 2rem 0;
+    margin-top: 2rem;
+}
+
+.load-more-btn {
+    background: linear-gradient(135deg, #5A9E2F 0%, #3f8215 100%);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 1rem 2rem;
+    font-weight: 500;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.load-more-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+    color: white;
+}
+
+.load-more-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.loading-spinner {
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-radius: 50%;
+    border-top-color: white;
+    animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.no-requests-message {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: #666;
+}
+
+.no-requests-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    opacity: 0.3;
+}
+
+.requests-count {
+    background: rgba(255,255,255,0.1);
+    border-radius: 20px;
+    padding: 0.3rem 0.8rem;
+    font-size: 0.8rem;
+    margin-left: 0.5rem;
+}
+
+.small-screen select {
+    border-radius: 15px;
+    border: 1px solid rgba(255,255,255,0.2);
+    background: rgba(255,255,255,0.1);
+    color: #333;
+    padding: 0.75rem 1rem;
+}
+
+@media (max-width: 768px) {
+    .requests-title {
+        font-size: 2rem;
+    }
+    
+    .nav-pills .nav-link {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+    }
+    
+    .card.bg-light-job:hover {
+        transform: translateY(-4px);
+    }
+}
+</style>
+
+<section class="<%=bg%> padt-8" >
+    <div class="container py-4">
+        <!-- Enhanced Header -->
+        <div class="requests-header">
+            <h1 class="requests-title"><%= t('MyServiceRequests') || 'My Service Requests' %></h1>
+            
+        </div>
+
+        <div class="page-content container container-profile note-has-grid">
+        <div class="not-small-screen">
+          <ul class="nav nav-pills p-3 bg-white mb-3 rounded-pill align-items-center">
+          <li class="nav-item" onClick="getRequests('active', '<%=lim%>', 'wide-scr')">
+            <a href="javascript:void(0)" class="nav-link rounded-pill note-link d-flex align-items-center px-2 px-md-3 mr-0 mr-md-2 active" id="active-bookings">
+              <b class="icon-layers mr-1"></b><span class="d-none d-md-block"><%= t('Pending') %></span>
+            </a>
+          </li>
+          <li class="nav-item" onClick="getRequests('in-progress', '<%=lim%>', 'wide-scr')">
+            <a href="javascript:void(0)" class="nav-link rounded-pill note-link d-flex align-items-center px-2 px-md-3 mr-0 mr-md-2" id="inprogress-bookings"> <b class="icon-briefcase mr-1"></b><span class="d-none d-md-block"><%= t('InProgress') %></span></a>
+            </li>
+          <li class="nav-item" onClick="getRequests('completed', '<%=lim%>', 'wide-scr')">
+          <a href="javascript:void(0)" class="nav-link rounded-pill note-link d-flex align-items-center px-2 px-md-3 mr-0 mr-md-2" id="completed-bookings"> <b class="icon-briefcase mr-1"></b><span class="d-none d-md-block"><%= t('Completed') %></span></a>
+          </li>
+          <li class="nav-item" onClick="getRequests('cancelled', '<%=lim%>', 'wide-scr')">
+          <a href="javascript:void(0)" class="nav-link rounded-pill note-link d-flex align-items-center px-2 px-md-3 mr-0 mr-md-2" id="cancelled-bookings"> <b class="icon-share-alt mr-1"></b><span class="d-none d-md-block"><%= t('Cancelled') %></span></a>
+          </li>
+          <li class="nav-item" onClick="getRequests('accepted', '<%=lim%>', 'wide-scr')">
+            <a href="javascript:void(0)" class="nav-link rounded-pill note-link d-flex align-items-center px-2 px-md-3 mr-0 mr-md-2" id="accepted-bookings"> <b class="icon-share-alt mr-1"></b><span class="d-none d-md-block"><%= t('Accepted') %></span></a>
+            </li>
+            <li class="nav-item" onClick="getRequests('booked', '<%=lim%>', 'wide-scr')">
+              <a href="javascript:void(0)" class="nav-link rounded-pill note-link d-flex align-items-center px-2 px-md-3 mr-0 mr-md-2" id="booked-bookings"> <b class="icon-tag mr-1"></b><span class="d-none d-md-block"><%= t('Booked') %></span></a>
+              </li>
+          <li class="nav-item" onClick="getRequests('all', '<%=lim%>', 'wide-scr')">
+          <a href="javascript:void(0)" class="nav-link rounded-pill note-link d-flex align-items-center px-2 px-md-3 mr-0 mr-md-2" id="all-bookings"> <b class="icon-tag mr-1"></b><span class="d-none d-md-block"><%= t('All') %></span></a>
+          </li>
+          
+          </ul>
+        </div>
+        <div class="row no-gutters shadow-sm row-bg mb-4 small-screen">
+          <div class=" col-12">
+              <p class="font-weight-light text-center mr-3 mb-6 small-screen"><%= t('FilterServiceRequests') %> </p>
+          </div>
+          <div class=" col-12">
+                  <select class="form-control text-light" aria-label="Select Request Type"  name="selected_request_type" id="selected_request_type" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                      <option value="active"><%= t('Pending') %></option>
+                      <option value="in-progress" ><%= t('InProgress') %></option>
+                      <option value="completed" ><%= t('Completed') %></option>
+                      <option value="cancelled" ><%= t('Cancelled') %></option>
+                      <option value="booked" ><%= t('Booked') %></option>
+                      <option value="accepted" ><%= t('Accepted') %></option>
+                      <option value="all"><%= t('All') %></option>
+                  </select>
+          </div>
+      </div>
+
+      <div class="tab-content bg-transparent padx-4 g">
+        <div id="requests-container" class="row mt-1">
+          <% if (postRequests.length > 0) {
+            let displayedRequests = postRequests.slice(0, Math.min(6, postRequests.length));
+            displayedRequests.forEach((req, index) => { %>
+          <div class="col-lg-4 col-md-6 col-12 mt-1 pt-2 request-card" data-request-index="<%= index %>">
+            <div class="card border-0 bg-light-job rounded-job shadow-job">
+                <div class="card-body p-4">
+                <span class="btn btn-sm bg-soft-prim cat-job float-md-right mb-3 mb-sm-0"><%= req.requestCategory %></span>
+                  <h6><%=req.requestTitle %></h6>
+              
+                <div class="mt-3">
+                    <span class="d-block job-details"><b class="fa fa-money mr-2" aria-hidden="true"></b><%= t('Budget') %>: <%= req.budget %> <%= req.currency %> - <%= req.budgetType %></span>
+                    <span class="d-block job-details"><b class="fa fa-calendar mr-2" aria-hidden="true"></b><%= t('Deadline') %>: <%= req.deadline %></span>
+                    <span class="d-block job-details"><b class="fa fa-flag mr-2" aria-hidden="true"></b><%= t('Status') %>: 
+                        <span class="badge <%= req.status === 'completed' ? 'badge-success' : req.status === 'cancelled' ? 'badge-danger' : req.status === 'in-progress' ? 'badge-warning' : 'badge-primary' %>">
+                            <%= req.status %>
+                        </span>
+                    </span>
+                </div>
+               
+                <div class="mt-3 border-bottom pb-4 d-flex ">
+                    <% if(req.status == 'active') { %>
+                      <a class="btn-job btn-prim-job-inv" href="/manage-request?rq=<%=req._id%>"><%= t('EditRequest') %></a>
+                    <% } else if(req.status == 'cancelled') { %>
+                      <a class="btn-job btn-prim-job-inv-blue" href="/manage-request?rq=<%=req._id%>"><%= t('ResubmitRequest') %></a>
+                    <% } else  { %>
+                      <a class="btn-job btn-prim-job-inv-blue" href="/manage-request?rq=<%=req._id%>"><%= t('ViewDetails') %></a>
+                    <% } %>
+                </div>
+                    <div class=""><span class="float-md-right text-small mt-1"><%= t('SubmittedOn') %> <%= req.createdAt.getUTCMonth() + 1 %>/<%= req.createdAt.getUTCDate()%>/<%= req.createdAt.getUTCFullYear() %></span></div>
+                </div>
+            
+            </div>
+          </div>
+          <% }); } else {%>
+            <div class="col-12">
+                <div class="no-requests-message">
+                    <div class="no-requests-icon">
+                        <b class="fa fa-file-text-o"></b>
+                    </div>
+                    <h5><%= t('NoRequestFound') || 'No requests found' %></h5>
+                    <p><%= t('NoRequestMessage') || 'You haven\'t created any service requests yet. Create your first request to get started!' %></p>
+                    <a href="/service-request" class="btn-job btn-prim-job-inv mt-3">
+                        <b class="fa fa-plus mr-2"></b><%= t('CreateFirstRequest') || 'Create Your First Request' %>
+                    </a>
+                </div>
+            </div>
+          <% } %>
+        </div>
+        
+        <!-- Load More Section -->
+        <% if (postRequests.length > 6) { %>
+        <div class="load-more-container" id="load-more-container">
+            <button class="load-more-btn" id="load-more-btn" onclick="loadMoreRequests()">
+                <span id="load-more-text"><%= t('LoadMore') || 'Load More' %></span>
+                <b class="fa fa-chevron-down ml-2" id="load-more-icon"></b>
+            </button>
+            <div style="display: none;" id="loading-spinner">
+                <div class="loading-spinner"></div>
+            </div>
+        </div>
+        <% } %>
+      </div>
+    </div>
+      
+      </div>
+
+    </div>
+</section>
+
+<script src="js/handleRequests.js"></script>
+
+<script>
+// Pass server-side language to client-side
+<% if (typeof i18n !== 'undefined' && i18n.language) { %>
+window.serverLanguage = '<%= i18n.language %>';
+console.log('Server language detected:', window.serverLanguage);
+<% } %>
+
+// Initialize the page with the correct type from URL parameters
+document.addEventListener('DOMContentLoaded', function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const requestType = urlParams.get('type') || 'active';
+    
+    console.log('Page loaded with type:', requestType);
+    
+    // Set the correct initial limit - always use 6 for the enhanced UI
+    const initialLimit = 6;
+    
+    // Check if we have a server language and update the requests manager
+    if (typeof window.serverLanguage !== 'undefined' && typeof updateRequestsLanguage === 'function') {
+        updateRequestsLanguage(window.serverLanguage);
+    }
+    
+    // Load the requests for the specified type
+    if (typeof getRequests === 'function') {
+        getRequests(requestType, initialLimit, 'wide-scr');
+    }
+    
+    // Also update the dropdown for small screens
+    const selectElement = document.getElementById("selected_request_type");
+    if (selectElement) {
+        selectElement.value = requestType;
+    }
+});
+</script>
+
+<%- include('partials/footer') %>

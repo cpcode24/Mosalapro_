@@ -1,0 +1,446 @@
+<%- include('partials/header') %>
+
+<section class="<%=bg%> padt-8 ">
+  <div class="container padt-4">
+    <div class=" pt-4">
+    <div class=" padt-4 bg-drk">
+      <div class="container text-secondary "> 
+        <div class="row">
+          <div class="col-lg-8 col-md-6 col-12">
+            <div class="container shadow-sm mb-5 bg-white rounded ">
+              <form action="/user-edit"  enctype="multipart/form-data" method="POST" class="">
+              <div class="row padx-4">
+
+                  <div class="col-12 ">
+                      <h6 class="justify-content-center mt-3 mb-3"><%= t('EditProfile') %></h6>
+                     
+                    <div
+                      id="photoBox"
+                      class="bg-image  w-100"
+                      style="
+                        background-image: url('<%=usr.photo %>');
+                        height: 300px;
+                      "
+                    ></div>
+                    <div class="d-flex justify-content-center mt-2 mb-3">
+                      <label for="photoInput" class="custom-file-upload profile-btn simple-btn ">
+                        <%= t('UploadProfilePicture') %>
+                      </label>
+                      <input type="file" id="photoInput" accept="image/png, image/gif, image/jpeg" name="photo" style="display: none;" onchange="onPhotoChange()"/>
+                    </div>
+
+                  </div>
+                  <div class="col-12">
+                    
+                      <div class="row">
+                        <div class="col-md-6 col-12">
+                            <!-- First name input -->
+                            <div class="form-outline  ">
+                                <input type="text" id="registerFirstName" class="form-control" placeholder="<%= t('FirstName') %>" name="firstName" value="<%=usr.firstName %>" required/>
+                              </div>
+                        </div>
+                        <div class="col-md-6 col-12">
+                            <!-- Last name input -->
+                            <div class="form-outline">
+                                <input type="text" id="registerLastName" class="form-control" placeholder="<%= t('LastName') %>" name="lastName" value="<%=usr.lastName %>"  required />
+                            </div>
+                        </div>
+                      </div>
+                    
+                        <div class="row mt-2">
+                            <div class="col-md-6 col-12">
+                                <!-- Email input -->
+                                <div class="form-outline">
+                                    <input type="email" id="registerEmail" class="form-control has-success" placeholder="<%= t('EmailAddress') %>" value="<%=usr.email %>" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" name="email"  disabled/>
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-12">
+                                <!-- Phone input -->
+                                <div class="form-outline">
+                                  <input type="number" id="registerPhone" class="form-control" placeholder="Phone Number" name="phone" value="<%=usr.phone %>" pattern="/((\+*)((0[ -]*)*|(*))((\d{12})+|(\d{10})+))|\d{5}([- ]*)\d{6}/" required/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mt-2">
+                          <div class="col-md-6 col-12">
+                              <!-- Email input -->
+                              <div class="form-outline">
+                                  <input id="facebookProfileLink" class="form-control has-success" placeholder="<%=usr.facebookProfileLink%>" value="<%=usr.facebookProfileLink%>" type="url" name="facebook_link" />
+                              </div>
+                          </div>
+                          <div class="col-md-6 col-12">
+                              <!-- Phone input -->
+                              <div class="form-outline">
+                                <input id="linkedinProfileLink" class="form-control" placeholder="<%=usr.linkedinProfileLink%>" value="<%=usr.linkedinProfileLink%>" name="linkedinProfileLink" type="url"/>
+                              </div>
+                          </div>
+                      </div>
+                        <!-- Address input -->
+                        <div class="row mt-2">
+                            <div class="col">
+                                <div class="form-outline">
+                                  <input type="text" id="registerAddress" class="form-control" placeholder="<%=usr.address %>" name="address" value="<%=usr.address %>" required/>
+                                </div>
+                            </div>
+                        </div>
+                        <% if(usr.category && !usr.google_id && !usr.facebook_id)  {%>
+                          <div class="row mt-2">
+                            <div class="col">
+                                <div class="form-outline">
+                                  <input type="text" id="categoryId" class="form-control" placeholder="<%= t('Category') %>" name="category" value="<%=usr.category %>" readonly/>
+                                </div>
+                            </div>
+                          </div>
+                        <% } else { %>
+ 
+                        <div class="row mt-2">
+                          <div class="col">
+                              <select class="form-control" aria-label="Select Category" name="category" id="user-category" style="display: inline;">
+                                  <option selected><%= t('SelectCategory') %></option>
+          
+                                  <% if(cats){ cats.forEach(cat=>{ %>
+                                    <% if (lang === 'fr') { %>
+                                          <option name="<%= cat.name %>" value="<%= cat.name %>"> <%= cat.translations.fr.name %></option>
+                                        <% } else { %>
+                                          <option name="<%= cat.name %>" value="<%= cat.name %>"> <%= cat.name %></option>
+                                        <% } }); } %>
+                                </select>
+                          </div>
+                        </div>
+                        <% } if (usr.country) { %>
+                          <div class="row mt-2">
+                              <div class="col col-md-6 col-12">
+                                <!--div class="form-outline">
+                                  <input type="text" id="location" class="form-control" placeholder="Location" name="location" value="<%=usr.country %> - <%=usr.city %>" readonly/>
+                                </div-->
+                                <select name="country" id="countrySearch" class="form-control" aria-label="Select Country" value="<%= usr.country %>" style="display: inline;" >
+                                  <option value="<%= usr.country %>"><%= usr.country %></option>
+                                  <% countries.forEach(country => { if(country != usr.country) %> 
+                                    <option value="<%= country.name %>"> <%= country.name %></option>
+                                    <% }); %>
+                                  </select>
+                              </div>
+                              <div class="col-md-6 col-12">
+                                <!-- City input -->
+                                <select class="form-control" aria-label="Select City"  style="display: inline;" id="citySearch" name="city" required>
+                                    <option><%= usr.city %></option>
+                                  </select>
+                            </div>
+
+                          </div>
+                        <% } else { %>
+                        <div class="row mt-2">
+                          <div class="col-md-6 col-12">
+                              <!-- Country input -->
+                              <select name="country" id="country_search" class="form-control" aria-label="Select Country" value="<%=usr.firstName %>"style="display: inline;" required>
+                                  <option value=""><%= t('SelectCountry') %>></option>
+                                  <% countries.forEach(country => { %> 
+                                    <option value="<%= country.name %>"> <%= country.name %></option>
+                                    <% }); %>
+                                </select>
+                          </div>
+                          <div class="col-md-6 col-12">
+                              <!-- City input -->
+                              <select class="form-control" aria-label="Select City"  style="display: inline;" id="city_search" name="city" required>
+                                  <option><% t('SelectCity') %></option>
+                                </select>
+                          </div>
+                      </div>
+                      <% } %>
+                      <div class="row mt-3">
+                        <div class="col-md-6 col-12">
+                            <div class="form-outline">
+                              <input type="text" id="role" class="form-control has-success" placeholder="Role" value="<%=usr.role %>"  name="role" />
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-outline">
+                              <input type="number" id="rate" class="form-control" placeholder="<%= t('Rate') %>" name="rate" value="<%=usr.rate %>" />
+                            </div>
+                        </div>
+                      </div>
+                      <div class="row mt-2">
+                        <div class="col-md-12 col-12">
+                            <div class="form-outline">
+                                <textarea rows="5" type="text" id="description" class="form-control has-success" placeholder="Description" name="description"><%=usr.description %></textarea>
+                            </div>
+                        </div>
+                      </div>
+                      <input type="hidden" id="skillsForm" class="form-control" placeholder="Address" name="skills" value="" required/>
+                      <!-- <div class="row">
+                          <div class="col-md-6">
+                              <div class="form-outline  ">
+                                  <input type="password" id="registerPassword" class="form-control" placeholder="New Password" name="password" />
+                              </div>
+                          </div>
+                          <div class="col-md-6">
+                              <div class="form-outline  ">
+                                  <input type="password" id="registerConfPassword" class="form-control" placeholder="Confirm new Password"  name="cpassword" />
+                              </div>
+                          </div>
+                      </div> -->
+                        <div class="d-flex justify-content-center mt-2 mb-4">
+
+                            <a href="/user" class="mr-3 simple-btn-inv"><%=t('Back')%></a>
+                            <button type="submit" class="profile-btn simple-btn " ><%=t('Save')%></button>
+                        </div>
+                      </div>
+                      </div>
+                    </form>
+                  </div>
+                  <div class="container shadow-sm mb-5 bg-white rounded ">
+                    <div class="row">
+                      <div class="p-3 w-100 d-flex justify-content-between border-bottom border-dark">
+                        <h5><%= t('PortfolioItems') %></h5>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+          <div class="col-lg-4 col-md-6 col-12">
+            <div class="container shadow-sm mb-5 pb-1 bg-white rounded ">
+              <div class="row">
+                <div class="w-100 d-flex justify-content-between align-items-center border-bottom border-dark p-3">
+                  <h6><%=t('AccountSettings')%></h6>
+                </div>
+              </div>
+                <div class="d-flex justify-content-between align-items-center my-3">
+                  <span><%=t('LoggedInAs')%>: </span>
+                  <span class="text-white badge badge-green"><%=usr.accountType%></span>
+                </div> 
+                <div class="d-flex justify-content-between align-items-center my-3">
+                  <span><%= t('SessionLocation') %>: </span>
+                  <span class="text-primary"><%= user_loc_data?.city%>, <%= user_loc_data?.region%></span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center my-3">
+                  <% if(usr.strictlyPro) { %>
+                    <span><%= t('SwitchAccount') %></span>
+                    <!--span class="text-primary"><a class="text-decoration-underline" href="#defaultPayModalCta" data-toggle="modal" data-caption-animate="fadeInUp">Verify</a></span-->
+                    <button type="submit" class="btn-primary-job-inv cursor" onclick="window.open('/join-as-user')" style="border-radius: 5px;"><%= t('JoinAsUser') %></button>
+                  <% } else { %>
+                    <span><%= t('SwitchAccount') %></span>
+                    <button type="submit" class="btn-primary-job-inv cursor" onclick="window.open('/switch-account')" style="border-radius: 5px;"><%= t('SwitchToUser') %></button>
+                  <% } %>
+                </div>
+                <div class="d-flex justify-content-between align-items-center my-3">
+                  <span ><%= t('Security') %></span>
+                  <button type="submit" class="btn-primary-job-inv cursor" onclick="showModal('#changePasswordModalCta')" style="border-radius: 5px;"><%= t('ChangePassword') %></button>
+                </div>
+                <div class="d-flex justify-content-between align-items-center my-3">
+                  <label ><%= t('FAQTwoFactorAuthentication') %></label>
+                  <div class="d-flex">
+                      <label class="switch">
+                          <% if(usr.twoFactAuth) { %>
+                          <input type="checkbox" id="two-fact-auth" onclick="setTwoFactAuth('<%=usr._id%>')" checked>
+                          <% } else { %>
+                          <input type="checkbox" id="two-fact-auth" onclick="setTwoFactAuth('<%=usr._id%>')">
+                          <% } %>
+                          <span class="slider round"></span>
+                      </label>
+                  </div>
+                </div>
+                <div class="d-flex justify-content-between align-items-center my-3">
+                  <span class="text-danger"><%= t('AccountDeletion')%></span>
+                  <button type="submit" class="btn-primary-job-inv-dgr cursor" onclick="showModal('#confirmAccountDeletionModalCta')" style="border-radius: 5px;"><%=t('DeleteAccount')%></button>
+                </div>
+              <p></p>
+              </div>
+              <div class="container shadow-sm mb-5 pb-1 bg-white rounded ">
+                <div class="row px-3">
+                  <div class="w-100 d-flex justify-content-between align-items-center border-bottom border-dark p-3">
+                    <h6>Notifications</h6>
+                  </div>
+                  <div class="form-group mt-2">
+                    <label class="d-block mb-0"><%= t('EmailNotifications') %></label>
+                    <div class="small text-muted "><%= t('ReceiveAlertsEmails') %></div>
+                    <div class="custom-control custom-checkbox ">
+                      <% if(usr.bkgUpdateNotifs) { %>
+                        <input type="checkbox" class="custom-control-input" id="emailNotifsForBkgUpdates" checked>
+                      <% }else { %>
+                        <input type="checkbox" class="custom-control-input" id="emailNotifsForBkgUpdates" unchecked>
+                      <% } %>
+                        <label class="custom-control-label text-muted" for="emailNotifsForBkgUpdates"><%= t('ReceiveBookingAlerts') %></label>
+                    </div>
+                    <div class="custom-control custom-checkbox ">
+                          <% if(usr.msgUpdateNotifs) { %>
+                              <input type="checkbox" class="custom-control-input" id="emailNotifsForProMsgs" checked>
+                          <% }else { %>
+                              <input type="checkbox" class="custom-control-input" id="emailNotifsForProMsgs" unchecked>
+                          <% } %>
+                          <label class="custom-control-label text-muted" for="emailNotifsForProMsgs"><%= t('ReceiveAlertsSMS') %></label>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="d-block mb-0">SMS Notifications</label>
+                    <div class="small text-muted "><%= t('ReceiveAlertsSMS') %></div>
+                    <div class="custom-control custom-checkbox">
+                      <% if(usr.SMSUpdateNotifs) { %>
+                        <input type="checkbox" class="custom-control-input" id="requestUpdatesSMS" checked>
+                      <% } else { %>
+                        <input type="checkbox" class="custom-control-input" id="requestUpdatesSMS" unchecked>
+                      <% } %>
+                        <label class="custom-control-label text-muted" for="requestUpdatesSMS"><%= t('ReceiveSMSBookingAlerts') %></label>
+                    </div>
+                    <div class="custom-control custom-checkbox">
+                      <% if(usr.oppSMSNotifs) { %>
+                        <input type="checkbox" class="custom-control-input" id="opportunitiesSMS" checked >
+                      <% } else { %>
+                        <input type="checkbox" class="custom-control-input" id="opportunitiesSMS" unchecked >
+                      <% } %>
+                        <label class="custom-control-label text-muted" for="opportunitiesSMS"> <%= t('ReceiveSMSOppAlerts') %></label>
+                    </div>
+                 
+                </div>
+
+                </div>
+              </div>
+            <div class="container shadow-sm mb-5 pb-3 bg-white rounded " >
+              <div class="row">
+                <div class="w-100 d-flex justify-content-between align-items-center border-bottom border-dark p-3">
+                  <h6>Subscription</h6>
+                </div>
+              </div>
+              <br />
+              <div class="d-flex justify-content-between">
+                <b><%=subName %></b>
+                <a id="changeSubscriptionBtn" style="cursor: pointer; color: #5A9E2F;" onclick="editSubscription()"><%= t('Change') %></a>
+              </div>
+              <div id="subscriptionsBox">
+                <br />
+                <div class="d-flex justify-content-between">
+                  <p><b><%= t('Free') %> </b> $0 / 30 days</p>
+                  <% if(subName != 'Free'){ %>
+                    <a class="text-decoration-underline" onclick="changeSubscription('free')">Select</a>
+                  <% } %>
+                </div>
+                <div class="d-flex justify-content-between">
+                  <p><b>Bronze</b> $50 / 90 days</p>
+                  <% if(subName != 'Bronze'){ %>
+                    <a class="text-decoration-underline" onclick="changeSubscription('bronze')">Select</a>
+                  <% } %>
+                </div>
+                <div class="d-flex justify-content-between">
+                  <p><b>Gold</b> $100 / 180 days</p>
+                  <% if(subName != 'Gold'){ %>
+                    <a class="text-decoration-underline" onclick="changeSubscription('gold')">Select</a>
+                  <% } %>
+                </div>
+                <div class="d-flex justify-content-between">
+                  <p><b>Bronze</b> $250 / 365 days</p>
+                  <% if(subName != 'Platinum'){ %>
+                  <a class="text-decoration-underline" onclick="changeSubscription('gold')">Select</a>
+                  <% } %>
+                </div>
+              </div>
+            </div>
+
+            <div class="container shadow-sm mb-5 pb-3 bg-white rounded ">
+              <div class="row">
+                <div class="w-100 d-flex justify-content-between align-items-center border-bottom border-dark p-3">
+                  <h6><%= t('Skills') %></h6>
+                  
+                </div>
+              </div>
+              <div id="skillBox">
+                <div id="skillsData" data-skills="<%=usr.skills%>" ></div>
+                <% usr.skills.forEach(skill => { %> 
+                  
+                  <div class="d-flex justify-content-between my-2">
+                    <p><%= skill %></p>
+                    <span style="cursor: pointer; color: red;" title="<%=t('Delete')%>" data-placement="top" data-toggle="tooltip" class="tooltips"  onClick="removeSkill(this, '<%= skill %>');" ><b class="fas fa-times"></b></span>
+                    <!--img style=" width: 15px; height: 15px;" title="Delete skill" data-placement="top" src="photo/icons8-delete-20.png"  onClick="removeSkill(this, '<%= skill %>');" )  /-->  
+                  </div>
+                <% }); %>
+              </div>
+              <div class="form-outline pt-3">
+                <div class="input-group">
+                  <input type="text" id="inputSkill" class="form-control" placeholder="<%=t('Skill') %>"  name="skill"/>
+                  <div class="input-group-append">
+                    <button type="button" class="profile-btn simple-btn" style="border-radius: 0 3px 3px 0;" onClick="addNewSkill()"><%= t('Submit')%></button>
+                  </div>
+                </div>
+              </div>
+          </div>
+          </div>
+        </div>
+      </div>
+  </div>
+  </div>
+  </section>
+
+<%- include('partials/defaultPaymentModal') %>
+<%- include('partials/confirmAccountDeletionModal') %>
+<%- include('partials/changePasswordModal') %>
+
+<script>
+
+  const notifsMsgsChbx = document.getElementById('emailNotifsForProMsgs');
+  const notifsUpdatesChbx = document.getElementById('emailNotifsForBkgUpdates');
+  const notifsSMSUpdChbx = document.getElementById('requestUpdatesSMS');
+  const notifsSMSOppChbx = document.getElementById('opportunitiesSMS');
+  const requestData = {};
+  
+  notifsMsgsChbx.addEventListener('change', (event) => {
+    //if (event.currentTarget.checked) {
+          _postData('/set-msg-update-notifs', requestData)
+              .then(async response => {
+              if(response.status == 200){
+                  console.log("Msg update email notifs successfully set!");
+              }else
+                  console.log("Error occured while setting msg update email notifs: ", response.message);
+  
+          }).catch(err=>{
+              console.log("Error occured while setting msg update email notifs: ", err);
+          });
+      //}
+  });
+  notifsUpdatesChbx.addEventListener('change', (event) => {
+    //if (event.currentTarget.checked) {
+          _postData('/set-bkg-update-notifs', requestData)
+              .then(async response => {
+              if(response.status == 200){
+                  console.log("Bkg update email notifs successfully set!");
+              }else
+                  console.log("Error occured while setting bkg update email notifs: ", response.message);
+  
+          }).catch(err=>{
+              console.log("Error occured while setting bkg update email notifs: ", err);
+          });
+      //}
+  });
+
+  notifsSMSUpdChbx.addEventListener('change', (event) => {
+  //if (event.currentTarget.checked) {
+        _postData('/set-sms-update-notifs', requestData)
+            .then(async response => {
+            if(response.status == 200){
+                console.log("Msg update SMS notifs successfully set!");
+            }else
+                console.log("Error occured while setting msg update SMS notifs: ", response.message);
+
+        }).catch(err=>{
+            console.log("Error occured while setting msg update SMS notifs: ", err);
+        });
+    //}
+});
+
+notifsSMSOppChbx.addEventListener('change', (event) => {
+  //if (event.currentTarget.checked) {
+        _postData('/set-sms-opp-notifs', requestData)
+            .then(async response => {
+            if(response.status == 200){
+                console.log("Opportunities SMS notifs successfully set!");
+            }else
+                console.log("Error occured while setting Opportunities SMS notifs notifs: ", response.message);
+
+        }).catch(err=>{
+            console.log("Error occured while setting Opportunities SMS notifs notifs: ", err);
+        });
+    //}
+});
+  </script>
+  
+
+  <script src="js/userEdit.js"></script>
+
+
+<%- include('partials/footer') %>

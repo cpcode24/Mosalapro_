@@ -1,0 +1,50 @@
+<%- include('partials/header') %>
+<section class="parallax-container padt-8" data-parallax-img="images/banner_pro_bgc.png">
+  <div class="container ">
+        <nav aria-label="breadcrumb" class="main-breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/"><%= t('Home') %></a></li>
+                <% if(usr.accountType == "user") { %> 
+                <li class="breadcrumb-item"><a href="javascript:void(0)"><%= t('User') %></a></li>
+                <% } else { %>
+                <li class="breadcrumb-item"><a href="javascript:void(0)"><%= t('Provider') %></a></li>
+                <% } %>
+                <li class="breadcrumb-item active" ><a href="javascript:void(0)"><%= t('Reviews') %></a></li>
+            </ol>
+        </nav>
+        <div class="row justify-content-center ">
+            <div class="col text-center my-3 px-4 py-2">
+                <h5><%= t('MostRecentReviewsFor') %> <%=pro.firstName%></h5>
+            </div>
+        </div>
+        <div class="row d-inline mx-4 p-4">
+            <% ratings.forEach(r=>{
+                let i = 0; 
+                let stars = r.rating < 1.5 ? 1: r.rating < 2.5 ? 2: r.rating < 3.5 ? 3 : r.rating < 4.5 ? 4: 5;  
+                %>
+                <div class="card p-3">
+                    <div class="row">
+                        <div class="col-lg-1 col-md-1 col-3 justify-content-center d-flex">
+                            <img src="<%=r.userPict%>"  alt="" class="rounded-circle " style="height:45px !important; width:45px !important;">
+                        </div>
+                        <div class="col-lg-11 col-md-11 col-9 ml-0">
+                            <div class="row mb-0 mt-0">
+                                    <% if(r.jobTitle) { %> <b class="mr-2"><%=r.jobTitle%> </b> <% } else { %> <b class="mr-2"><%= t('Review') %> <%=i+1%> </b><% } %>
+                                    <% for(i = 0; i < stars; i++) { %>
+                                        <li class="d-inline"><b class="fa-star fa-sm rating-star-color fas "></b></li>
+                                    <% } if(i < 5) while(i < 5) { %>
+                                        <li class="d-inline"><b class="fa-star-o fa-sm rating-star-color fas "></b></li>
+                                    <% i++; } %>
+                                
+                            </div>
+                            <div class="row mt-0 ">
+                                <div class="col mx-0"><p><%=r.userComment%></p><span class="text-petit"><b><%=r.usrname%> &nbsp;&nbsp;&bullet; &nbsp;</b>  <%=r.lastUpdate%></span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            <% });%>
+        </div>
+  </div>
+</section>
+<%- include('partials/footer') %>

@@ -1,0 +1,102 @@
+<% if(usr) { %>
+
+<div class="modal fade" id="defaultPayModalCta" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+    <div class="modal-content">
+        <div class="container mt-4">
+            <h3 class="text-center mb-2">Update default payment</h3>
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <!-- <form action="/charge" method="post" id="payment-form">
+                        <div class="form-group">
+                          <label for="card-element">
+                            Credit or debit card
+                          </label>
+                          <div id="card-element"  style="width: 30em">
+                            <label for="cardNumberEl">Card</label>
+                            <div id="cardNumberEl" class="form-control"></div>
+                          </div>
+                          
+                          <div id="card-errors" role="alert"></div>
+                        </div>
+                      
+                        <button class="btn btn-block button-primary mt-3">Submit Payment</button>
+                    </form> -->
+
+                    <form id="paymentForm">
+                        <div class="form-group">
+                            <label for="cardNumberEl">Card Number</label>
+                            <span id="cardNumberEl" ></span>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="cardExpiryEl">Expiration Month</label>
+                                <span id="cardExpiryEl" class="form-control"></span>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="cardCVCEl">CVC</label>
+                                <span id="cardCVCEl" class="form-control"></span>
+                            </div>
+                           
+                        </div>
+                       
+                        <input type="hidden" name="plan" id="planInput" class="form-control">
+                        <div class="col d-flex flex-column justify-content-center align-items-center">
+                            <div class=" justify-content-center">
+                                <div class="g-recaptcha " 
+                                    data-sitekey="<%=recaptchaKey%>"
+                                    data-callback='enableSubmit'>
+                                </div>
+                            </div>
+                        </div>                        
+                        <button id="submit_payment" class="btn btn-block button-primary mt-3" disabled="disabled" onClick="submitHandler(event)">Update</button>
+                    </form>
+
+
+                    <!-- <form id="paymentForm">
+                        <div class="form-group">
+                            <label for="cardNumber">Card Number</label>
+                            <input type="text" class="form-control" id="cardNumber" name="cardNumber" placeholder="1234 5678 9012 3456" maxlength="19" required>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="cardExpiry">Expiration Month</label>
+                                <input type="number" class="form-control" id="cardExpiryMonth" name="expiryMonth" placeholder="MM" min="1" max="12" required>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="cardExpiryYear">Expiration Year</label>
+                                <input type="number" class="form-control" id="cardExpiryYear" name="expiryYear" placeholder="YYYY" min="2023" max="2043" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="cardCVC">CVC</label>
+                            <input type="number" class="form-control" id="cardCVC" name="cvc" placeholder="123" min="100" max="999" required>
+                        </div>
+                        <input type="hidden" name="plan" id="planInput" class="form-control">
+                        <div class="col d-flex flex-column justify-content-center align-items-center">
+                            <div class=" justify-content-center">
+                              <div class="g-recaptcha " data-sitekey="6LdUeBMlAAAAAAln0xxrDWAG1kHsZLwtNVVYn8o6" data-callback="enableSubmit"></div>
+                            </div>
+                        </div>                        
+                        <button id="submit_payment" class="btn btn-block button-primary mt-3" disabled="disabled" onClick="submitHandler(event)">Update</button>
+                    </form> -->
+                </div>
+            </div>
+        </div>
+    </div>
+  </div>
+</div>
+<script src="js/payment.js"></script>
+<% }  %>
+<!--div class="modal fade" id="payModalCta" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <p>you need to sign in your account</p>
+        </div>
+    </div>
+</div-->
+<script>
+    function enableSubmit(){
+      document.getElementById("submit_payment").disabled = false;
+    }
+</script>

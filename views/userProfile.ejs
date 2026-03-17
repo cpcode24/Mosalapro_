@@ -191,7 +191,7 @@
                                             </div>
                                             <div class="col-lg-6 col-md-6 col">
                                                 <% if(usr.registeredAsPro) { %>
-                                                    <button type="submit" class="btn-primary-job-inv cursor" onclick="window.open('/switch-account')" style="border-radius: 5px; padding: 6px;"><%= t('SwitchToUser') %></button>
+                                                    <button type="submit" class="btn-primary-job-inv cursor" onclick="window.open('/switch-account')" style="border-radius: 5px; padding: 6px;"><%= t('SwitchToPro') %></button>
                                                 <% } %>
                                             </div>"
                                             <!--div class="col-lg-6 col-md6 col-sm-12 col-12">
@@ -241,11 +241,68 @@
                             <p class="font-size-sm text-secondary" ><%= t('CurrentSessionInformation') %></p>
                             <ul class="list-group list-group-sm">
                             <li class="list-group-item has-icon">
-                            <div>
-                            <h6 class="mb-0"> <%= user_loc_data?.city%>, <%= user_loc_data?.region%> - <%= user_loc_data?.timezone%></h6>
-                            <small class="text-muted"><%= t('YourCurrentSessionSeen') %> <%= user_loc_data?.country_name%></small>
+                            <div class="w-100">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                <h6 class="mb-0"> <%= user_loc_data?.city%>, <%= user_loc_data?.region%> - <%= user_loc_data?.timezone%></h6>
+                                <small class="text-muted"><%= t('YourCurrentSessionSeen') %> <%= user_loc_data?.country_name%></small>
+                                </div>
+                                <button class="btn btn-light btn-sm ml-auto" type="button" onclick="toggleSessionInfo()">
+                                    <span id="moreInfoText"><%= t('MoreInfo') %></span>
+                                    <svg id="moreInfoIcon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transition: transform 0.3s;">
+                                        <polyline points="6 9 12 15 18 9"></polyline>
+                                    </svg>
+                                </button>
                             </div>
-                            <button class="btn btn-light btn-sm ml-auto" type="button"><%= t('MoreInfo') %></button>
+                            <div id="sessionDetailsContainer" style="display: none; margin-top: 15px; padding-top: 15px; border-top: 1px solid #e0e0e0;">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <strong class="d-block text-muted small">IP Address</strong>
+                                        <span><%= user_loc_data?.ip || 'N/A' %></span>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <strong class="d-block text-muted small">Country</strong>
+                                        <span><%= user_loc_data?.country_name || 'N/A' %> (<%= user_loc_data?.country_code || 'N/A' %>)</span>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <strong class="d-block text-muted small">Region</strong>
+                                        <span><%= user_loc_data?.region || 'N/A' %></span>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <strong class="d-block text-muted small">City</strong>
+                                        <span><%= user_loc_data?.city || 'N/A' %></span>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <strong class="d-block text-muted small">Timezone</strong>
+                                        <span><%= user_loc_data?.timezone || 'N/A' %></span>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <strong class="d-block text-muted small">ISP</strong>
+                                        <span><%= user_loc_data?.org || 'N/A' %></span>
+                                    </div>
+                                    <% if(user_loc_data?.postal) { %>
+                                    <div class="col-md-6 mb-3">
+                                        <strong class="d-block text-muted small">Postal Code</strong>
+                                        <span><%= user_loc_data?.postal %></span>
+                                    </div>
+                                    <% } %>
+                                    <% if(user_loc_data?.latitude && user_loc_data?.longitude) { %>
+                                    <div class="col-md-6 mb-3">
+                                        <strong class="d-block text-muted small">Coordinates</strong>
+                                        <span><%= user_loc_data?.latitude %>, <%= user_loc_data?.longitude %></span>
+                                    </div>
+                                    <% } %>
+                                </div>
+                                <div class="alert alert-info small mt-2 mb-0">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 5px;">
+                                        <circle cx="12" cy="12" r="10"></circle>
+                                        <line x1="12" y1="16" x2="12" y2="12"></line>
+                                        <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                                    </svg>
+                                    This information is based on your current session and network connection.
+                                </div>
+                            </div>
+                            </div>
                             </li>
                             </ul>
                             </div>
@@ -680,10 +737,26 @@ const setTwoFactAuth = async(id)=>{
         else{
             console.log("Error occured while setting two factors auth!");
         }
-        
+
         }).catch(err => {
             console.log(err);
         });
+}
+
+const toggleSessionInfo = () => {
+    const container = document.getElementById('sessionDetailsContainer');
+    const icon = document.getElementById('moreInfoIcon');
+    const text = document.getElementById('moreInfoText');
+
+    if (container.style.display === 'none') {
+        container.style.display = 'block';
+        icon.style.transform = 'rotate(180deg)';
+        text.innerHTML = '<%= t("LessInfo") || "Less Info" %>';
+    } else {
+        container.style.display = 'none';
+        icon.style.transform = 'rotate(0deg)';
+        text.innerHTML = '<%= t("MoreInfo") %>';
+    }
 }
 
 const deleteAccount = async (id) =>{

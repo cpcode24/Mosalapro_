@@ -1,24 +1,37 @@
 /**
  * RAG Service for MosalaPro
- * Handles Retrieval Augmented Generation with local Llama model
+ * Handles Retrieval Augmented Generation with multiple LLM providers
+ * Supports: Local Llama (via Ollama) and Groq (cloud-based)
  */
 
 const VectorDBService = require('./vectorDB');
 const { Ollama } = require('ollama');
+const GroqService = require('./groqService');
 
 class RAGService {
     constructor() {
         this.vectorDB = new VectorDBService();
+
+        // Determine which provider to use
+        this.provider = process.env.LLM_PROVIDER || 'groq'; // Default to Groq for better performance
+
+        // Initialize Ollama (for local Llama)
         this.ollama = new Ollama({
             host: process.env.OLLAMA_URL
         });
         this.model = process.env.LLAMA_MODEL || 'llama3.2:3b';
+
+        // Initialize Groq service
+        this.groqService = new GroqService();
+
         this.initialized = false;
         this.topK = 3; // Reduced from 5 to 3 - less context = faster
         this.temperature = 0.7;
 
-        // Keep model loaded in memory to avoid reload latency
+        // Keep model loaded in memory to avoid reload latency (for Ollama)
         this.keepModelLoaded = true;
+
+        console.log(`🔧 RAG Service configured to use: ${this.provider.toUpperCase()}`);
     }
 
     /**
@@ -31,32 +44,50 @@ class RAGService {
             // Initialize vector database
             await this.vectorDB.initialize();
 
-            // Check if Ollama is running and model is available
-            try {
-                const models = await this.ollama.list();
-                const modelExists = models.models.some(m => m.name.includes(this.model.split(':')[0]));
+            // Initialize based on selected provider
+            if (this.provider === 'groq') {
+                // Initialize Groq service
+                const success = await this.groqService.initialize();
+                if (success) {
+                    console.log('✅ RAG Service initialized with Groq');
+                    this.initialized = true;
+                    return true;
+                } else {
+                    console.warn('⚠️ Groq initialization failed, falling back to Ollama...');
+                    this.provider = 'ollama';
+                }
+            }
 
-                if (!modelExists) {
-                    console.warn(` Model ${this.model} not found. Please run: ollama pull ${this.model}`);
+            // Initialize Ollama (either selected or fallback)
+            if (this.provider === 'ollama') {
+                try {
+                    const models = await this.ollama.list();
+                    const modelExists = models.models.some(m => m.name.includes(this.model.split(':')[0]));
+
+                    if (!modelExists) {
+                        console.warn(` Model ${this.model} not found. Please run: ollama pull ${this.model}`);
+                        return false;
+                    }
+
+                    console.log('✅ RAG Service initialized with Ollama');
+                    this.initialized = true;
+
+                    // Warmup: Preload model into memory for faster first response
+                    if (this.keepModelLoaded) {
+                        this.warmupModel().catch(err =>
+                            console.warn(' Model warmup failed (non-critical):', err.message)
+                        );
+                    }
+
+                    return true;
+                } catch (error) {
+                    console.error(` Ollama is not running on ${process.env.OLLAMA_URL}. Please start Ollama service.`);
+                    console.error('   Run: ollama serve');
                     return false;
                 }
-
-                console.log('RAG Service initialized successfully');
-                this.initialized = true;
-
-                // Warmup: Preload model into memory for faster first response
-                if (this.keepModelLoaded) {
-                    this.warmupModel().catch(err =>
-                        console.warn(' Model warmup failed (non-critical):', err.message)
-                    );
-                }
-
-                return true;
-            } catch (error) {
-                console.error(` Ollama is not running on ${process.env.OLLAMA_URL}. Please start Ollama service.`);
-                console.error('   Run: ollama serve');
-                return false;
             }
+
+            return false;
         } catch (error) {
             console.error('Failed to initialize RAG Service:', error);
             this.initialized = false;

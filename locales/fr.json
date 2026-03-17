@@ -285,6 +285,7 @@
   "EmailNotifications": "Notifications par e-mail",
   "ReceiveAlertsEmails": "Recevoir des alertes par e-mail",
   "ReceiveAlertsSMS": "Recevoir des alertes par SMS",
+  "SessionInfoDisclaimer": "Cette information est basée sur votre session actuelle et votre connexion réseau.",
   "ReceiveBookingAlerts": "Recevoir des e-mails pour les échéances et mises à jour des réservations.",
   "ReceiveSMSBookingAlerts": "Recevoir des messages pour mes reservations et délais",
   "ReceiveSMSOppAlerts": "Recevoir des messages concernant les opportunités",

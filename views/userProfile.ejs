@@ -258,31 +258,31 @@
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
                                         <strong class="d-block text-muted small">IP Address</strong>
-                                        <span><%= user_loc_data?.ip || 'N/A' %></span>
+                                        <span><%= user_loc_data?.ip %></span>
                                     </div>
                                     <div class="col-md-6 mb-3">
-                                        <strong class="d-block text-muted small">Country</strong>
-                                        <span><%= user_loc_data?.country_name || 'N/A' %> (<%= user_loc_data?.country_code || 'N/A' %>)</span>
+                                        <strong class="d-block text-muted small"><%= t('Country') %></strong>
+                                        <span><%= user_loc_data?.country_name %> (<%= user_loc_data?.country_code %>)</span>
                                     </div>
                                     <div class="col-md-6 mb-3">
-                                        <strong class="d-block text-muted small">Region</strong>
-                                        <span><%= user_loc_data?.region || 'N/A' %></span>
+                                        <strong class="d-block text-muted small"><%= t('Region') %></strong>
+                                        <span><%= user_loc_data?.region %></span>
                                     </div>
                                     <div class="col-md-6 mb-3">
-                                        <strong class="d-block text-muted small">City</strong>
-                                        <span><%= user_loc_data?.city || 'N/A' %></span>
+                                        <strong class="d-block text-muted small"><%= t('City') %></strong>
+                                        <span><%= user_loc_data?.city %></span>
                                     </div>
                                     <div class="col-md-6 mb-3">
-                                        <strong class="d-block text-muted small">Timezone</strong>
+                                        <strong class="d-block text-muted small"><%= t('Timezone') %></strong>
                                         <span><%= user_loc_data?.timezone || 'N/A' %></span>
                                     </div>
                                     <div class="col-md-6 mb-3">
-                                        <strong class="d-block text-muted small">ISP</strong>
+                                        <strong class="d-block text-muted small"><%= t('ISP') %></strong>
                                         <span><%= user_loc_data?.org || 'N/A' %></span>
                                     </div>
                                     <% if(user_loc_data?.postal) { %>
                                     <div class="col-md-6 mb-3">
-                                        <strong class="d-block text-muted small">Postal Code</strong>
+                                        <strong class="d-block text-muted small"><%= t('Postal Code') %></strong>
                                         <span><%= user_loc_data?.postal %></span>
                                     </div>
                                     <% } %>
@@ -293,13 +293,13 @@
                                     </div>
                                     <% } %>
                                 </div>
-                                <div class="alert alert-info small mt-2 mb-0">
+                                <div class="alert-info small mt-2 mb-0">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 5px;">
                                         <circle cx="12" cy="12" r="10"></circle>
                                         <line x1="12" y1="16" x2="12" y2="12"></line>
                                         <line x1="12" y1="8" x2="12.01" y2="8"></line>
                                     </svg>
-                                    This information is based on your current session and network connection.
+                                    <%= t('SessionInfoDisclaimer') %>
                                 </div>
                             </div>
                             </div>
@@ -450,7 +450,7 @@ async function loadUserPaymentMethods() {
             container.innerHTML = html;
         } else {
             container.innerHTML = `
-                <div class="alert alert-info text-center">
+                <div class=" alert-info text-center">
                     class="fa fa-info-circle"></b> <%= t('YouHaveNotAddedPaymentMethod') %>
                 </div>
             `;
@@ -458,7 +458,7 @@ async function loadUserPaymentMethods() {
     } catch (error) {
         console.error('Error loading payment methods:', error);
         container.innerHTML = `
-            <div class="alert alert-danger">
+            <div class=" alert-danger">
                 class="fa fa-exclamation-triangle"></b> <%= t('ErrorLoadingPaymentMethods') %>
             </div>
         `;
@@ -515,7 +515,7 @@ async function loadPaymentHistory() {
             container.innerHTML = html;
         } else {
             container.innerHTML = `
-                <div class="alert alert-info text-center">
+                <div class=" alert-info text-center">
                     class="fa fa-info-circle"></b> <%= t('YouHaveNotMadeAnyPayment') %>
                 </div>
             `;
@@ -523,7 +523,7 @@ async function loadPaymentHistory() {
     } catch (error) {
         console.error('Error loading payment history:', error);
         container.innerHTML = `
-            <div class="alert alert-danger">
+            <div class=" alert-danger">
                 class="fa fa-exclamation-triangle"></b> <%= t('ErrorLoadingPaymentHistory') %>
             </div>
         `;

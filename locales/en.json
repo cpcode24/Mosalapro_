@@ -794,6 +794,7 @@
   "ReadAndReplyMessage": "Read and reply message",
   "CheckProviderProfile": "Check provider profile",
   "DeleteAlert": "Delete alert",
+  "SessionInfoDisclaimer": "This information is based on your current session and network connection.",
   "ViewBookingUpdate": "View booking update",
   "ViewBookingDetails": "View booking details",
   "ViewQuotationRequest": "View quotation request",

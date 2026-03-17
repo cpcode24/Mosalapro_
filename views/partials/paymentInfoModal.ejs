@@ -27,7 +27,7 @@
                 </ul>
 
                 <!-- Alert Messages -->
-                <div id="paymentAlert" class="alert d-none" role="alert"></div>
+                <div id="paymentAlert" class=" d-none" role="alert"></div>
 
                 <!-- Tab Content -->
                 <div class="tab-content" id="paymentMethodTabContent">
@@ -82,7 +82,7 @@
                     <!-- PayPal Tab -->
                     <div class="tab-pane fade" id="paypalPayment" role="tabpanel" aria-labelledby="paypal-tab">
                         <form id="paypalPaymentForm">
-                            <div class="alert alert-info">
+                            <div class=" alert-info">
                                 <b class="fa fa-info-circle"></b><%= t('PayPalRedirectInfo') %>
                             </div>
 
@@ -298,7 +298,7 @@ async function loadPaymentMethods() {
     } catch (error) {
         console.error('Error loading payment methods:', error);
         document.getElementById('savedPaymentMethods').innerHTML =
-            '<div class="alert alert-warning">Failed to load payment methods</div>';
+            '<div class=" alert-warning">Failed to load payment methods</div>';
     }
 }
 

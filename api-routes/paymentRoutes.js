@@ -80,6 +80,7 @@ router.post('/payment-method', isAuthenticated, async (req, res) => {
  * GET /api/payment/payment-methods
  */
 router.get('/payment-methods', isAuthenticated, async (req, res) => {
+    console.log(`Fetching payment methods for user ${req.user._id}`);
     try {
         const userId = req.user._id;
         const paymentMethods = await PaymentMethod.getActiveForUser(userId);
@@ -96,11 +97,11 @@ router.get('/payment-methods', isAuthenticated, async (req, res) => {
             lastUsedAt: pm.lastUsedAt,
             createdAt: pm.createdAt
         }));
-
+        console.log(`Payment methods for user ${userId}:`, methods);
         res.json({ success: true, paymentMethods: methods });
 
     } catch (error) {
-        console.error('Error fetching payment methods:', error);
+        console.log('Error fetching payment methods:', error);
         res.status(500).json({ error: error.message });
     }
 });

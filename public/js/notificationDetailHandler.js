@@ -1,6 +1,7 @@
 const hirePro = async(proId, jobId_)=> {
 
     const message = document.getElementById("notif-msg");
+    const translations = window.hireTranslations || {};
     requestData = {
         providerId: proId,
         jobId: jobId_
@@ -11,33 +12,34 @@ const hirePro = async(proId, jobId_)=> {
         if(json.status == 200){
             message.classList.remove('error_message');
             message.classList.add('success_message');
-            message.innerHTML = "You have hired this provider for the job! A notification has been sent";
+            message.innerHTML = translations.providerHiredSuccess ;
             await new Promise(r => setTimeout(r, 1500));
-            
+
             var lnk = location.href.split("/");
             var baseLnk = lnk[0]+"//"+lnk[2];
-            var socket = io(baseLnk, { transports: ['websocket', 'polling', 'flashsocket'], 'force new connection': true });
-            
+            var socket = io(baseLnk, { transports: ['websocket']});
+
               socket.emit("pushNotification", {
-                      "title": "Congratulations! You have been hired.",
-                      "content": "You have been hired for a service request you applied for.",
+                      "title": translations.providerHiredTitle ,
+                      "content": translations.providerHiredContent,
                       "userId": proId,
                       "notifType": "pro"
                   });
           $('#contentId').load(location.href+" #contentId");
         }
-        else{ 
-            message.innerHTML = "Oops. An error occured: "+json.status;
+        else{
+            message.innerHTML = (translations.hireErrorOccurred || "Oops. An error occurred: ") + json.status;
         }
-        
+
       }).catch(err => {
         console.log(err) // Handle errors
-        message.innerHTML = "Oops. An error occured. Please try again.";
+        message.innerHTML = translations.hireErrorTryAgain || "Oops. An error occurred. Please try again.";
       });
 }
 
 const rejectApplication = async(proId, jobId_)=> {
 const message = document.getElementById("notif-msg");
+  const translations = window.hireTranslations || {};
   requestData = {
       providerId: proId,
       jobId: jobId_
@@ -48,27 +50,27 @@ const message = document.getElementById("notif-msg");
       if(json.status == 200){
           message.classList.remove('error_message');
           message.classList.add('success_message');
-          message.innerHTML = "You have rejected the provider's application. A notification has been sent.";
+          message.innerHTML = translations.applicationRejectedSuccess;
           await new Promise(r => setTimeout(r, 1100));
           // var lnk = location.href.split("/");
           // var baseLnk = lnk[0]+"//"+lnk[2];
           // var socket = io(baseLnk, { transports: ['websocket', 'polling', 'flashsocket'], 'force new connection': true });
-          
+
           socket.emit("pushNotification", {
-                    "title": "Your application has been rejected.",
-                    "content": "Your application for a service request has been rejected\n by the client.",
+                    "title": translations.applicationRejectedTitle,
+                    "content": translations.applicationRejectedContent,
                     "userId": proId,
                     "notifType": "pro"
           });
           $('#contentId').load(location.href+" #contentId");
       }
       else{
-          message.innerHTML = "Oops. An error occured: "+json.status;
+          message.innerHTML = (translations.hireErrorOccurred || "Oops. An error occurred: ") + json.status;
       }
-      
+
     }).catch(err => {
       console.log(err) // Handle errors
-      message.innerHTML = "Oops. An error occured. Please try again.";
+      message.innerHTML = translations.hireErrorTryAgain;
     });
 }
 

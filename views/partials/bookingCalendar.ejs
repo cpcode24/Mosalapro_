@@ -1,0 +1,296 @@
+<!-- Booking Calendar with Provider Availability -->
+<div class="booking-calendar-container">
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">
+                <i class="fas fa-calendar-alt"></i> <%= t('SelectDateTime') %>
+            </h5>
+        </div>
+        <div class="card-body">
+            <!-- Calendar View -->
+            <div id="bookingCalendar" class="mb-4"></div>
+
+            <!-- Selected Date Info -->
+            <div id="selectedDateInfo" class="alert alert-info" style="display: none;">
+                <strong><%= t('SelectedDate') %>:</strong> <span id="selectedDateText"></span>
+            </div>
+
+            <!-- Available Time Slots -->
+            <div id="timeSlots" style="display: none;">
+                <h6 class="mb-3"><%= t('AvailableTimeSlots') %></h6>
+                <div id="timeSlotsContainer" class="row g-2">
+                    <!-- Time slots will be populated here -->
+                </div>
+            </div>
+
+            <!-- No availability message -->
+            
+            <!-- Selected Time Display -->
+            <div id="selectedTimeDisplay" class="alert alert-success" style="display: none;">
+                <i class="fas fa-check-circle"></i>
+                <strong><%= t('SelectedTime') %>:</strong>
+                <span id="selectedTimeText"></span>
+                <input type="hidden" id="selectedDate" name="bookingDate">
+                <input type="hidden" id="selectedStartTime" name="startTime">
+                <input type="hidden" id="selectedEndTime" name="endTime">
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Include FullCalendar CSS and JS -->
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js"></script>
+
+<style>
+.booking-calendar-container {
+    margin: 20px 0;
+}
+
+#bookingCalendar {
+    max-width: 100%;
+}
+
+.time-slot-btn {
+    padding: 12px;
+    border: 2px solid #dee2e6;
+    border-radius: 8px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+    font-weight: 500;
+}
+
+.time-slot-btn:hover {
+    border-color: #007bff;
+    background: #e7f3ff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.time-slot-btn.selected {
+    background: #007bff;
+    color: white;
+    border-color: #007bff;
+}
+
+.time-slot-btn.disabled {
+    background: #e9ecef;
+    color: #6c757d;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.time-slot-btn.disabled:hover {
+    transform: none;
+    box-shadow: none;
+}
+
+.fc-day-today {
+    background-color: #fff3cd !important;
+}
+
+.fc-day-past {
+    background-color: #f8f9fa;
+    opacity: 0.6;
+}
+
+.fc-day-available {
+    background-color: #d4edda;
+}
+
+.fc-event {
+    background-color: #28a745;
+    border-color: #28a745;
+}
+</style>
+
+<script>
+// Provider ID will be passed from the parent page
+let providerId = '<%= typeof pro !== "undefined" ? pro._id : "" %>';
+let calendar;
+let providerAvailability = [];
+
+document.addEventListener('DOMContentLoaded', function() {
+    initializeBookingCalendar();
+});
+
+async function initializeBookingCalendar() {
+    if (!providerId) {
+        console.error('Provider ID not set');
+        return;
+    }
+
+    // Load provider availability
+    await loadProviderAvailability();
+
+    // Initialize calendar
+    const calendarEl = document.getElementById('bookingCalendar');
+    calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        headerToolbar: {
+            left: 'prev,next today',
+            center: 'title',
+            right: ''
+        },
+        selectable: true,
+        selectMirror: true,
+        dateClick: function(info) {
+            handleDateClick(info.dateStr);
+        },
+        dayCellDidMount: function(info) {
+            // Style days based on availability
+            const dateStr = info.date.toISOString().split('T')[0];
+            const dayOfWeek = info.date.getDay();
+            const isPast = info.date < new Date(new Date().setHours(0, 0, 0, 0));
+
+            if (isPast) {
+                info.el.classList.add('fc-day-past');
+            } else if (hasAvailability(dayOfWeek, dateStr)) {
+                info.el.classList.add('fc-day-available');
+            }
+        },
+        validRange: {
+            start: new Date() // Disable past dates
+        }
+    });
+
+    calendar.render();
+}
+
+async function loadProviderAvailability() {
+    try {
+        const today = new Date();
+        const threeMonthsLater = new Date();
+        threeMonthsLater.setMonth(threeMonthsLater.getMonth() + 3);
+
+        const response = await fetch(
+            `/api/availability/provider/${providerId}?startDate=${today.toISOString()}&endDate=${threeMonthsLater.toISOString()}`
+        );
+        const data = await response.json();
+
+        if (data.success) {
+            providerAvailability = data.availabilities;
+        }
+    } catch (error) {
+        console.error('Error loading availability:', error);
+    }
+}
+
+function hasAvailability(dayOfWeek, dateStr) {
+    // Check recurring availability
+    const recurring = providerAvailability.find(a =>
+        a.type === 'recurring' && a.dayOfWeek === dayOfWeek && a.isAvailable
+    );
+
+    // Check specific date availability
+    const specific = providerAvailability.find(a =>
+        a.type === 'specific' &&
+        a.date.startsWith(dateStr) &&
+        a.isAvailable
+    );
+
+    return recurring || specific;
+}
+
+async function handleDateClick(dateStr) {
+    const date = new Date(dateStr);
+    const dayOfWeek = date.getDay();
+
+    // Update selected date display
+    document.getElementById('selectedDateText').textContent = date.toLocaleDateString('en-US', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    });
+    document.getElementById('selectedDateInfo').style.display = 'block';
+    document.getElementById('selectedDate').value = dateStr;
+
+    // Get available time slots for this date
+    const slots = getAvailableTimeSlots(dayOfWeek, dateStr);
+
+    if (slots.length > 0) {
+        displayTimeSlots(slots, dateStr);
+        document.getElementById('timeSlots').style.display = 'block';
+        document.getElementById('noAvailability').style.display = 'none';
+    } else {
+        document.getElementById('timeSlots').style.display = 'none';
+        document.getElementById('noAvailability').style.display = 'block';
+    }
+
+    // Hide selected time
+    document.getElementById('selectedTimeDisplay').style.display = 'none';
+}
+
+function getAvailableTimeSlots(dayOfWeek, dateStr) {
+    const slots = [];
+
+    // Get recurring slots for this day
+    const recurring = providerAvailability.filter(a =>
+        a.type === 'recurring' && a.dayOfWeek === dayOfWeek && a.isAvailable
+    );
+
+    // Get specific slots for this date
+    const specific = providerAvailability.filter(a =>
+        a.type === 'specific' && a.date.startsWith(dateStr) && a.isAvailable
+    );
+
+    // Combine and format slots
+    [...recurring, ...specific].forEach(slot => {
+        slots.push({
+            startTime: slot.startTime,
+            endTime: slot.endTime,
+            id: slot._id
+        });
+    });
+
+    return slots;
+}
+
+function displayTimeSlots(slots, dateStr) {
+    const container = document.getElementById('timeSlotsContainer');
+    container.innerHTML = '';
+
+    slots.forEach(slot => {
+        const slotElement = document.createElement('div');
+        slotElement.className = 'col-md-4 col-6';
+        slotElement.innerHTML = `
+            <div class="time-slot-btn" onclick="selectTimeSlot('${slot.startTime}', '${slot.endTime}', '${dateStr}')">
+                <i class="fas fa-clock"></i>
+                ${formatTime(slot.startTime)} - ${formatTime(slot.endTime)}
+            </div>
+        `;
+        container.appendChild(slotElement);
+    });
+}
+
+function selectTimeSlot(startTime, endTime, dateStr) {
+    // Remove previous selection
+    document.querySelectorAll('.time-slot-btn').forEach(btn => {
+        btn.classList.remove('selected');
+    });
+
+    // Mark selected
+    event.currentTarget.classList.add('selected');
+
+    // Update hidden fields
+    document.getElementById('selectedStartTime').value = startTime;
+    document.getElementById('selectedEndTime').value = endTime;
+
+    // Display selected time
+    const date = new Date(dateStr);
+    document.getElementById('selectedTimeText').textContent =
+        `${date.toLocaleDateString()} at ${formatTime(startTime)} - ${formatTime(endTime)}`;
+    document.getElementById('selectedTimeDisplay').style.display = 'block';
+}
+
+function formatTime(time24) {
+    const [hours, minutes] = time24.split(':');
+    const hour = parseInt(hours);
+    const ampm = hour >= 12 ? 'PM' : 'AM';
+    const hour12 = hour % 12 || 12;
+    return `${hour12}:${minutes} ${ampm}`;
+}
+</script>

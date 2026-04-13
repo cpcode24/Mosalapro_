@@ -10,6 +10,7 @@
 
 require("dotenv").config();
 const express = require("express");
+const httpp = express();
 const bodyParser = require("body-parser");
 const hpp = require('hpp');
 const { createProxyMiddleware } = require('http-proxy-middleware');
@@ -45,7 +46,18 @@ const connectDB = async(DBURI) => {
 	await mongoose.connect(DBURI, {
 		useNewUrlParser:true,
 		useUnifiedTopology: true,
-		family:4
+		family:4,
+		maxPoolSize: 100,        // ← KEY FIX: 100 instead of 5!
+		minPoolSize: 10,
+		maxIdleTimeMS: 30000,
+		serverSelectionTimeoutMS: 10000,
+		socketTimeoutMS: 45000,
+		connectTimeoutMS: 10000,
+		retryWrites: true,
+		retryReads: true,
+		heartbeatFrequencyMS: 10000,
+		ssl: true,
+		tls: true
 	}).then(async success=>{
 		dbConnected = true;
 		logger.info("APP:: Successfully connected to the database.");
@@ -58,7 +70,6 @@ const connectDB = async(DBURI) => {
 				await new Promise(r => setTimeout(r, 1000));
 				rates_ = await axios.get(process.env.CURRFREAKSAPI);
 			}
-			console.log("rates from axios:: ", rates_);
 			await new Promise(r => setTimeout(r, 500));
 			const tmprates = await new CurrencyDailyRatesModel({
 				createdAt: new Date(),
@@ -150,23 +161,48 @@ app.use(bodyParser.urlencoded({
 
 
   
+// Create MongoStore with error handling
+const sessionStore = MongoStore.create({
+	mongoUrl: process.env.DBURI,
+	collectionName: 'sessions', // Dedicated collection for sessions
+	autoRemove: 'native', // Use MongoDB's native TTL index (more efficient)
+	autoRemoveInterval: 10, // Cleanup interval in minutes
+	crypto: {
+		secret: process.env.SESSION_SECRET,
+	},
+	touchAfter: 3600, // Update session in DB max once per hour (reduces DB writes)
+	ttl: 365 * 24 * 60 * 60, // Session expiry: 1 year (in seconds)
+});
+
+// Handle session store errors
+sessionStore.on('error', function(error) {
+	logger.error('Session store error:', error);
+	// Don't crash the app on session errors
+	if (error.message && error.message.includes('decrypt')) {
+		logger.warn('Session decryption error - corrupted session will be ignored');
+	}
+});
+
 app.use(session({
 	secret: process.env.SESSION_SECRET,
 	resave: false,
 	saveUninitialized: false,
 	cookie: {
-		maxAge: 1000 * 3600 * 24 * 365
+		maxAge: 1000 * 3600 * 24 * 365,
+		secure: process.env.NODE_ENV === 'production', // HTTPS only in production
+		httpOnly: true,
+		sameSite: 'lax'
 	},
-	store: MongoStore.create({
-		mongoUrl: process.env.DBURI,
-		autoRemove: 'interval',
-		autoRemoveInterval: 10, // In minutes. Default
-		crypto: {
-			secret: process.env.SESSION_SECRET,
-		  },
-		
-	  })
+	store: sessionStore
 }));
+
+// Middleware to handle session errors gracefully
+app.use((req, res, next) => {
+	if (!req.session) {
+		logger.warn('Session not available, creating new session');
+	}
+	next();
+});
 
 app.use(passport.initialize());
 app.use(passport.session());
@@ -225,7 +261,7 @@ passport.use(new FacebookStrategy({
 		logger.info("FB AUTH:: User profile: "+profile);
 		UserModel.findOne({email: profile.emails[0].value}, function(err, existingUser){
 			if(existingUser){
-				console.log("FB AUTH:: Existing user.."+existingUser);
+				console.log("FB AUTH:: Existing user..");
 				// Update access token for existing user
 				existingUser.facebookAccessToken = accessToken;
 				existingUser.facebookTokenExpires = new Date(Date.now() + 60 * 24 * 60 * 60 * 1000); // 60 days
@@ -271,19 +307,85 @@ passport.use(new FacebookStrategy({
 app.get("/auth/google",
 	passport.authenticate("google", {scope: [ 'email', 'profile' ]}));
 
-app.get("/auth/google/mosalapro", 
+app.get("/auth/google/mosalapro",
 	passport.authenticate("google", {
-		successRedirect: '/profile',
-		failureRedirect: "/"}));
+		failureRedirect: "/"}),
+	async function(req, res) {
+		// Capture location after successful authentication
+		if (req.user && req.user.country == null) {
+			try {
+				const geoip = require('geoip-lite');
+				const geo = geoip.lookup(req.ip);
+
+				if (geo) {
+					// Load countries data to get timezone
+					const fs = require('fs');
+					const countriesData = JSON.parse(fs.readFileSync('./public/data/countries/countries.json', 'utf8'));
+
+					// Find matching country
+					const country = countriesData.find(c => c.iso2 === geo.country);
+
+					if (country) {
+						req.user.country = country.name;
+						req.user.city = geo.city || '';
+
+						// Set timezone from country data
+						if (country.timezones && country.timezones.length > 0) {
+							req.user.address = country.timezones[0].tzName + " (" + country.timezones[0].gmtOffsetName + ")";
+						}
+
+						await req.user.save();
+						logger.info("GOOGLE AUTH:: Location set for user: " + req.user.email);
+					}
+				}
+			} catch (error) {
+				logger.error("GOOGLE AUTH:: Error setting location: " + error);
+			}
+		}
+		res.redirect('/profile');
+	});
 		
 	
 app.get("/auth/facebook",
   passport.authenticate("facebook", {scope: ['email', 'public_profile', 'user_friends']}));
 
 app.get('/auth/facebook/mosalapro',
-  passport.authenticate('facebook', {
-	successRedirect: '/profile', 
-	failureRedirect: '/' }));
+	passport.authenticate('facebook', {
+		failureRedirect: '/' }),
+	async function(req, res) {
+		// Capture location after successful authentication
+		if (req.user && req.user.country == null) {
+			try {
+				const geoip = require('geoip-lite');
+				const geo = geoip.lookup(req.ip);
+
+				if (geo) {
+					// Load countries data to get timezone
+					const fs = require('fs');
+					const countriesData = JSON.parse(fs.readFileSync('./public/data/countries/countries.json', 'utf8'));
+
+					// Find matching country
+					const country = countriesData.find(c => c.iso2 === geo.country);
+
+					if (country) {
+						req.user.country = country.name;
+						req.user.city = geo.city || '';
+
+						// Set timezone from country data
+						if (country.timezones && country.timezones.length > 0) {
+							req.user.address = country.timezones[0].tzName + " (" + country.timezones[0].gmtOffsetName + ")";
+						}
+
+						await req.user.save();
+						logger.info("FB AUTH:: Location set for user: " + req.user.email);
+					}
+				}
+			} catch (error) {
+				logger.error("FB AUTH:: Error setting location: " + error);
+			}
+		}
+		res.redirect('/profile');
+	});
 
 // Language switching route
 app.get('/lang/:lng', (req, res) => {
@@ -310,42 +412,46 @@ const otpCleanupTask = nodeCron.schedule("*/10 * * * *", () => {
 otpCleanupTask.start();
 
 const http = require('http');
-const https = require('https');
 const fs = require('fs');
 const Message = require("./services/message");
 const messageHandler = new Message();
 
-// HTTPS configuration for secure payments
-let server;
-if (process.env.NODE_ENV === 'production' && process.env.SSL_KEY && process.env.SSL_CERT) {
-    // Production HTTPS server
-    const options = {
-        key: fs.readFileSync(process.env.SSL_KEY),
-        cert: fs.readFileSync(process.env.SSL_CERT)
-    };
-    server = https.createServer(options, app);
-} else {
-    // Development HTTP server
-    server = http.createServer(app);
-}
-io = require('socket.io')().listen(server);
+// Create a single HTTP server and attach Socket.IO to it — compatible with GCP Standard
+const server = http.createServer(app);
+
+const { Server: IOServer } = require('socket.io');
+const io = new IOServer(server, {
+  cors: {
+    origin: true,
+    methods: ['GET', 'POST'],
+    credentials: true
+  }
+});
+
+// Make io globally available to all services
+global.io = io;
 
 io.on('connection', function(socket){
-	//console.log('A user connected');
+    console.log('A user connected:', socket.id);
 
-	socket.on('createUser', function(data) {
-		messageHandler.saveUserSocket(data.userId, socket.id);
-	});
+    socket.on('createUser', function(data) {
+        console.log('User registered:', data.userId);
+        messageHandler.saveUserSocket(data.userId, socket.id);
+    });
 
-	socket.on("pushNotification", function(data){
-		socket.broadcast.emit("pushNotification"+data.userId, data);
-	})
+    socket.on('pushNotification', function(data){
+        console.log('Push notification requested for user:', data.userId);
+        socket.broadcast.emit('pushNotification'+data.userId, data);
+    });
 
-	socket.on('disconnect', function() {
-		//messageHandler.removeUserSocket(socket.id);
-		console.log("User disconnected!");
-	});
+    socket.on('disconnect', function() {
+        messageHandler.removeUserSocket(socket.id);
+        console.log('User disconnected:', socket.id);
+    });
 });
+
+// Increase server timeout for long-running requests (keeps previous behavior)
+server.setTimeout(500000);
 
 app.locals = {
     bg: "bg-light",
@@ -354,12 +460,24 @@ app.locals = {
 	getShortTimeAgo: TimeHelper.getShortTimeAgo
 };
 
-// Main application routes
+// Main application routes - MUST be loaded AFTER Passport initialization
 require('./api-routes/routes')(app);
 
-// Payment routes (REST API)
-const paymentRoutes = require('./api-routes/paymentRoutes');
-app.use('/api/payment', paymentRoutes);
+// Handle passport deserialization errors
+app.use((err, req, res, next) => {
+	if (err && err.message && (err.message.includes('session') || err.message.includes('decrypt'))) {
+		logger.warn('Session error caught, destroying corrupted session:', err.message);
+		if (req.session) {
+			req.session.destroy(() => {
+				res.redirect(req.originalUrl);
+			});
+		} else {
+			next();
+		}
+	} else {
+		next(err);
+	}
+});
 
 
 //------------------STARTING UP SERVER------------------------------//
@@ -367,17 +485,15 @@ app.use('/api/payment', paymentRoutes);
 const start = async () => {
     try {
         await connectDB(process.env.DBURI).then(async function (success) {
-			server.listen(process.env.PORT || 8080, function() {
-			 // console.log("APP:: Server successfully started online and locally on port 8080");
-			});
-		}).catch(function (error) { // console.log("APP:: Error"+error);
+            const port = process.env.PORT || 8080;
+				server.listen(port, '0.0.0.0', () => {
+					console.log(`Listening on port ${port}`);
+				});
+        }).catch(function (error) { // console.log("APP:: Error"+error);
 			});
 		
-	}catch(error) {console.log("APP:: Error occured while connecting to the db: "+error);}
+	}catch(error) {console.log("APP:: Error occured while connecting to the db: "+error);} 
 };
-
-const servr = app.listen();
-servr.setTimeout(500000); 
 
 start();
 

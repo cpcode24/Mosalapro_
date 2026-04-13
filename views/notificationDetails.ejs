@@ -152,5 +152,18 @@
   <%- include('partials/HireConfirmationModal') %>
   <%- include('partials/RejectConfirmationModal') %>
 <% } %>
+<script>
+  // Pass translations to JavaScript
+  window.hireTranslations = {
+    providerHiredSuccess: "<%= t('ProviderHiredSuccess') %>",
+    providerHiredTitle: "<%= t('ProviderHiredTitle') %>",
+    providerHiredContent: "<%= t('ProviderHiredContent') %>",
+    applicationRejectedSuccess: "<%= t('ApplicationRejectedSuccess') %>",
+    applicationRejectedTitle: "<%= t('ApplicationRejectedTitle') %>",
+    applicationRejectedContent: "<%= t('ApplicationRejectedContent') %>",
+    hireErrorOccurred: "<%= t('HireErrorOccurred') %>",
+    hireErrorTryAgain: "<%= t('HireErrorTryAgain') %>"
+  };
+</script>
 <script src="js/notificationDetailHandler.js"></script>
 <%- include('partials/footer') %>

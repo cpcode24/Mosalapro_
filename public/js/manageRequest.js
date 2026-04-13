@@ -505,7 +505,7 @@ async function rejectQuotation(quotationId, requestId, proId) {
       await new Promise(r => setTimeout(r, 2500));
       var lnk = location.href.split("/");
       var baseLnk = lnk[0]+"//"+lnk[2];
-      var socket = io(baseLnk, { transports: ['websocket', 'polling', 'flashsocket'], 'force new connection': true });
+      var socket = io(baseLnk, { transports: ['websocket'] });
       
       socket.emit("pushNotification", {
                     "title": "Your quote was rejected.",

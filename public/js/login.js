@@ -9,7 +9,7 @@ function logKey(e) {
 }
 
 const onLoginSubmit = async()=> {
-  
+
     const username_ = document.getElementById("username").value;
     const password_ = document.getElementById("password").value;
     const message = document.getElementById("message");
@@ -27,7 +27,7 @@ const onLoginSubmit = async()=> {
       message.classList.add('error_message');
       if(lang_log== 'fr'){
         message.innerHTML = "Veuillez entrer un mot de passe pour vous connecter.";
-      }else {   
+      }else {
         message.innerHTML = "Please enter a password to login.";
       }
       return;
@@ -47,7 +47,7 @@ const onLoginSubmit = async()=> {
             }else {
               message.innerHTML = "Login successful! Redirecting..";
             }
-            await new Promise(r => setTimeout(r, 500));
+            await new Promise(r => setTimeout(r, 100));
             window.location.reload();
         }
         else if(json.status == 402){
@@ -66,7 +66,7 @@ const onLoginSubmit = async()=> {
           }else {
             message.innerHTML = "Two factors authentification enabled. Check your email for verification code. Redirecting...";
           }
-          await new Promise(r => setTimeout(r, 2500));
+          await new Promise(r => setTimeout(r, 1500));
           window.location = "/resendCode/"+json.id;
         }
         else{

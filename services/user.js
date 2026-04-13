@@ -27,9 +27,12 @@ const userEmailSender = new EmailSender();
 const log4js = require("log4js");
 const PostRequestService = require("./postrequest");
 const QuotationRequestModel = require("../models/quotationRequest");
+const PaymentMethodModel = require("../models/paymentMethod");
 const logger = log4js.getLogger();
 const stripe = require('stripe')(process.env.STRIPE_SEC_KEY);
 const SearchTranslation = require('./searchTranslation');
+const { Pay } = require("twilio/lib/twiml/VoiceResponse");
+const { convertToOpenAIImageBlock } = require("@langchain/core/messages");
 
 passport.use(UserModel.createStrategy());
 
@@ -93,17 +96,17 @@ const UserService = {
       
       const category = await CategoryModel.findOne({name:req.body.pCategory}).exec();
       const countryCode = await CountryModel.findOne({name: req.body.country_p}).exec();
-      
+
       // For phone registration, use phone as username and generate temporary email
       let userEmail = req.body.pEmail;
       let username = req.body.pEmail;
-       
+
       if(isPhoneRegistration && !userEmail) {
         // Generate temporary email for phone registration
         userEmail = ' ';
         username = req.body.pPhone;
       }
-      
+
       newUser = await new UserModel({
         categoryId : category._id,
         category: category.name,
@@ -131,17 +134,17 @@ const UserService = {
     }
     else{
       const countryCode = await CountryModel.findOne({name: req.body.country}).exec();
-      
+
       // For phone registration, use phone as username and generate temporary email
       let userEmail = req.body.email;
       let username = req.body.email;
-      
+
       if(isPhoneRegistration && !userEmail) {
-        // Generate temporary email for phone registration  
+        // Generate temporary email for phone registration
         userEmail = ' ';
         username = req.body.phone;
       }
-      
+
       newUser = new UserModel({
         firstName: _.capitalize(req.body.firstName),
         lastName: _.capitalize(req.body.lastName),
@@ -190,7 +193,7 @@ const UserService = {
         
         if(existingUser) {
           const msg = "User with given phone number already exists!"; 
-          res.status(300).send(msg);
+          res.status(409).send({error: msg, status: 409});
           return;
         }
       } else {
@@ -199,83 +202,122 @@ const UserService = {
         
         if(existingUser) {
           const msg = "User with given email already exists!"; 
-          res.status(300).send(msg);
+          res.status(408).send({error: msg, status: 408});
           return;
         }
       }
       
       logger.info(`USER:: ${isPhoneRegistration ? 'Phone' : 'Email'} is solid, none found.`);
-      
+
       await UserModel.register(newUser, password, async function(err, u){
         if (err) {
           logger.error("USER:: User Registration error: "+err);
-          res.status(409).send({error: err});
+          res.status(410).send({error: err, status: 410});
           return;
         } else {
-          let tok = TokenModel.findOne({ userId: newUser._id }).exec();
-          TokenModel.findByIdAndRemove(tok._id).exec();
+          // Delete any existing tokens for this user before creating a new one
+          await TokenModel.deleteMany({ userId: newUser._id }).exec();
           logger.info("User has been successfully registered.");
-          
+
           if(isPhoneRegistration) {
             // For phone registration, send OTP
             const TwilioPhoneAuthService = require("../services/twilioPhoneAuth");
             const twilioService = new TwilioPhoneAuthService();
-            
+
             const phoneToVerify = req.body.userType === 'provider' ? req.body.pPhone : req.body.phone;
             const selectedCountry = req.body.userType === 'provider' ? req.body.country_p : req.body.country;
             const countryInfo = await CountryModel.findOne({name: selectedCountry}).exec();
             const userCountryCode = countryInfo ? countryInfo.phone_code : '+1';
-            
+
             const otpResult = await twilioService.sendOTP(res, phoneToVerify, newUser.email, userCountryCode);
-            
+
             if(otpResult.success) {
               res.status(200).send({userId: newUser._id, status:200, registrationType: 'phone'});
               return;
             } else {
-              logger.warn("USER:: Could not send OTP!");
-              res.status(408).send({error: "USER:: Could not send OTP!"});
+              // OTP sending failed, delete the user from database
+              logger.warn("USER:: Could not send OTP! Deleting user from database.");
+              await UserModel.findByIdAndDelete(newUser._id).exec();
+              res.status(411).send({error: "USER:: Could not send OTP!", status: 411});
               return;
             }
           } else {
             // For email registration, send email verification
-            if(userEmailSender.sendCode(6, newUser)){
+            const emailSent = await userEmailSender.sendCode(6, newUser);
+            if(emailSent){
               res.status(200).send({userId: newUser._id, status:200, registrationType: 'email'});
               return;
             } else {
-              logger.warn("USER:: Could not send code!");
-              res.status(408).send({error: "USER:: Could not send code!"});
+              // Email sending failed, delete the user from database
+              logger.warn("USER:: Could not send code! Deleting user from database.");
+              await UserModel.findByIdAndDelete(newUser._id).exec();
+              await TokenModel.deleteMany({ userId: newUser._id }).exec();
+              res.status(411).send({error: "USER:: Could not send code!", status: 411});
               return;
             }
           }
         }
       });
       return;
-    }catch(error){
-        res.status(400).send("USER:: An error occurred : "+error);
+    }catch(err){
+        res.status(400).send({error: "USER:: An error occurred : "+err, status: 400});
         return;
     }
-    return;
   
   },
   sendVerificationCode: async(req, res)=>{
     try{
-      const user = await UserModel.findOne({email:req.body.email}).exec();
-      
+      const { emailOrPhone, isEmail, isPhone } = req.body;
+
+      let user = null;
+
+      // Find user by email or phone
+      if(isEmail) {
+        user = await UserModel.findOne({email: emailOrPhone}).exec();
+      } else if(isPhone) {
+        // Try multiple phone number variations to find the user
+        const TwilioPhoneAuthService = require("../services/twilioPhoneAuth");
+        const twilioService = new TwilioPhoneAuthService();
+        const userResult = await twilioService.getUserByPhone(emailOrPhone, req);
+
+        if(userResult.success && userResult.userExists) {
+          user = userResult.user;
+        }
+      }
+
       if(user){
-        if(userEmailSender.sendRecoveryCode(6, user)){
-            //res.render("emailVerification", {usr: null, link:null, cats: categories, userId: newUser._id});
-            res.status(200).send({userId: user._id, status:200});
+        // Send verification code via email or phone
+        if(isEmail) {
+          if(userEmailSender.sendRecoveryCode(6, user)){
+              console.log("USER:: Recovery code sent successfully!");
+              res.status(200).send({userId: user._id, status:200, recoveryMethod: 'email'});
+              return;
+          } else {
+            logger.warn("USER:: User found but could not send email code!");
+            console.log("USER:: User found but could not send email code!");
+            res.status(408).send("USER:: Could not send code!");
             return;
-        }else{
-          logger.warn("USER:: User found but could not send code!");
-          console.log("USER:: User found but could not send code!");
-          res.status(408).send("USER:: Could not send code!");
-          return;
+          }
+        } else if(isPhone) {
+          // Send OTP via phone
+          const TwilioPhoneAuthService = require("../services/twilioPhoneAuth");
+          const twilioService = new TwilioPhoneAuthService();
+
+          const countryCode = user.countryCode || '+1';
+          const otpResult = await twilioService.sendOTP(res, user.phone, user.email, countryCode);
+
+          if(otpResult.success) {
+            res.status(200).send({userId: user._id, status:200, recoveryMethod: 'phone'});
+            return;
+          } else {
+            logger.warn("USER:: User found but could not send OTP!");
+            console.log("USER:: User found but could not send OTP!");
+            res.status(408).send("USER:: Could not send OTP!");
+            return;
+          }
         }
       }
       else{
-        logger.warn("USER:: Could not find user!");
-        console.log("USER:: Could not find user!");
         res.status(408).send({status:408, msg:"USER:: Could not find user!"});
         return;
       }
@@ -289,7 +331,8 @@ const UserService = {
   resendCode: async(req, res)=>{
     try{
       const id = req.params.id != ""? req.params.id: req.body.id;
-      let user = await UserModel.findById(id).exec();
+      let user = await UserModel.findOne({_id: ObjectId(id)}).exec();
+      
       if(user){
         console.log("USER:: User found, resending email.. "+user._id);
           let tokens = await TokenModel.find({ userId: user._id }).exec();
@@ -307,6 +350,7 @@ const UserService = {
           email_ = email_ + user.email.substr(atIndex, user.email.length-1);
           if(req.body.redirect_link == "/"){
             if(await userEmailSender.sendCode(6, user)){
+              console.log("USER:: Verification code sent successfully!");
               res.render("emailVerification", {usr: null, link:null, currtab:'home', cats: categories, email:email_, userId: user._id, recaptchaKey: process.env.RECAPTCHA_KEY_ID, lang: res.locals.locale, redirect_link:req.body.redirect_link });
               //res.status(200).send({userId: user._id, status:200});
               return;
@@ -324,14 +368,13 @@ const UserService = {
               return;
             }else{
                 logger.warn("USER:: Could not resend code!");
-                console.log("USER:: Could not resend code!");
                 res.status(408).send({status:408, msg:"USER:: Could not resend code!"});
                 return;
             }
           }
       }
       else{
-          console.log("USER:: User not found, could not resend email.");
+          console.log("USER:: User not found, could not resend email. id from post: ", req.body.id, "; id from parms: ", req.params.id);
           // res.render("emailVerification", {usr: null, link:null, cats: categories, email: null, userId: req.params.id, recaptchaKey: process.env.RECAPTCHA_KEY_ID, redirect_link:req.body.redirect_link});
           res.status(402).send({status:402, msg:"USER:: Could not find user!"});
           return;
@@ -349,16 +392,21 @@ const UserService = {
     try {
       const user = await UserModel.findOne({ _id: req.body.id }).exec();
       if (!user) return res.status(400).send("USER:: User : Invalid link. User id: "+req.body.id);
-  
-      const token = await TokenModel.findOne({ userId: user._id}).exec();
+      // Check if token exists and is not expired (15 minutes)
+      const fifteenMinutesAgo = new Date(Date.now() - 15 * 60 * 1000);
+      const tokens = await TokenModel.find({ userId: user._id, createdAt: { $gte: fifteenMinutesAgo }}).sort({ createdAt: -1 }).exec();
 
-      if (!token) return res.status(400).send("USER:: Token : Invalid link");
-      
+      console.log("USER:: Tokens found: ", tokens.length);
+      if (!tokens || tokens.length === 0) return res.status(400).send("USER:: Token : Invalid link or expired");
+
+      // Get the most recent token
+      const token = tokens[0];
+      console.log("USER:: Most recent token found: "  + token.token);
+
       const codeEntered = ""+req.body.first + req.body.second + req.body.third + req.body.fourth + req.body.fifth + req.body.sixth;
       if(codeEntered == token.token){
         console.log("USER:: Code verification successful! logging in the user..");
-        logger.info("USER:: Code verification successful! logging in the user..");
-          req.login(user, function(err){
+          req.login(user, async function(err){
               if (err) {
                 console.log("USER:: An error occured (Email Verification): "+err);
                 logger.error("USER:: An error occured (Email Verification): "+err);
@@ -367,8 +415,9 @@ const UserService = {
               } else {
                       logger.info("USER:: Email verification: User has been successfully logged in");
                       console.log("USER:: Email verification: User has been successfully logged in");
-                      UserModel.updateOne({ _id: user._id}, {$set: {verified: true}} ).exec();
-                      TokenModel.findByIdAndRemove(token._id).exec();
+                      await UserModel.updateOne({ _id: user._id}, {$set: {verified: true}} ).exec();
+                      // Delete all tokens for this user after successful verification
+                      await TokenModel.deleteMany({ userId: user._id }).exec();
                       //res.redirect("/");
                       return res.status(200).send({msg:" Code verification successful!", status:200});
               }
@@ -384,7 +433,7 @@ const UserService = {
           return res.status(400).send("USER:: Email verification: Code entered does not match the one sent!");
           //res.render("emailVerification", {usr: null, cats: categories, userId: user._id});
       }
-      
+
     } catch (error) {
         logger.error("USER:: An error occured (Email verification): "+ error);
         console.log("USER:: An error occured (Email verification): "+ error);
@@ -443,16 +492,21 @@ const UserService = {
     try {
       const user = await UserModel.findOne({ _id: req.body.id }).exec();
       if (!user) return res.status(400).send("USER:: User : Invalid link. User id: "+req.body.id);
-  
-      const token = await TokenModel.findOne({ userId: user._id}).exec();
 
-      if (!token) return res.status(400).send("USER:: Token : Invalid link");
-      
+      // Get all tokens for this user and sort by most recent
+      const tokens = await TokenModel.find({ userId: user._id }).sort({ createdAt: -1 }).exec();
+
+      if (!tokens || tokens.length === 0) return res.status(400).send("USER:: Token : Invalid link or no token found");
+
+      // Get the most recent token
+      const token = tokens[0];
+
       const codeEntered = ""+req.body.first + req.body.second + req.body.third + req.body.fourth + req.body.fifth + req.body.sixth;
       if(codeEntered == token.token){
           console.log("USER:: Code verification successful! logging in the user..");
           logger.info("USER:: Code verification successful! logging in the user..");
-          TokenModel.findByIdAndRemove(token._id).exec();
+          // Delete all tokens for this user after successful verification
+          await TokenModel.deleteMany({ userId: user._id }).exec();
           return res.status(200).send({msg:" Code verification successful!", status:200});
       }
       else{
@@ -460,7 +514,7 @@ const UserService = {
           return res.status(400).send("USER:: Email verification: Code entered does not match the one sent!");
           //res.render("emailVerification", {usr: null, cats: categories, userId: user._id});
       }
-      
+
     } catch (error) {
       console.log("USER:: An error occured (Email verification): "+ error);
       logger.error("USER:: An error occured (Email verification): "+ error);
@@ -1191,64 +1245,99 @@ deleteProAccount: async(req, res)=>{
   },
   updatePaymentMethod: async (req) => {
     try {
-      const token = req.body.token;
+      const { provider, paymentMethodId, paypalEmail, setAsDefault, token } = req.body;
 
-      if (!token) {
-        throw new Error('Payment token is required');
-      }
-
-      const user = await UserModel.findOne({_id: req.user._id}).exec();
+      const user = await UserModel.findById(req.user._id).exec();
       if (!user) {
         throw new Error('User not found');
       }
 
-      // Search for existing Stripe customer
-      const stripeCustomers = await stripe.customers.search({
-        query: `email:"${user.email}"`
-      });
+      // Handle new payment service format (Stripe Elements or PayPal)
+      if (provider && (paymentMethodId || paypalEmail)) {
+        const paymentService = require('./paymentService');
 
-      let stripeCustomer;
-      if (stripeCustomers.data.length > 0) {
-        stripeCustomer = stripeCustomers.data[0];
-      } else {
-        // Create new Stripe customer if doesn't exist
-        stripeCustomer = await stripe.customers.create({
-          email: user.email,
-          name: `${user.firstName} ${user.lastName}`,
-          metadata: {
-            userId: user._id.toString()
+        let paymentMethodData = {
+          provider: provider,
+          setAsDefault: setAsDefault || true,
+          ipAddress: req.ip,
+          userAgent: req.get('user-agent')
+        };
+
+        let existingPaymentMethod;
+
+        if (provider === 'stripe') {
+          if (!paymentMethodId) {
+            throw new Error('Payment method ID is required for Stripe');
           }
-        });
+          paymentMethodData.paymentMethodId = paymentMethodId;
+          existingPaymentMethod = await PaymentMethodModel.findOne({ userId: user._id, provider: 'stripe', stripeCustomerId: user.stripeCustomerId }).exec();
+        } else if (provider === 'paypal') {
+          if (!paypalEmail) {
+            throw new Error('PayPal email is required');
+          }
+          // Generate a unique ID for PayPal method
+          paymentMethodData.paymentMethodId = `paypal_${Date.now()}_${user._id}`;
+          paymentMethodData.paypalEmail = paypalEmail;
+          existingPaymentMethod = await PaymentMethodModel.findOne({ userId: user._id, provider: 'paypal', paypalEmail: paypalEmail }).exec();
+        }
+        
+        const savedPaymentMethod = existingPaymentMethod || await paymentService.savePaymentMethod(user._id, paymentMethodData);
+
+        return { status: 200, paymentMethod: savedPaymentMethod };
       }
 
-      // Create payment method from token
-      const paymentMethod = await stripe.paymentMethods.create({
-        type: 'card',
-        card: {
-          token: token
+      // Legacy token-based format (backwards compatibility)
+      if (token) {
+        // Search for existing Stripe customer
+        const stripeCustomers = await stripe.customers.search({
+          query: `email:"${user.email}"`
+        });
+
+        let stripeCustomer;
+        if (stripeCustomers.data.length > 0) {
+          stripeCustomer = stripeCustomers.data[0];
+        } else {
+          // Create new Stripe customer if doesn't exist
+          stripeCustomer = await stripe.customers.create({
+            email: user.email,
+            name: `${user.firstName} ${user.lastName}`,
+            metadata: {
+              userId: user._id.toString()
+            }
+          });
         }
-      });
+        
+        // Create payment method from token
+        const paymentMethod = await stripe.paymentMethods.create({
+          type: 'card',
+          card: {
+            token: token
+          }
+        });
 
-      // Attach payment method to customer
-      await stripe.paymentMethods.attach(paymentMethod.id, {
-        customer: stripeCustomer.id
-      });
+        // Attach payment method to customer
+        await stripe.paymentMethods.attach(paymentMethod.id, {
+          customer: stripeCustomer.id
+        });
 
-      // Set as default payment method
-      await stripe.customers.update(stripeCustomer.id, {
-        invoice_settings: {
-          default_payment_method: paymentMethod.id
-        }
-      });
+        // Set as default payment method
+        await stripe.customers.update(stripeCustomer.id, {
+          invoice_settings: {
+            default_payment_method: paymentMethod.id
+          }
+        });
 
-      // Update user record with Stripe customer info
-      await UserModel.findByIdAndUpdate(user._id, {
-        stripeCustomerId: stripeCustomer.id,
-        lastUpdate: new Date()
-      });
+        // Update user record with Stripe customer info
+        await UserModel.findByIdAndUpdate(user._id, {
+          stripeCustomerId: stripeCustomer.id,
+          lastUpdate: new Date()
+        });
 
-      console.log(`USER:: Payment method updated for user ${user.email}`);
-      return true;
+        console.log(`USER:: Payment method updated for user ${user.email} (legacy)`);
+        return true;
+      }
+
+      throw new Error('Either provider/paymentMethodId or token is required');
 
     } catch (error) {
       console.error('USER:: Error updating payment method:', error);

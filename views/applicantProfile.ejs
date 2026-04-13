@@ -215,5 +215,10 @@
 
 <%- include('partials/HireConfirmationModal') %>
 <%- include('partials/RejectConfirmationModal') %>
+<script>
+<% if (typeof i18n !== 'undefined' && i18n.language) { %>
+window.serverLanguage = '<%= i18n.language %>';
+<% } %>
+</script>
 <script src="js/notificationDetailHandler.js"></script>
 <%- include('partials/footer') %>

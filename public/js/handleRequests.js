@@ -13,21 +13,21 @@ class RequestsManager {
 
     // Detect current language from various sources
     detectLanguage() {
-        console.log('🌍 Detecting language...');
+        console.log(' Detecting language...');
         
         // Try to get language from URL first
         const urlParams = new URLSearchParams(window.location.search);
         const urlLang = urlParams.get('lang');
         console.log('URL lang parameter:', urlLang);
         if (urlLang && ['en', 'fr'].includes(urlLang)) {
-            console.log('✅ Language detected from URL:', urlLang);
+            console.log(' Language detected from URL:', urlLang);
             return urlLang;
         }
 
         // Check if there's a language in the URL path (like /lang/fr)
         const pathMatch = window.location.pathname.match(/\/lang\/([a-z]{2})/);
         if (pathMatch && ['en', 'fr'].includes(pathMatch[1])) {
-            console.log('✅ Language detected from path:', pathMatch[1]);
+            console.log(' Language detected from path:', pathMatch[1]);
             return pathMatch[1];
         }
 
@@ -35,7 +35,7 @@ class RequestsManager {
         const storedLang = localStorage.getItem('language');
         console.log('Stored language in localStorage:', storedLang);
         if (storedLang && ['en', 'fr'].includes(storedLang)) {
-            console.log('✅ Language detected from localStorage:', storedLang);
+            console.log(' Language detected from localStorage:', storedLang);
             return storedLang;
         }
 
@@ -43,7 +43,7 @@ class RequestsManager {
         const htmlLang = document.documentElement.lang;
         console.log('HTML lang attribute:', htmlLang);
         if (htmlLang && ['en', 'fr'].includes(htmlLang)) {
-            console.log('✅ Language detected from HTML:', htmlLang);
+            console.log(' Language detected from HTML:', htmlLang);
             return htmlLang;
         }
 
@@ -51,25 +51,25 @@ class RequestsManager {
         const metaLang = document.querySelector('meta[name="language"]')?.content;
         console.log('Meta language tag:', metaLang);
         if (metaLang && ['en', 'fr'].includes(metaLang)) {
-            console.log('✅ Language detected from meta tag:', metaLang);
+            console.log(' Language detected from meta tag:', metaLang);
             return metaLang;
         }
 
         // Try to get from server-side language variable
         if (typeof window.serverLanguage !== 'undefined' && ['en', 'fr'].includes(window.serverLanguage)) {
-            console.log('✅ Language detected from server:', window.serverLanguage);
+            console.log(' Language detected from server:', window.serverLanguage);
             return window.serverLanguage;
         }
 
         // Try to get from global variable if available
         if (typeof lang !== 'undefined' && ['en', 'fr'].includes(lang)) {
-            console.log('✅ Language detected from global variable:', lang);
+            console.log(' Language detected from global variable:', lang);
             return lang;
         }
 
         // Try to get from window.i18n if available
         if (typeof window.i18n !== 'undefined' && window.i18n.language && ['en', 'fr'].includes(window.i18n.language)) {
-            console.log('✅ Language detected from window.i18n:', window.i18n.language);
+            console.log(' Language detected from window.i18n:', window.i18n.language);
             return window.i18n.language;
         }
 
@@ -79,7 +79,7 @@ class RequestsManager {
             ?.split('=')[1];
         console.log('Cookie language:', cookieLang);
         if (cookieLang && ['en', 'fr'].includes(cookieLang)) {
-            console.log('✅ Language detected from cookie:', cookieLang);
+            console.log(' Language detected from cookie:', cookieLang);
             return cookieLang;
         }
 
@@ -91,7 +91,7 @@ class RequestsManager {
                 const linkLang = parentLink.href.match(/\/lang\/([a-z]{2})/)?.[1];
                 console.log('Active language from DOM:', linkLang);
                 if (linkLang && ['en', 'fr'].includes(linkLang)) {
-                    console.log('✅ Language detected from active DOM element:', linkLang);
+                    console.log(' Language detected from active DOM element:', linkLang);
                     return linkLang;
                 }
             }
@@ -101,12 +101,12 @@ class RequestsManager {
         const browserLang = navigator.language.slice(0, 2);
         console.log('Browser language:', browserLang);
         if (['en', 'fr'].includes(browserLang)) {
-            console.log('✅ Language detected from browser:', browserLang);
+            console.log(' Language detected from browser:', browserLang);
             return browserLang;
         }
 
         // Default to English
-        console.log('⚠️ No language detected, defaulting to English');
+        console.log(' No language detected, defaulting to English');
         return 'en';
     }
 
@@ -193,13 +193,13 @@ class RequestsManager {
         if (['en', 'fr'].includes(language)) {
             this.currentLanguage = language;
             localStorage.setItem('language', language);
-            console.log('🔄 Language updated to:', language);
+            console.log(' Language updated to:', language);
         }
     }
 
     // Debug function to show all language detection sources
     debugLanguageDetection() {
-        console.log('🔍 Language Detection Debug:');
+        console.log(' Language Detection Debug:');
         console.log('Current detected language:', this.currentLanguage);
         console.log('URL parameters:', new URLSearchParams(window.location.search).get('lang'));
         console.log('URL path match:', window.location.pathname.match(/\/lang\/([a-z]{2})/)?.[1]);
@@ -376,7 +376,7 @@ class RequestsManager {
                     <h5>${this.t('noRequestsFound', 'No requests found')}</h5>
                     <p>${this.t('noRequestsMessage', "You haven't created any service requests yet. Create your first request to get started!")}</p>
                     <a href="/service-request" class="btn-job btn-primary-job-inv mt-3">
-                        <b class="fa fa-plus mr-2"></b>${this.t('createFirstRequest', 'Create Your First Request')}
+                        <b class="fa fa-plus mr-2"></b>${this.t('createFirstRequest')}
                     </a>
                 </div>
             </div>

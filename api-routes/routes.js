@@ -16,6 +16,7 @@ const jobApplicationHander = new JobApplication();
 const UserService = require("../services/user");
 const TimeHelper = require("../services/timeHelper");
 const PostRequestModel = require("../models/postRequest");
+const PaymentMethodModel = require("../models/paymentMethod");
 const BookingModel = require("../models/booking");
 const OnlineUserModel = require("../models/onlineUser");
 const passport = require('passport');
@@ -117,9 +118,6 @@ const TwilioPhoneAuthService = require("../services/twilioPhoneAuth");
 const twilioService = new TwilioPhoneAuthService();
 const ChatSupport = require("../services/chatSupport");
 const chatSupport = new ChatSupport();
-
-let usdBasedRates = {};
-
 
 const categoriesToFrMap = new Map();
 fs.readFile('./public/data/categories.json', 'utf8', (err, data) => {
@@ -252,7 +250,6 @@ app.get("/", async function(req, res){
         }
         else{
             const geo = geoip.lookup(req.ip);
-            console.log("GEO:: ", geo);
             const userCountry = await CountryModel.findOne({iso2: geo?.country}).exec();
             let currency_ = "";
             let currency_sym = "";
@@ -260,7 +257,6 @@ app.get("/", async function(req, res){
                 currency_ = userCountry.currency;
                 currency_sym = userCountry.currency_symbol;
             }
-            console.log("HOME:: ", currency_);
             const _50InReqCurr = global.rates != null ? parseFloat(50 * global.rates?.rates[currency_]).toFixed(2)  : 50.00;
             const _100InReqCurr = global.rates != null ? parseFloat(100 * global.rates?.rates[currency_]).toFixed(2): 100.00;
             const _250InReqCurr = global.rates != null ? parseFloat(250 * global.rates?.rates[currency_]).toFixed(2): 250.00;
@@ -459,6 +455,7 @@ app.get("/", async function(req, res){
                 res.render("notifications", {
                 usr: req.user,
                 firstCor: 'none', currtab: 'dash',
+                lang: res.locals.locale,
                 cats: categories, recaptchaKey: process.env.RECAPTCHA_KEY_ID,
                 notifications: notifs,
                 countries: countries,
@@ -531,13 +528,14 @@ app.get("/", async function(req, res){
                     const checkBooking_ = await BookingModel.findOne({jobId: notifi.causedByItem}).exec();
                     if(provider) provider.photo = provider.photo.includes("https://")  ? provider.photo : ("/photo/"+provider.photo);
                     //console.log("checkbooking: "+checkBooking_);
-                    res.render("notificationDetails", {pro: provider, notifi: notifi, 
+                    res.render("notificationDetails", {pro: provider, notifi: notifi,
                         postRequestsCompleted: postReqCompleted.length,
-                        job: job_, 
+                        job: job_,
                         firstCor: 'none', currtab: 'dash',
-                        usr: req.user, notifications: notifs, 
-                        link: null, cats: categories, recaptchaKey: process.env.RECAPTCHA_KEY_ID, 
-                        checkBooking: checkBooking_, 
+                        lang: res.locals.locale,
+                        usr: req.user, notifications: notifs,
+                        link: null, cats: categories, recaptchaKey: process.env.RECAPTCHA_KEY_ID,
+                        checkBooking: checkBooking_,
                         map_api_key: process.env.GOOGLE_MAPS_API_KEY,
                         countries: countries} );
                 }
@@ -594,6 +592,7 @@ app.get("/", async function(req, res){
                 res.render("applicantProfile", {
                     pro: provider, 
                     job: job_, currtab: 'dash',
+                    lang: res.locals.locale,
                     usr: req.user, notifications: notifs,
                     postRequestsCompleted: postReqCompleted.length,
                     checkBooking: checkBooking_,
@@ -641,7 +640,7 @@ app.get("/", async function(req, res){
                     }
                 });
 
-                res.render("manageJobApplications", {usr: req.user, firstCor: 'none',currtab: 'dash', notifications: notifs, allApp: allApplications, ja: uniqJAs, link: null,  cats: categories, recaptchaKey: process.env.RECAPTCHA_KEY_ID});
+                res.render("manageJobApplications", {usr: req.user, firstCor: 'none',currtab: 'dash', lang: res.locals.locale, notifications: notifs, allApp: allApplications, ja: uniqJAs, link: null,  cats: categories, recaptchaKey: process.env.RECAPTCHA_KEY_ID});
                 }catch(error){
                     console.log("ROUTES:: /application - Error occured: "+error);
                     res.redirect("/");
@@ -843,6 +842,7 @@ app.get("/", async function(req, res){
               usr: req.user,
               jobsCompleted: postReqCompleted.length,
               firstCor: 'none',currtab: 'dash',
+              lang: res.locals.locale,
               subName: subName,
               cats: categories, recaptchaKey: process.env.RECAPTCHA_KEY_ID,
               notifications: notifs,
@@ -864,6 +864,7 @@ app.get("/", async function(req, res){
             res.render("userEdit", {
               usr: req.user,currtab: 'dash',
               firstCor: 'none',
+              lang: res.locals.locale,
               cats: categories, recaptchaKey: process.env.RECAPTCHA_KEY_ID,
               countries: countries,
               subName: subName,
@@ -912,6 +913,7 @@ app.get("/", async function(req, res){
               currtab: 'login',
               page: 'login',
               firstCor: 'none',
+              lang: res.locals.locale,
               cats: categories, recaptchaKey: process.env.RECAPTCHA_KEY_ID,
               countries: countries,
               subName: subName,
@@ -999,8 +1001,8 @@ app.get("/", async function(req, res){
             const stripeCustomer = await stripe.customers.search({
                 query: `email:"${user.email}"`
             });
-
-            if (stripeCustomer.data[0].invoice_settings.default_payment_method){
+        
+            if ( stripeCustomer && stripeCustomer.data && stripeCustomer.data.length > 0 && stripeCustomer.data[0].invoice_settings.default_payment_method){
                 res.status(200).send({status: true});
             } else {
                 res.status(200).send({status: false});
@@ -1013,29 +1015,181 @@ app.get("/", async function(req, res){
     app.post("/user/payment", async function (req, res) {
         if (req.isAuthenticated()) {
             try {
-                await UserService.updatePaymentMethod(req);
+                const result = await UserService.updatePaymentMethod(req);
+
+                // Check if this is new payment service format (returns object with status)
+                if (result && typeof result === 'object' && result.status) {
+                    return res.status(result.status).json(result);
+                }
 
                 // Check if this is a save payment method request (AJAX)
-                if (req.body.save_payment_method) {
-                    res.status(200).json({ success: true, message: 'Payment method saved successfully' });
+                if (req.body.save_payment_method || req.body.provider) {
+                    res.status(200).json({ success: true, status: 200, message: 'Payment method saved successfully' });
                 } else {
                     res.redirect('/p-profile');
                 }
             } catch (error) {
                 console.error('Error saving payment method:', error);
-                
-                if (req.body.save_payment_method) {
-                    res.status(400).json({ success: false, error: error.message });
+
+                if (req.body.save_payment_method || req.body.provider) {
+                    res.status(400).json({ success: false, status: 400, message: error.message });
                 } else {
                     res.status(500).send('Error saving payment method');
                 }
             }
         } else {
-            if (req.body.save_payment_method) {
-                res.status(401).json({ success: false, error: 'Not authenticated' });
+            if (req.body.save_payment_method || req.body.provider) {
+                res.status(401).json({ success: false, status: 401, message: 'Not authenticated' });
             } else {
                 res.status(401).send();
             }
+        }
+    });
+
+    /**
+     * Get user's payment methods
+     * GET /payment-methods
+     */
+    app.get('/payment-methods', async (req, res) => {
+        if (!req.isAuthenticated()) {
+            return res.status(401).json({ success: false, message: 'Not authenticated' });
+        }
+        try {
+            const userId = req.user._id;
+            const paymentMethods = await PaymentMethodModel.getActiveForUser(userId);
+    
+            const methods = paymentMethods.map(pm => ({
+                id: pm._id,
+                displayName: pm.displayName,
+                type: pm.type,
+                provider: pm.provider,
+                isDefault: pm.isDefault,
+                isExpired: pm.cardExpiryYear < new Date().getFullYear() || (pm.cardExpiryYear === new Date().getFullYear() && pm.cardExpiryMonth < new Date().getMonth() + 1),
+                cardExpiryMonth: pm.cardExpiryMonth,
+                cardExpiryYear: pm.cardExpiryYear,
+                cardLast4: pm.cardLast4,
+                cardBrand: pm.cardBrand,
+                lastUsedAt: pm.lastUsedAt,
+                createdAt: pm.createdAt
+            }));
+            res.json({ success: true, paymentMethods: methods });
+
+        } catch (error) {
+            console.log('Error fetching payment methods:', error);
+            res.status(500).json({ error: error.message });
+        }
+    });
+
+    /**
+     * Set default payment method
+     * POST /set-default-payment-method/:id
+     */
+    app.post('/set-default-payment-method/:id', async (req, res) => {
+        if (!req.isAuthenticated()) {
+            return res.status(401).json({ success: false, message: 'Not authenticated' });
+        }
+        try {
+            const userId = req.user._id;
+            const paymentMethodId = req.params.id;
+
+            const paymentMethod = await PaymentMethodModel.findOne({
+                _id: paymentMethodId,
+                userId,
+                isActive: true
+            });
+
+            if (!paymentMethod) {
+                return res.status(404).json({ success: false, message: 'Payment method not found' });
+            }
+
+            await paymentMethod.setAsDefault();
+
+            res.json({ success: true, message: 'Default payment method updated' });
+
+        } catch (error) {
+            console.error('Error setting default payment method:', error);
+            res.status(500).json({ success: false, message: error.message });
+        }
+    });
+
+    /**
+     * Delete payment method
+     * DELETE /delete-payment-method/:id
+     */
+    app.delete('/delete-payment-method/:id', async (req, res) => {
+        if (!req.isAuthenticated()) {
+            return res.status(401).json({ success: false, message: 'Not authenticated' });
+        }
+        try {
+            const userId = req.user._id;
+            const paymentMethodId = req.params.id;
+
+            const paymentMethod = await PaymentMethodModel.findOne({
+                _id: paymentMethodId,
+                userId
+            });
+
+            if (!paymentMethod) {
+                return res.status(404).json({ success: false, message: 'Payment method not found' });
+            }
+
+            // Soft delete
+            await paymentMethod.softDelete();
+
+            res.json({ success: true, message: 'Payment method deleted successfully' });
+
+        } catch (error) {
+            console.error('Error deleting payment method:', error);
+            res.status(500).json({ success: false, message: error.message });
+        }
+    });
+
+
+    // PayPal vault setup token creation
+    app.post("/paypal/create-setup-token", async function (req, res) {
+        if (!req.isAuthenticated()) {
+            return res.status(401).json({ success: false, message: 'Not authenticated' });
+        }
+
+        try {
+            const paymentService = require('../services/paymentService');
+            const setupToken = await paymentService.createPayPalSetupToken(req.user);
+
+            res.status(200).json({ id: setupToken.id, status: setupToken.status });
+        } catch (error) {
+            console.error('Error creating PayPal setup token:', error);
+            res.status(500).json({ success: false, message: error.message });
+        }
+    });
+
+    // Save PayPal payment token after user approval
+    app.post("/paypal/save-payment-token", async function (req, res) {
+        if (!req.isAuthenticated()) {
+            return res.status(401).json({ success: false, status: 401, message: 'Not authenticated' });
+        }
+
+        try {
+            const { vaultSetupToken } = req.body;
+
+            if (!vaultSetupToken) {
+                return res.status(400).json({ success: false, status: 400, message: 'Vault setup token is required' });
+            }
+
+            const paymentService = require('../services/paymentService');
+            const paymentMethod = await paymentService.savePayPalVaultToken(req.user._id, vaultSetupToken, {
+                ipAddress: req.ip,
+                userAgent: req.get('user-agent')
+            });
+
+            res.status(200).json({
+                success: true,
+                status: 200,
+                message: 'PayPal account linked successfully',
+                paymentMethod: paymentMethod
+            });
+        } catch (error) {
+            console.error('Error saving PayPal payment token:', error);
+            res.status(500).json({ success: false, status: 500, message: error.message });
         }
     });
 
@@ -1088,33 +1242,47 @@ app.get("/", async function(req, res){
         if(req.isAuthenticated())
             res.render("/");
         else
-            res.render("emailVerification", {usr: null, link:null, firstCor: 'none', currtab: 'home', cats: categories, map_api_key: process.env.GOOGLE_MAPS_API_KEY,
+            res.render("emailVerification", {usr: null, link:null, firstCor: 'none', currtab: 'home', lang: res.locals.locale, cats: categories, map_api_key: process.env.GOOGLE_MAPS_API_KEY,
         recaptchaKey: process.env.RECAPTCHA_KEY_ID, userId: req.body.id,  form_action: "/verify-u-email", redirect_link:"/" });
     });
 
     app.get("/pass-recovery", function(req, res){
         if(req.isAuthenticated())
-            res.render("/");
+            res.redirect("/");
         else
             res.render("passRecovery", {usr: null, link:null, firstCor: 'none', currtab: 'home', 
             lang: res.locals.locale, cats: categories, recaptchaKey: process.env.RECAPTCHA_KEY_ID, userId: req.body.id, form_action: "/verify-u-email" });
     });
     app.post("/recover-pass", async (req, res) =>{
-            UserService.sendVerificationCode(req, res);
-    });
-    app.get("/recover-pass/:userId", async (req, res) =>{
         if(req.isAuthenticated())
+            return;
+        UserService.sendVerificationCode(req, res);
+    });
+    app.get("/recover-pass/:userId/:method", async (req, res) =>{
+        if(req.isAuthenticated() || !req.params.userId)
             res.render("/");
         else{
             const unverifiedUser = await UserModel.findById(req.params.userId).exec();
-            let email = unverifiedUser.email.charAt(0);
-            const atIndex = unverifiedUser.email.indexOf('@');
-            for(let i = 0; i < atIndex; i++){
-                email = email + "*";
+            let email = "";
+            if(unverifiedUser){
+                if(req.params.method && req.params.method === "phone" ){
+                    let phone = unverifiedUser.phone.substr(0,3);
+                    for(let i = 3; i < unverifiedUser.phone.length-2; i++){
+                        phone = phone + "*";
+                    }
+                    email = phone;
+                }else{
+                    email = unverifiedUser.email.substr(0,2);
+                    const atIndex = unverifiedUser.email.indexOf('@');
+                    for(let i = 2; i < atIndex; i++){
+                        email = email + "*";
+                    }
+                    email = email + unverifiedUser.email.substr(atIndex, unverifiedUser.email.length-1);
+                }
             }
-            email = email + unverifiedUser.email.substr(atIndex, unverifiedUser.email.length-1);
+            
             req.params.redirect_link = "/change-pass";
-            res.render("emailVerification", {usr: null, map_api_key: process.env.GOOGLE_MAPS_API_KEY,
+            res.render("emailVerification", {usr: null, map_api_key: process.env.GOOGLE_MAPS_API_KEY, lang: res.locals.locale,
                 currtab: 'dash', link:null, currtab: 'home', firstCor: 'none', cats: categories, recaptchaKey: process.env.RECAPTCHA_KEY_ID, userId: req.params.userId, email: email, redirect_link:"/change-pass", link:"/change-pass" });
         }
     });
@@ -1587,7 +1755,7 @@ app.get("/", async function(req, res){
         if(req.isAuthenticated()){
             const notifs = await NotificationModel.find({receiverId: req.user._id, status:{$ne:"archived"}}).sort({lastUpdate: -1}).exec();
             res.render("termsAndConditions", {usr: req.user, notifications: notifs, firstCor: 'none', map_api_key: process.env.GOOGLE_MAPS_API_KEY,
-                currtab: 'dash', link: req.link, cats: categories, lang: res.locals.locale, recaptchaKey: process.env.RECAPTCHA_KEY_ID, countries: countries, lang: res.locals.locale});
+                currtab: 'dash', link: req.link, cats: categories, lang: res.locals.locale, recaptchaKey: process.env.RECAPTCHA_KEY_ID, countries: countries});
         }
         else
             res.render("termsAndConditions", {usr: null, notifications: null, firstCor: 'none', currtab: 'home', map_api_key: process.env.GOOGLE_MAPS_API_KEY,
@@ -1661,7 +1829,7 @@ app.get("/", async function(req, res){
                 lang: res.locals.locale, map_api_key: process.env.GOOGLE_MAPS_API_KEY, currtab: 'contact-us', cats: categories, recaptchaKey: process.env.RECAPTCHA_KEY_ID});
         }
         else
-            res.render("contact", {usr: null,  notifications:null, link: null,  map_api_key: process.env.GOOGLE_MAPS_API_KEY, firstCor: 'none', currtab: 'contact-us', cats: categories, recaptchaKey: process.env.RECAPTCHA_KEY_ID });
+            res.render("contact", {usr: null,  notifications:null, link: null, lang: res.locals.locale, map_api_key: process.env.GOOGLE_MAPS_API_KEY, firstCor: 'none', currtab: 'contact-us', cats: categories, recaptchaKey: process.env.RECAPTCHA_KEY_ID });
     });
 
     app.get("/myrequests", async function(req, res){
@@ -1730,7 +1898,7 @@ app.get("/", async function(req, res){
                 }else{
                     // console.log("No requests found with username: "+req.user.username);
                 }
-                res.render("userRequests", {usr: req.user, notifications: notifs,firstCor: 'none', currtab: 'myrequests', postRequests: pRequests, allRequests: allRequests, link: null,
+                res.render("userRequests", {usr: req.user, notifications: notifs,firstCor: 'none', currtab: 'myrequests', postRequests: pRequests, allRequests: allRequests, link: null, lang: res.locals.locale,
                                             base_url:process.env.BASE_URL, map_api_key: process.env.GOOGLE_MAPS_API_KEY, projects_type:req.params.type, cats: categories, recaptchaKey: process.env.RECAPTCHA_KEY_ID});
             }catch(error) {res.redirect("/")};
         }
@@ -2208,7 +2376,7 @@ app.get("/", async function(req, res){
                     quotationRequest.budgetType = reqst.budgetType;
                     quotationRequest.currency = reqst.currency;
                 }
-                res.render("manageQuotationRequest", {usr: req.user, notifications: notifs, map_api_key: process.env.GOOGLE_MAPS_API_KEY, firstCor: 'none', currtab: 'quotations', link: null, qr: quotationRequest, customer: cust, cats: categories, recaptchaKey: process.env.RECAPTCHA_KEY_ID});
+                res.render("manageQuotationRequest", {usr: req.user, notifications: notifs, lang: res.locals.locale, map_api_key: process.env.GOOGLE_MAPS_API_KEY, firstCor: 'none', currtab: 'quotations', link: null, qr: quotationRequest, customer: cust, cats: categories, recaptchaKey: process.env.RECAPTCHA_KEY_ID});
             }
             else{
                 // console.log("APP:: /quotation No quotation found for id: "+req.query.q);
@@ -2269,9 +2437,9 @@ app.get("/", async function(req, res){
 
     app.post("/authenticate", async function(req, res){
         const unverifiedUser = await UserModel.findById(req.body.iddl).exec();
-        let email = unverifiedUser.email.charAt(0);
+        let email = unverifiedUser.email.substr(0, 2);
         const atIndex = unverifiedUser.email.indexOf('@');
-        for(let i = 0; i < atIndex; i++){
+        for(let i = 2; i < atIndex; i++){
             email = email + "*";
         }
         email = email + unverifiedUser.email.substr(atIndex, unverifiedUser.email.length-1);
@@ -2280,9 +2448,9 @@ app.get("/", async function(req, res){
 
     app.post("/verified-and-registered-user", async function(req, res){
         const unverifiedUser = await UserModel.findById(req.body.iddl).exec();
-        let email = unverifiedUser.email.charAt(0);
+        let email = unverifiedUser.email.substr(0, 1);
         const atIndex = unverifiedUser.email.indexOf('@');
-        for(let i = 0; i < atIndex; i++){
+        for(let i = 2; i < atIndex; i++){
             email = email + "*";
         }
         email = email + unverifiedUser.email.substr(atIndex, unverifiedUser.email.length-1);
@@ -2358,6 +2526,7 @@ app.get("/", async function(req, res){
             res.render("phoneVerification", {
                 phone: phone,
                 userId: userId,
+                lang: res.locals.locale,
                 title: "Verify Phone Number"
             });
         }
@@ -2476,11 +2645,37 @@ app.get("/", async function(req, res){
   
     app.get("/profile", async function(req, res){
         if(req.isAuthenticated()){
+            if(req.user.accountType == 'provider'){
+                res.redirect("/p-profile");
+                return;
+            }
             const notifs = await NotificationModel.find({receiverId: req.user._id, status:{$ne:"archived"}}).sort({lastUpdate: -1}).exec();
             const geo = geoip.lookup(req.ip);
-            if(res.locals.locale === 'fr') req.user.accountType = 'utilisateur';
-            res.render("userProfile", {usr: req.user, firstCor: 'none', lang: res.locals.locale, map_api_key: process.env.GOOGLE_MAPS_API_KEY, currtab: 'dash', notifications: notifs, link:null, cats: categories, recaptchaKey: process.env.RECAPTCHA_KEY_ID, user_loc_data: geo,
-                countries: countries});
+
+            // Enhance geo data with additional information for session details
+            let user_loc_data = null;
+            if (geo) {
+                // Get country name from the countries list
+                const countryData = countries.find(c => c.iso2 === geo.country);
+
+                user_loc_data = {
+                    ip: req.ip,
+                    country_code: geo.country,
+                    country_name: countryData ? countryData.name : geo.country,
+                    region: geo.region,
+                    city: geo.city,
+                    timezone: geo.timezone,
+                    latitude: geo.ll ? geo.ll[0] : null,
+                    longitude: geo.ll ? geo.ll[1] : null,
+                    postal: geo.postal || null,
+                    org: null // ISP info not available in geoip-lite
+                };
+            }
+
+            let accountTypeDisplay = req.user.accountType;
+            if(res.locals.locale === 'fr') accountTypeDisplay = 'utilisateur';
+            res.render("userProfile", {usr: req.user, firstCor: 'none', lang: res.locals.locale, map_api_key: process.env.GOOGLE_MAPS_API_KEY, currtab: 'dash', notifications: notifs, link:null, cats: categories, recaptchaKey: process.env.RECAPTCHA_KEY_ID, user_loc_data: user_loc_data,
+                countries: countries, accountTypeDisplay: accountTypeDisplay});
         }else   res.redirect("/");
     });
 
@@ -2737,37 +2932,25 @@ app.get("/", async function(req, res){
 
     app.get("/p-profile", async function(req, res){
         if(req.isAuthenticated()){
+            console.log("ROUTES:: Account type: "+req.user.accountType);
+            if(req.user.accountType !== 'provider'){
+                res.redirect("/profile");
+                return;
+            }
             const notifs = await NotificationModel.find({receiverId: req.user._id, status:{$ne:"archived"}}).sort({lastUpdate: -1}).exec();
-            // const stripeCustomer = await stripe.customers.search({
-            //     query: `email:"${req.user.email}"`
-            // });
 
             let hasDefaultPayment = false;
-            // if (stripeCustomer.data.length != 0) {
-            //     hasDefaultPayment = stripeCustomer.data[0]?.default_source != null;
-            // }
-
-            // const subscriptions = await stripe.subscriptions.list({
-            //     customer: stripeCustomer.data[0]?.id,
-            // });
-
-            // const priceKey = subscriptions.data[0]?.items.data[0]?.price.lookup_key;
 
             let subName = "Free";
 
-            // switch(priceKey) {
-            //     case 'bronze_price': subName = "Bronze"; break;
-            //     case 'gold_price': subName = "Gold"; break;
-            //     case 'platinum_price': subName = "Platinum"; break;
-            //     default: subName = "Free";
-            // }
             const geo = geoip.lookup(req.ip);
+            let accountTypeDisplay = req.user.accountType;
             if(res.locals.locale === 'fr'){
-                req.user.accountType = req.user.accountType === 'provider' ? 'prestataire' : 'utilisateur';
+                accountTypeDisplay = req.user.accountType === 'provider' ? 'prestataire' : 'utilisateur';
                 req.user.category = categoriesToFrMap.get(req.user.category);
                 subName = "Essai";
             }
-            res.render("userEdit", {usr: req.user, firstCor: 'none', currtab: 'dash', notifications: notifs, link:null, lang: res.locals.locale, cats: categories, recaptchaKey: process.env.RECAPTCHA_KEY_ID, countries: countries, hasDefaultPayment: hasDefaultPayment, user_loc_data: geo, subName: subName});
+            res.render("userEdit", {usr: req.user, firstCor: 'none', currtab: 'dash', notifications: notifs, link:null, lang: res.locals.locale, cats: categories, recaptchaKey: process.env.RECAPTCHA_KEY_ID, countries: countries, hasDefaultPayment: hasDefaultPayment, user_loc_data: geo, subName: subName, accountTypeDisplay: accountTypeDisplay});
         }else{res.redirect("/");}
     });
 
@@ -3071,6 +3254,8 @@ app.get("/", async function(req, res){
         if(req.isAuthenticated()){
             const notifs = await NotificationModel.find({receiverId: req.user._id, status:{$ne:"archived"}}).sort({lastUpdate: -1}).exec();
             const userCountry = await CountryModel.findOne({name: req.user.country}).exec();
+            const paymentMethods = await PaymentMethodModel.find({userId: req.user._id}).sort({createdAt: -1 }).limit(3).exec();
+            console.log("ROUTES:: Payment methods found: "+paymentMethods.length);
             if(userCountry){
                 req.user.currency = userCountry.currency;
                 req.user.currency_name = userCountry.currency_name;
@@ -3082,7 +3267,8 @@ app.get("/", async function(req, res){
                     lang: res.locals.locale,
                     map_api_key: process.env.GOOGLE_MAPS_API_KEY,
                     firstCor: 'none', currtab: 'myrequests', 
-                    notifications: notifs, link:null,  
+                    notifications: notifs, link:null, 
+                    paymentMethods: paymentMethods, 
                     cats: categories, recaptchaKey: process.env.RECAPTCHA_KEY_ID});
         }else{
             logger.warn("User not connecting, redirecting to home page..");
@@ -3277,6 +3463,12 @@ app.get("/", async function(req, res){
 
     app.get("/sr-details/:jobId", async function(req, res){
         if(req.isAuthenticated()){
+            const jobApplication = await JobApplicationModel.findOne({jobId: req.params.jobId, providerId: req.user._id}).exec();
+            if(jobApplication) {
+                res.redirect("/job-application/"+req.params.jobId);
+                return;
+            }
+        
             try{
             const notifs = await NotificationModel.find({receiverId: req.user._id, status:{$ne:"archived"}}).sort({lastUpdate: -1}).exec();
             const sr = await PostRequestModel.findOne({_id: req.params.jobId}).exec();
@@ -3424,10 +3616,11 @@ app.get("/", async function(req, res){
     app.get('/:anything/', async function (req, res) {
         if(req.isAuthenticated()){
             const notifs = await NotificationModel.find({receiverId: req.user._id, status:{$ne:"archived"}}).sort({lastUpdate: -1}).exec();
-            res.render("page_not_found", {usr: req.user, firstCor: 'none', map_api_key: process.env.GOOGLE_MAPS_API_KEY,
+            res.render("page_not_found", {usr: req.user, firstCor: 'none', map_api_key: process.env.GOOGLE_MAPS_API_KEY, lang: res.locals.locale,
                 currtab: 'dash', notifications: notifs, cats: categories, recaptchaKey: process.env.RECAPTCHA_KEY_ID, link:req.link});
         }else
-         res.render("page_not_found", {usr: null, firstCor: 'none', map_api_key: process.env.GOOGLE_MAPS_API_KEY, currtab: 'home', notifications: null, cats: categories, recaptchaKey: process.env.RECAPTCHA_KEY_ID, link:null });
+         res.render("page_not_found", {usr: null, firstCor: 'none', map_api_key: process.env.GOOGLE_MAPS_API_KEY, currtab: 'home', notifications: null, cats: categories, 
+            recaptchaKey: process.env.RECAPTCHA_KEY_ID, link:null , lang: res.locals.locale});
    });
 
     
@@ -3458,14 +3651,14 @@ app.get("/", async function(req, res){
             if (!userCheck.success) {
                 return res.status(500).json({
                     success: false,
-                    message: 'Unable to verify phone number'
+                    message: res.locals.locale === 'fr' ? 'Impossible de vérifier le numéro de téléphone' : 'Unable to verify phone number'
                 });
             }
             
             if (!userCheck.userExists) {
                 return res.status(404).json({
                     success: false,
-                    message: 'This phone number is not registered. Please sign up first or contact support.'
+                    message: res.locals.locale === 'fr' ? 'Ce numéro de téléphone n\'est pas enregistré. Veuillez d\'abord vous inscrire ou contacter le support.' : 'This phone number is not registered. Please sign up first or contact support.'
                 });
             }
             

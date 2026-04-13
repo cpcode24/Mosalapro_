@@ -36,13 +36,9 @@ const sendMessage = async(pro_id)=> {
             err.classList.add('success_message');
             err.innerHTML = "Message has been successfully sent!";
 
-            socket.emit("pushNotification", { 
-                "title": "You have a new message",
-                "content": "A client has sent you a new message. \n",
-                "userId": pro_id,
-                "notifType": "msg"
-            });
-            
+            // Backend already handles Socket.io emission to recipient
+            // No need to emit from client side
+
             await new Promise(r => setTimeout(r, 700));
             $('#messageModalCta .close').click();
         }

@@ -3,7 +3,7 @@
 * Author: Constant Pagoui.
 *	Date: 03-19-2023
 *	Copyright: MosalaPro TM
-*
+* Use https://nodemailer.com/ to send emails to users. You can use any email service provider that supports SMTP, such as Gmail, SendGrid, Mailgun, etc. Make sure to configure the email service provider with the appropriate credentials and settings in your application.
 **********************************************************************************************************/
 
 const UserModel = require("../models/user");
@@ -12,71 +12,112 @@ const CategoryModel = require("../models/category");
 const passport = require("passport");
 const log4js = require("log4js");
 const logger = log4js.getLogger();
+const Mailjet = require('node-mailjet');
 
 
 class EmailSender {
 
     async sendEmail(name, email, subject, message) {
-        const axios = require("axios");
-        const data = JSON.stringify({
-            "Messages": [{
-            "From": {"Email": process.env.EMAIL_SENDER, "Name": "MosalaPro"},
-            "To": [{"Email": email, "Name": name}],
-            "Subject": subject,
-            "HTMLPart": message
-            }]
-        });
+        // const axios = require("axios");
+        // const data = JSON.stringify({
+        //     "Messages": [{
+        //     "From": {"Email": process.env.EMAIL_SENDER, "Name": "MosalaPro"},
+        //     "To": [{"Email": email, "Name": name}],
+        //     "Subject": subject,
+        //     "HTMLPart": message
+        //     }]
+        // });
     
-        const config = {
-            method: 'post',
-            url: 'https://api.mailjet.com/v3.1/send',
-            data: data,
-            headers: {'Content-Type': 'application/json'},
-            auth: {username: process.env.MAILJET_API_KEY, password: process.env.MAILJET_API_SECRET},
-        };
+        // const config = {
+        //     method: 'post',
+        //     url: process.env.MAILJET_API_URL,
+        //     data: data,
+        //     headers: {'Content-Type': 'application/json'},
+        //     auth: {username: process.env.MAILJET_API_KEY, password: process.env.MAILJET_API_SECRET},
+        // };
         
-        return axios(config)
-            .then(function (response) {
-                //console.log(JSON.stringify(response.data));
-            }).catch(function (error) {logger.error("EMAIL SENDER:: An error occured: "+error);});
-    }
-    
-    async generateRandomString(strLength){
-        const chars =
-          "AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890";
-        const randomArray = Array.from(
-          { length: strLength },
-          (v, k) => chars[Math.floor(Math.random() * chars.length)]
-        );
-      
-        const randomString = randomArray.join("");
-        return randomString;
-      }
-    
-      async generateRandomDigit(codeLength){
-        const chars =
-          "1234567890";
-        const randomArray = Array.from(
-          { length: codeLength},
-          (v, k) => chars[Math.floor(Math.random() * chars.length)]
-        );
-        const code = randomArray.join("");
-        return code;
-      }
-    
-    async sendCode(codeLength, user){
-        const chars =
-        "1234567890";
-      const randomArray = Array.from(
-        { length: codeLength},
-        (v, k) => chars[Math.floor(Math.random() * chars.length)]
-      );
-        const randomDigit =  randomArray.join("");
+        // return axios(config)
+        //     .then(function (response) {
+        //         //console.log(JSON.stringify(response.data));
+        //     }).catch(function (error) {console.log("EMAIL SENDER:: An error occured: "+error);});
 
-        let token = await new TokenModel({
-            userId: user._id,
-            token: randomDigit,
-        }).save();
+       
+
+        const mailjet = Mailjet.apiConnect(
+          process.env.MAILJET_API_KEY,
+          process.env.MAILJET_API_SECRET
+        );
+
+        const request = mailjet
+            .post('send', { version: 'v3.1' })
+            .request({
+              Messages: [
+                {
+                  From: {
+                    Email: process.env.EMAIL_SENDER,
+                    Name: "MosalaPro"
+                  },
+                  To: [
+                    {
+                      Email: email,
+                      Name: name
+                    }
+                  ],
+                  Subject: subject,
+                  TextPart: message,
+                  HTMLPart: message
+                }
+              ]
+            })
+
+    request
+        .then((result) => {
+            console.log("Email sent successfully!")
+        })
+        .catch((err) => {
+            console.log(err.statusCode)
+        })
+        }
+        
+        async generateRandomString(strLength){
+            const chars =
+              "AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890";
+            const randomArray = Array.from(
+              { length: strLength },
+              (v, k) => chars[Math.floor(Math.random() * chars.length)]
+            );
+          
+            const randomString = randomArray.join("");
+            return randomString;
+          }
+        
+          async generateRandomDigit(codeLength){
+            const chars =
+              "1234567890";
+            const randomArray = Array.from(
+              { length: codeLength},
+              (v, k) => chars[Math.floor(Math.random() * chars.length)]
+            );
+            const code = randomArray.join("");
+            return code;
+          }
+        
+        async sendCode(codeLength, user){
+            const chars =
+            "1234567890";
+          const randomArray = Array.from(
+            { length: codeLength},
+            (v, k) => chars[Math.floor(Math.random() * chars.length)]
+          );
+            const randomDigit =  randomArray.join("");
+            console.log("EMAIL SENDER:: User ID: "+user._id);
+            // Delete any existing tokens for this user before creating a new one
+            await TokenModel.deleteMany({ userId: user._id }).exec();
+
+            let token = await new TokenModel({
+                userId: user._id,
+                token: randomDigit,
+            }).save();
 
         const name = user.firstName;
         const email = user.email;
@@ -423,7 +464,7 @@ table, td { color: #000000; } @media (max-width: 480px) { #u_content_heading_1 .
 </html>
 `;
             
-        logger.info("EMAIL_SENDER:: An Email sent to your account please verify");
+        console.log("EMAIL_SENDER:: An Email sent to your account please verify");
         if(this.sendEmail(name, email, subject, message))
             return true;
         else
@@ -764,7 +805,6 @@ table, td { color: #000000; } @media (max-width: 480px) { #u_content_heading_1 .
 
 </html>`
 ;            
-        logger.info("EMAIL_SENDER:: Email sent to user.");
         if(this.sendEmail(name, email, subject, message))
             return true;
         else
@@ -798,6 +838,8 @@ table, td { color: #000000; } @media (max-width: 480px) { #u_content_heading_1 .
           (v, k) => chars[Math.floor(Math.random() * chars.length)]
         );
         const randomDigit =  randomArray.join("");
+        // Delete any existing tokens for this user before creating a new one
+        await TokenModel.deleteMany({ userId: user._id }).exec();
 
         let token = await new TokenModel({
             userId: user._id,
@@ -1139,9 +1181,11 @@ table, td { color: #000000; } @media (max-width: 480px) { #u_content_heading_1 .
 </html>
 `;
             
-        logger.info("EMAIL_SENDER:: An Email sent to your account please verify");
-        if(this.sendEmail(name, email, subject, message))
+        console.log("EMAIL_SENDER:: An Email sent to your account please verify");
+        if(this.sendEmail(name, email, subject, message)){
+            console.log("EMAIL_SENDER:: Email sent successfully");
             return true;
+        }
         else
             return false; 
     }

@@ -2798,7 +2798,7 @@ input[type="button"].btn-block {
 }
 
 .custom-control-input:focus ~ .custom-control-label::before {
-	box-shadow: 0 0 0 1px #fff, 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+	box-shadow: 0 0 0 1px #fff, 0 0 0 0.2rem rgba(7, 116, 56, 0.25);
 }
 
 .custom-control-input:active ~ .custom-control-label::before {
@@ -2858,7 +2858,7 @@ input[type="button"].btn-block {
 }
 
 .custom-checkbox .custom-control-input:indeterminate ~ .custom-control-label::before {
-	background-color: #007bff;
+	background-color: #5A9E2F;
 }
 
 .custom-checkbox .custom-control-input:indeterminate ~ .custom-control-label::after {
@@ -2866,11 +2866,11 @@ input[type="button"].btn-block {
 }
 
 .custom-checkbox .custom-control-input:disabled:checked ~ .custom-control-label::before {
-	background-color: rgba(0, 123, 255, 0.5);
+	background-color: rgba(7, 116, 56, 0.25);
 }
 
 .custom-checkbox .custom-control-input:disabled:indeterminate ~ .custom-control-label::before {
-	background-color: rgba(0, 123, 255, 0.5);
+	background-color: rgba(7, 116, 56, 0.25);
 }
 
 .custom-radio .custom-control-label::before {
@@ -2878,7 +2878,7 @@ input[type="button"].btn-block {
 }
 
 .custom-radio .custom-control-input:checked ~ .custom-control-label::before {
-	background-color: #007bff;
+	background-color: #5A9E2F;
 }
 
 .custom-radio .custom-control-input:checked ~ .custom-control-label::after {
@@ -2886,7 +2886,7 @@ input[type="button"].btn-block {
 }
 
 .custom-radio .custom-control-input:disabled:checked ~ .custom-control-label::before {
-	background-color: rgba(0, 123, 255, 0.5);
+	background-color: rgba(7, 116, 56, 0.25);
 }
 
 .custom-select {
@@ -2905,9 +2905,9 @@ input[type="button"].btn-block {
 }
 
 .custom-select:focus {
-	border-color: #80bdff;
+	border-color: #78ecaa;
 	outline: 0;
-	box-shadow: 0 0 0 0.2rem rgba(128, 189, 255, 0.5);
+	box-shadow: 0 0 0 0.2rem rgba(128, 255, 147, 0.5);
 }
 
 .custom-select:focus::-ms-value {
@@ -2964,12 +2964,12 @@ input[type="button"].btn-block {
 }
 
 .custom-file-input:focus ~ .custom-file-label {
-	border-color: #80bdff;
-	box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+	border-color: #78ecaa;
+	box-shadow: 0 0 0 0.2rem rgba(128, 255, 147, 0.5);
 }
 
 .custom-file-input:focus ~ .custom-file-label::after {
-	border-color: #80bdff;
+	border-color: #78ecaa;
 }
 
 .custom-file-input:disabled ~ .custom-file-label {

@@ -20,7 +20,12 @@ const postRequestSchema = new mongoose.Schema({
         type: String
     },
     providerId : String,
-    quotationId: String, 
+    quotationId: String,
+    paymentMethodId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'PaymentMethod',
+        index: true
+    },
     budget: Number,
     budgetType: {
         type: String,

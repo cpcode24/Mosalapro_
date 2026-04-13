@@ -31,6 +31,20 @@
 #prevBtn[style*="display: none"] {
     display: none !important;
 }
+
+/* Payment method type selector active state styling */
+.btn-group-toggle .btn.active {
+    color: #5A9E2F !important;
+}
+
+.btn-group-toggle .btn.active:hover {
+    color: #4a8525 !important;
+}
+
+/* Override Bootstrap's active state */
+.btn-group-toggle label.active {
+    color:  #5A9E2F !important;
+}
 </style>
 <section class="<%=bg%> post-request-section mb-0 pb-4">
     <div class="container ">
@@ -77,7 +91,7 @@
                             </div>
                             <span class="" id="attach_err_msg"></span>
                             <label for="pr-attachment" class="attach-btn">
-                                <i class="fas fa-paperclip"></i> <%= t('AttachRequirementDoc') %>
+                                <b class="fas fa-paperclip"></b> <%= t('AttachRequirementDoc') %>
                             </label>
                             <input id="pr-attachment" name="file" type="file"  accept=
                             "application/msword, application/vnd.ms-excel, application/vnd.ms-powerpoint,
@@ -160,6 +174,97 @@
                 </div>
             </div>
             <div class="tab">
+                <div class="tab-pane" id="payment-method">
+                    <div class="card-header border-bottom mt-4 p-4 d-flex d-md-none">
+                        <ul class="nav nav-gap-x-1" role="tablist">
+                            <li class="nav-item">
+                                <b class="numbering fa fa-check" aria-hidden="true"></b><h6 class=" d-inline nav-link has-icon"><%= t('BriefDescription') %> </h6>
+                            </li>
+                            <li class="nav-item">
+                                <svg width="8" height="16" viewBox="0 0 8 16" xmlns="http://www.w3.org/2000/svg"><path d="M0.772126 1.19065L0.153407 1.80934C0.00696973 1.95578 0.00696973 2.19322 0.153407 2.33969L5.80025 8L0.153407 13.6603C0.00696973 13.8067 0.00696973 14.0442 0.153407 14.1907L0.772126 14.8094C0.918563 14.9558 1.156 14.9558 1.30247 14.8094L7.84666 8.26519C7.99309 8.11875 7.99309 7.88131 7.84666 7.73484L1.30247 1.19065C1.156 1.04419 0.918563 1.04419 0.772126 1.19065Z"></path></svg>
+                            </li>
+                            <li class="nav-item ml-3">
+                                <b class="numbering fa fa-check" aria-hidden="true"></b><h6 class=" d-inline nav-link has-icon"><%= t('Timeline') %> </h6>
+                            </li>
+                            <li class="nav-item">
+                                <svg width="8" height="16" viewBox="0 0 8 16" xmlns="http://www.w3.org/2000/svg"><path d="M0.772126 1.19065L0.153407 1.80934C0.00696973 1.95578 0.00696973 2.19322 0.153407 2.33969L5.80025 8L0.153407 13.6603C0.00696973 13.8067 0.00696973 14.0442 0.153407 14.1907L0.772126 14.8094C0.918563 14.9558 1.156 14.9558 1.30247 14.8094L7.84666 8.26519C7.99309 8.11875 7.99309 7.88131 7.84666 7.73484L1.30247 1.19065C1.156 1.04419 0.918563 1.04419 0.772126 1.19065Z"></path></svg>
+                            </li>
+                            <li class="nav-item ml-3">
+                                <h6 class="numbering">3</h6><h6 class=" d-inline nav-link has-icon"><%= t('PaymentMethod') %> </h6>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="row-service">
+                        <div class="col-lg-6 col-md-6 col-sm-12 col-12 mb-3">
+                            <h3><%= t('SecureYourBooking') %></h3>
+                            <h6 class="text-light mt-2"><%= t('PaymentMethodRequiredBooking') %></h6>
+                            <p class="small text-muted"><%= t('PaymentMethodInfoBooking') %></p>
+                            <img src="/images/secure_payment.png" class="service-image" onerror="this.style.display='none'"
+                                alt="Secure Payment">
+                        </div>
+                        <div class="col-lg-6 col-md-6 col-sm-12 col-12 col-with-input">
+                            <div id="payment_err_msg" class="error_message" style="display: none;"></div>
+
+                            <div id="payment-methods-container" class="mb-3">
+                                <!-- Existing payment methods will be loaded here -->
+                            </div>
+                        
+                            <div id="add-payment-section" class="mt-3" style="display: none;">
+                                <div class="card shadow-sm">
+                                    <div class="card-header bg-light">
+                                        <h6 class="mb-0"><b class="fas fa-credit-card mr-2"></b><%= t('AddPaymentMethod') %></h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <!-- Payment Method Type Selector -->
+                                        <div class="btn-group btn-group-toggle w-100 mb-3" data-toggle="buttons">
+                                            <label class="btn btn-outline-primary active" id="card-option-label">
+                                                <input type="radio" name="paymentType" id="card-option" value="card" checked>
+                                                <b class="active fab fa-cc-visa mr-1"></b> <%= t('CreditCard') %>/<%= t('DebitCard') %>
+                                            </label>
+                                            <label class="btn btn-outline-primary" id="paypal-option-label">
+                                                <input type="radio" name="paymentType" id="paypal-option" value="paypal">
+                                                <b class="fab fa-paypal mr-1"></b> <%= t('PayPal') %>
+                                            </label>
+                                        </div>
+
+                                        <!-- Card Payment Section -->
+                                        <div id="card-payment-section">
+                                            <div id="card-element" class="form-control" style="height: 50px; padding: 15px;"></div>
+                                            <div id="card-errors" class="text-danger small mt-2"></div>
+                                            <small class="text-muted d-block mt-2">
+                                                <b class="fas fa-lock mr-1"></b> <%= t('SecurePaymentInfo') || 'Your payment information is encrypted and secure' %>
+                                            </small>
+                                        </div>
+
+                                        <!-- PayPal Payment Section -->
+                                        <div id="paypal-payment-section" style="display: none;">
+                                            <div class=" alert-info border-0 mb-3">
+                                                <b class="fas fa-info-circle mr-2"></b>
+                                                <span><%= t('PayPalConnectInfo') || 'Click the button below to securely connect your PayPal account' %></span>
+                                            </div>
+                                            <div id="paypal-button-container" style="min-height: 45px;"></div>
+                                            <div id="paypal-errors" class="text-danger small mt-2"></div>
+                                            <div id="paypal-success" class=" alert-success mt-3" style="display: none;">
+                                                <b class="fas fa-check-circle mr-2"></b>
+                                                <span id="paypal-success-message"></span>
+                                            </div>
+                                        </div>
+
+                                        <button type="button" id="save-payment-btn" class="btn simple-btn btn-primary btn-block mt-3">
+                                            <b class="fas fa-save mr-2"></b> <%= t('SavePaymentMethod') || 'Save Payment Method' %>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="button" id="add-payment-btn" class="btn btn-primary-job-inv-blue btn-outline-primary btn-block">
+                                 <b class="fas fa-plus mr-2"></b> <%= t('AddNewPaymentMethod') %>
+                            </button>
+                            <input type="hidden" id="selectedPaymentMethodId" name="paymentMethodId" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tab">
                 <div class="tab-pane" id="requet-desc">
                     <div class="card-header border-bottom mt-4 p-4 d-flex d-md-none">
                         <ul class="nav nav-gap-x-1" role="tablist">
@@ -171,6 +276,12 @@
                             </li>
                             <li class="nav-item ml-3">
                                 <b class="numbering fa fa-check" aria-hidden="true"></b><h6 class=" d-inline nav-link has-icon"><%= t('Timeline') %> </h6>
+                            </li>
+                            <li class="nav-item">
+                                <svg width="8" height="16" viewBox="0 0 8 16" xmlns="http://www.w3.org/2000/svg"><path d="M0.772126 1.19065L0.153407 1.80934C0.00696973 1.95578 0.00696973 2.19322 0.153407 2.33969L5.80025 8L0.153407 13.6603C0.00696973 13.8067 0.00696973 14.0442 0.153407 14.1907L0.772126 14.8094C0.918563 14.9558 1.156 14.9558 1.30247 14.8094L7.84666 8.26519C7.99309 8.11875 7.99309 7.88131 7.84666 7.73484L1.30247 1.19065C1.156 1.04419 0.918563 1.04419 0.772126 1.19065Z"></path></svg>
+                            </li>
+                            <li class="nav-item ml-3">
+                                <b class="numbering fa fa-check" aria-hidden="true"></b><h6 class=" d-inline nav-link has-icon"><%= t('PaymentMethod') %> </h6>
                             </li>
                         </ul>
                     </div>
@@ -200,18 +311,28 @@
 <%- include('partials/footer') %>
 
 <!-- Service Request Form Scripts -->
+<script src="https://js.stripe.com/v3/"></script>
+<script src="https://www.paypal.com/sdk/js?client-id=<%= process.env.PAYPAL_CLIENT_ID || '' %>&vault=true&intent=tokenize"></script>
 <script src="https://unpkg.com/gijgo@1.9.14/js/gijgo.min.js" type="text/javascript"></script>
 <script>
 $(document).ready(function() {
     console.log('Document ready, initializing service request form...');
-    
+
+    // Initialize Stripe
+    const stripe = Stripe('<%= process.env.STRIPE_PUBLISHABLE_KEY || "" %>');
+    const elements = stripe.elements();
+    let cardElement = null;
+    let selectedPaymentMethodId = null;
+    let paypalButtonRendered = false;
+    let paypalTokenData = null;
+
     // Initialize datepicker
     var date = new Date();
     var minD = new Date(date.getFullYear(), date.getMonth(), date.getDate()+1, 0, 0, 0, 0);
-    $('#datepicker').datepicker({ 
+    $('#datepicker').datepicker({
         minDate: minD,
         uiLibrary: 'bootstrap4'
-    }); 
+    });
 
     // File input handler
     const output = document.querySelector(".output");
@@ -231,7 +352,7 @@ $(document).ready(function() {
                 }
             }
             for (const file of fileInput.files) {
-                output.innerText += `\n${file.name}`; 
+                output.innerText += `\n${file.name}`;
             }
         });
     }
@@ -239,24 +360,517 @@ $(document).ready(function() {
     // Form navigation variables
     var currentTab = 0;
 
+    // Payment methods functions
+    async function loadPaymentMethods() {
+        try {
+            const response = await fetch('/payment-methods', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            const data = await response.json();
+
+            const container = document.getElementById('payment-methods-container');
+            if (data.paymentMethods && data.paymentMethods.length > 0) {
+                container.innerHTML = `
+                    <div class="mb-3">
+                        <h6 class="text-muted mb-3">
+                            <b class="fas fa-wallet mr-2"></b><%= t("SavedPaymentMethods") %>
+                        </h6>
+                        <small class="text-muted"><%= t("SelectPaymentMethodInfo") %></small>
+                    </div>
+                `;
+
+                data.paymentMethods.forEach(pm => {
+                    const isDefault = pm.isDefault;
+                    const isPayPal = pm.type === 'paypal';
+                    const isExpired = pm.isExpired;
+
+                    let icon, displayText;
+                    if (isPayPal) {
+                        icon = '<b class="fab fa-paypal" style="font-size: 28px; color: #003087;"></b>';
+                        displayText = `<strong>PayPal</strong><br><small class="text-muted">${pm.paypalEmail || 'PayPal Account'}</small>`;
+                    } else {
+                        const brandColors = {
+                            'visa': '#1A1F71',
+                            'mastercard': '#EB001B',
+                            'amex': '#006FCF',
+                            'discover': '#FF6000'
+                        };
+                        const brandColor = brandColors[pm.cardBrand?.toLowerCase()] || '#6c757d';
+                        icon = `<b class="fab fa-cc-${pm.cardBrand?.toLowerCase() || 'visa'}" style="font-size: 28px; color: ${brandColor};"></b>`;
+                        displayText = `<strong>${pm.cardBrand ? pm.cardBrand.toUpperCase() : 'Card'}</strong> •••• ${pm.cardLast4}<br>
+                                      <small class="text-muted">Expires ${pm.cardExpiryMonth}/${pm.cardExpiryYear}</small>`;
+                        if (isExpired) {
+                            displayText += '<br><span class="badge badge-danger"><%= t("ExpiredCard") %></span>';
+                        }
+                    }
+
+                    const pmCard = `
+                        <div class="card payment-method-card mb-2 ${isDefault ? 'border-primary' : ''} ${isExpired ? 'opacity-50' : ''}"
+                             data-pm-id="${pm.id}"
+                             style="cursor: ${isExpired ? 'not-allowed' : 'pointer'}; transition: all 0.3s ease;">
+                            <div class="card-body p-3">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <div class="d-flex align-items-center">
+                                        <div class="mr-3">
+                                            ${icon}
+                                        </div>
+                                        <div>
+                                            ${displayText}
+                                        </div>
+                                    </div>
+                                    <div class="text-right">
+                                        ${isDefault ? '<span class="badge badge-primary mb-2"><b class="fas fa-check-circle mr-1"></b><%= t("DefaultPaymentMethod") %></span><br>' : ''}
+                                        <div class="custom-control custom-radio">
+                                            <input type="radio"
+                                                   class="custom-control-input"
+                                                   name="paymentMethod"
+                                                   id="pm_${pm.id}"
+                                                   value="${pm.id}"
+                                                   ${isDefault ? 'checked' : ''}
+                                                   ${isExpired ? 'disabled' : ''}>
+                                            <label class="custom-control-label" for="pm_${pm.id}"></label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    container.innerHTML += pmCard;
+                    // Set default payment method as selected
+                    if (isDefault) {
+                        selectedPaymentMethodId = pm.id;
+                        document.getElementById('selectedPaymentMethodId').value = pm.id;
+                    }
+                });
+
+                
+
+                // Add click handlers with enhanced styling
+                document.querySelectorAll('.payment-method-card').forEach(card => {
+                    card.addEventListener('click', function() {
+                        const radio = this.querySelector('input[type="radio"]');
+                        if (radio && !radio.disabled) {
+                            // Remove border from all cards
+                            document.querySelectorAll('.payment-method-card').forEach(c => {
+                                c.classList.remove('border-primary', 'shadow-sm');
+                                c.style.transform = 'scale(1)';
+                            });
+
+                            // Add border and shadow to selected card
+                            this.classList.add('border-primary', 'shadow-sm');
+                            this.style.transform = 'scale(1.02)';
+
+                            // Check the radio
+                            radio.checked = true;
+                            selectedPaymentMethodId = this.dataset.pmId;
+                            document.getElementById('selectedPaymentMethodId').value = selectedPaymentMethodId;
+                        }
+                    });
+
+                    // Add hover effect
+                    card.addEventListener('mouseenter', function() {
+                        const radio = this.querySelector('input[type="radio"]');
+                        if (radio && !radio.disabled) {
+                            this.style.transform = 'translateY(-2px)';
+                            this.classList.add('shadow-sm');
+                        }
+                    });
+
+                    card.addEventListener('mouseleave', function() {
+                        const radio = this.querySelector('input[type="radio"]');
+                        if (radio && !radio.disabled && !radio.checked) {
+                            this.style.transform = 'scale(1)';
+                            this.classList.remove('shadow-sm');
+                        }
+                    });
+                });
+
+                // Trigger initial styling for default payment method
+                const defaultCard = container.querySelector('.payment-method-card input[type="radio"]:checked');
+                if (defaultCard) {
+                    defaultCard.closest('.payment-method-card').classList.add('shadow-sm');
+                    defaultCard.closest('.payment-method-card').style.transform = 'scale(1.02)';
+                }
+            } else {
+                container.innerHTML = `
+                    <div class=" alert-info border-0">
+                        <div class="d-flex align-items-center">
+                            <b class="fas fa-info-circle fa-2x mr-3 text-info"></b>
+                            <div>
+                                <strong><%= t("NoSavedPaymentMethods") %></strong>
+                                <p class="mb-0 small"><%= t("NoPaymentMethodsAvailable") %></p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+        } catch (error) {
+            console.error('Error loading payment methods:', error);
+            document.getElementById('payment-methods-container').innerHTML = `
+                <div class=" alert-danger">
+                    <%= t("ErrorLoadingPaymentMethodsMsg") %>
+                </div>
+            `;
+        }
+    }
+
+    // Payment type toggle handlers
+    function switchPaymentType(type) {
+        if (type === 'card') {
+            document.getElementById('card-payment-section').style.display = 'block';
+            document.getElementById('paypal-payment-section').style.display = 'none';
+            document.getElementById('card-option').checked = true;
+            document.getElementById('card-option-label').classList.add('active');
+            document.getElementById('paypal-option-label').classList.remove('active');
+        } else if (type === 'paypal') {
+            document.getElementById('card-payment-section').style.display = 'none';
+            document.getElementById('paypal-payment-section').style.display = 'block';
+            document.getElementById('paypal-option').checked = true;
+            document.getElementById('paypal-option-label').classList.add('active');
+            document.getElementById('card-option-label').classList.remove('active');
+
+            // Render PayPal button if not already rendered
+            if (!paypalButtonRendered && typeof paypal !== 'undefined') {
+                renderPayPalButton();
+            }
+        }
+    }
+
+    // Render PayPal Button
+    function renderPayPalButton() {
+        const container = document.getElementById('paypal-button-container');
+        if (!container || paypalButtonRendered) return;
+
+        try {
+            paypal.Buttons({
+                createVaultSetupToken: async function() {
+                    try {
+                        const response = await fetch('/paypal/create-setup-token', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            }
+                        });
+
+                        const data = await response.json();
+
+                        if (!response.ok) {
+                            throw new Error(data.message || 'Failed to create setup token');
+                        }
+
+                        return data.id;
+                    } catch (error) {
+                        console.error('Error creating setup token:', error);
+                        document.getElementById('paypal-errors').textContent = error.message;
+                        throw error;
+                    }
+                },
+                onApprove: async function(data) {
+                    try {
+                        // Save the vault setup token to backend
+                        const response = await fetch('/paypal/save-payment-token', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                vaultSetupToken: data.vaultSetupToken
+                            })
+                        });
+
+                        const result = await response.json();
+
+                        if (!response.ok || result.status !== 200) {
+                            throw new Error(result.message || 'Failed to save PayPal account');
+                        }
+
+                        // Store payment method data
+                        paypalTokenData = result.paymentMethod;
+                        selectedPaymentMethodId = result.paymentMethod._id;
+                        document.getElementById('selectedPaymentMethodId').value = selectedPaymentMethodId;
+
+                        // Show success message
+                        const successDiv = document.getElementById('paypal-success');
+                        const successMsg = document.getElementById('paypal-success-message');
+                        successMsg.innerHTML = '<%= t("PayPalAccountLinkedSuccessfully") || "PayPal account linked successfully!" %> (' + (result.paymentMethod.paypalEmail || 'PayPal Account') + ')';
+                        successDiv.style.display = 'block';
+
+                        // Hide the PayPal button after successful connection
+                        container.style.display = 'none';
+
+                        // Reload payment methods to show the new one
+                        await loadPaymentMethods();
+
+                        return result;
+                    } catch (error) {
+                        console.error('Error saving PayPal token:', error);
+                        document.getElementById('paypal-errors').textContent = error.message;
+                        throw error;
+                    }
+                },
+                onCancel: function() {
+                    document.getElementById('paypal-errors').textContent = '<%= t("PayPalConnectionCancelled") || "PayPal connection was cancelled" %>';
+                },
+                onError: function(err) {
+                    console.error('PayPal button error:', err);
+                    document.getElementById('paypal-errors').textContent = '<%= t("PayPalConnectionError") || "An error occurred while connecting to PayPal. Please try again." %>';
+                },
+                style: {
+                    layout: 'horizontal',
+                    color: 'blue',
+                    shape: 'rect',
+                    label: 'paypal',
+                    height: 45
+                }
+            }).render('#paypal-button-container');
+
+            paypalButtonRendered = true;
+        } catch (error) {
+            console.error('Error rendering PayPal button:', error);
+            document.getElementById('paypal-errors').textContent = '<%= t("PayPalButtonRenderError") || "Failed to load PayPal button. Please refresh the page." %>';
+        }
+    }
+
+    // Add click handlers to both radio inputs and labels
+    document.getElementById('card-option').addEventListener('change', function() {
+        if (this.checked) {
+            switchPaymentType('card');
+        }
+    });
+
+    document.getElementById('card-option-label').addEventListener('click', function() {
+        switchPaymentType('card');
+    });
+
+    document.getElementById('paypal-option').addEventListener('change', function() {
+        if (this.checked) {
+            switchPaymentType('paypal');
+        }
+    });
+
+    document.getElementById('paypal-option-label').addEventListener('click', function() {
+        switchPaymentType('paypal');
+    });
+
+    // Add payment method button handler
+    document.getElementById('add-payment-btn').addEventListener('click', function() {
+        const addSection = document.getElementById('add-payment-section');
+        if (addSection.style.display === 'none') {
+            addSection.style.display = 'block';
+            this.innerHTML = '<b class="fas fa-times mr-2"></b><%= t("Cancel") %>';
+            this.classList.remove('btn-outline-primary');
+            this.classList.add('btn-outline-secondary');
+
+            // Initialize Stripe card element if not already done
+            if (!cardElement) {
+                cardElement = elements.create('card', {
+                    style: {
+                        base: {
+                            fontSize: '16px',
+                            color: '#32325d',
+                            fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
+                            lineHeight: '24px',
+                            '::placeholder': {
+                                color: '#aab7c4'
+                            }
+                        },
+                        invalid: {
+                            color: '#fa755a',
+                            iconColor: '#fa755a'
+                        }
+                    }
+                });
+                cardElement.mount('#card-element');
+
+                // Handle card element errors
+                cardElement.on('change', function(event) {
+                    const displayError = document.getElementById('card-errors');
+                    if (event.error) {
+                        displayError.innerHTML = '<b class="fas fa-exclamation-circle mr-1"></b>' + event.error.message;
+                    } else {
+                        displayError.textContent = '';
+                    }
+                });
+            }
+        } else {
+            addSection.style.display = 'none';
+            this.innerHTML = '<b class="fas fa-plus mr-2"></b><%= t("AddNewPaymentMethod") %>';
+            this.classList.remove('btn-outline-secondary');
+            this.classList.add('btn-outline-primary');
+        }
+    });
+
+    // Save payment method button handler
+    document.getElementById('save-payment-btn').addEventListener('click', async function() {
+        const paymentType = document.querySelector('input[name="paymentType"]:checked').value;
+        const btn = this;
+        const originalHtml = btn.innerHTML;
+
+        btn.disabled = true;
+        btn.innerHTML = '<b class="fas fa-spinner fa-spin mr-2"></b><%= t("Processing") || "Processing..." %>';
+
+        if (paymentType === 'card') {
+            const result = await saveNewPaymentMethod();
+            if (result.success) {
+                document.getElementById('add-payment-section').style.display = 'none';
+                document.getElementById('add-payment-btn').innerHTML = '<b class="fas fa-plus mr-2"></b><%= t("AddNewPaymentMethod") %>';
+                document.getElementById('add-payment-btn').classList.remove('btn-outline-secondary');
+                document.getElementById('add-payment-btn').classList.add('btn-outline-primary');
+            }
+        } else if (paymentType === 'paypal') {
+            const result = await savePayPalPaymentMethod();
+            if (result.success) {
+                document.getElementById('add-payment-section').style.display = 'none';
+                document.getElementById('add-payment-btn').innerHTML = '<b class="fas fa-plus mr-2"></b><%= t("AddNewPaymentMethod") %>';
+                document.getElementById('add-payment-btn').classList.remove('btn-outline-secondary');
+                document.getElementById('add-payment-btn').classList.add('btn-outline-primary');
+            }
+        }
+
+        btn.disabled = false;
+        btn.innerHTML = originalHtml;
+    });
+
+    // Save new Stripe payment method
+    async function saveNewPaymentMethod() {
+        if (!cardElement) {
+            return { success: false, error: '<%= t("NoPaymentMethodsAvailable") %>' };
+        }
+
+        const payment_err_msg = document.getElementById('payment_err_msg');
+        payment_err_msg.style.display = 'none';
+        payment_err_msg.classList.remove('alert-danger', 'alert-success');
+
+        try {
+            // Create payment method with Stripe
+            const { error, paymentMethod } = await stripe.createPaymentMethod({
+                type: 'card',
+                card: cardElement
+            });
+
+            if (error) {
+                throw new Error(error.message);
+            }
+
+            // Save to backend
+            const response = await fetch('/user/payment', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    provider: 'stripe',
+                    paymentMethodId: paymentMethod.id,
+                    setAsDefault: true
+                })
+            });
+
+            const data = await response.json();
+
+            if (!response.ok || data.status !== 200) {
+                // Provide user-friendly error message
+                let errorMsg = data.message || '<%= t("ErrorSavingPaymentMethodMsg") %>';
+
+                // Check for specific error messages
+                if (errorMsg.includes('different Stripe environment')) {
+                    errorMsg = '<%= t("StripeEnvError") || "Payment method verification failed. Please ensure you are using the correct payment environment." %>';
+                } else if (errorMsg.includes('Payment method not found')) {
+                    errorMsg = '<%= t("PaymentMethodNotFound") || "The payment method could not be verified. Please try entering your card details again." %>';
+                } else if (errorMsg.includes('already attached to another customer')) {
+                    errorMsg = '<%= t("PaymentMethodAlreadyUsed") || "This payment method is already associated with another account." %>';
+                }
+
+                throw new Error(errorMsg);
+            }
+
+            selectedPaymentMethodId = data.paymentMethod._id;
+            document.getElementById('selectedPaymentMethodId').value = selectedPaymentMethodId;
+
+            // Show success message
+            payment_err_msg.classList.remove('error_message');
+            payment_err_msg.classList.add('success_message');
+            payment_err_msg.innerHTML = '<b class="fas fa-check-circle success mr-2"></b><%= t("PaymentMethodSavedSuccessfully") || "Payment method saved successfully!" %>';
+            payment_err_msg.style.display = 'block';
+
+            // Reload payment methods
+            await loadPaymentMethods();
+
+            return { success: true };
+        } catch (error) {
+            payment_err_msg.classList.remove('success_message');
+            payment_err_msg.classList.add('error_message');
+            payment_err_msg.innerHTML = '<b class="fas fa-exclamation-circle mr-2"></b>' + error.message;
+            payment_err_msg.style.display = 'block';
+
+            // Scroll to error message
+            payment_err_msg.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            return { success: false, error: error.message };
+        }
+    }
+
+    // Save new PayPal payment method
+    async function savePayPalPaymentMethod() {
+        const payment_err_msg = document.getElementById('payment_err_msg');
+        payment_err_msg.style.display = 'none';
+        payment_err_msg.classList.remove('alert-danger', 'alert-success', 'alert-warning');
+
+        // Check if PayPal token was already collected via the button
+        if (paypalTokenData && selectedPaymentMethodId) {
+            payment_err_msg.classList.add('alert-success');
+            payment_err_msg.innerHTML = '<b class="fas fa-check-circle mr-2"></b><%= t("PayPalAccountLinkedSuccessfully") || "PayPal account linked successfully!" %>';
+            payment_err_msg.style.display = 'block';
+            return { success: true, paymentMethodId: selectedPaymentMethodId };
+        }
+
+        // If no token data, prompt user to click PayPal button
+        payment_err_msg.classList.add('alert-warning');
+        payment_err_msg.innerHTML = '<b class="fas fa-exclamation-triangle mr-2"></b><%= t("PleaseConnectPayPal") || "Please click the PayPal button above to connect your account" %>';
+        payment_err_msg.style.display = 'block';
+        payment_err_msg.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+        return { success: false, error: 'PayPal not connected' };
+    }
+
+    // Validate payment method is selected
+    function validatePaymentMethod() {
+        const selectedId = document.getElementById('selectedPaymentMethodId').value;
+        const addSectionVisible = document.getElementById('add-payment-section').style.display !== 'none';
+        if (!selectedId && !addSectionVisible) {
+            const payment_err_msg = document.getElementById('payment_err_msg');
+            payment_err_msg.classList.remove('alert-success');
+            payment_err_msg.classList.add('alert-danger');
+            payment_err_msg.innerHTML = '<b class="fas fa-exclamation-circle mr-2"></b><%= t("PleaseSelectPaymentMethod") || "Please select a payment method or add a new one" %>';
+            payment_err_msg.style.display = 'block';
+
+            // Scroll to error message
+            payment_err_msg.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            return false;
+        }
+
+        return true;
+    }
+
     // Form navigation functions
-    window.showTab = function(n) {
+    window.showTab = async function(n) {
         console.log('showTab called with n =', n);
         var x = document.getElementsByClassName("tab");
         console.log('Found', x.length, 'tabs');
-        
+
         if (x.length === 0) {
             console.error('No tabs found!');
             return;
         }
-        
+
         // Hide all tabs first with explicit logging
         for (var i = 0; i < x.length; i++) {
             x[i].style.display = "none";
             x[i].style.visibility = "hidden";
             console.log('Hiding tab', i);
         }
-        
+
         // Show the current tab
         if (x[n]) {
             x[n].style.display = "block";
@@ -266,16 +880,22 @@ $(document).ready(function() {
             console.error('Tab', n, 'not found');
             return;
         }
-        
+
+        // Load payment methods when showing payment tab (tab index 2)
+        if (n === 2) {
+            await loadPaymentMethods();
+            validatePaymentMethod(); // Ensure validation message is shown if no method selected
+        }
+
         // Get button elements
         var prevBtn = document.getElementById("prevBtn");
         var nextBtn = document.getElementById("nextBtn");
-        
+
         if (!prevBtn || !nextBtn) {
             console.error('Navigation buttons not found');
             return;
         }
-        
+
         // Handle Previous/Next buttons
         if (n == 0) {
             prevBtn.style.display = "none";
@@ -284,11 +904,11 @@ $(document).ready(function() {
             prevBtn.style.display = "inline";
             console.log('Showing previous button');
         }
-        
-        if (n == (x.length - 2)) {
+
+        if (n == 2) {
             nextBtn.innerHTML = "<%= t('Submit') %>";
             console.log('Setting next button to Submit');
-        } else if(n == (x.length - 1)){
+        } else if(n == 3){
             prevBtn.style.display = "none";
             nextBtn.innerHTML = "<%= t('StartNewRequest') %>";
             console.log('Final tab - hiding prev, showing start new request');
@@ -301,23 +921,47 @@ $(document).ready(function() {
 
     window.nextPrev = async function(n) {
         console.log('nextPrev called with n =', n, ', currentTab =', currentTab);
-        
+
         try {
             var x = document.getElementsByClassName("tab");
-            
+
             if (x.length === 0) {
                 console.error('No tabs found in nextPrev!');
                 return false;
             }
-            
+
             // Validate form if going forward
             if (n == 1 && !validateForm()) {
-                console.log('Form validation failed');
+                console.log('Form validation failed --- ');
                 return false;
             }
-            
-            // Handle submission logic
-            if ((currentTab+n) == x.length-1) {
+
+            // Validate payment method when leaving payment tab (tab 2)
+            if (n == 2 && currentTab == 2) {
+                // Check if user is adding a new payment method
+                const addSectionVisible = document.getElementById('add-payment-section').style.display !== 'none';
+                if (addSectionVisible) {
+                    // Check which payment type is selected
+                    const paymentType = document.querySelector('input[name="paymentType"]:checked').value;
+                    let result;
+                    if (paymentType === 'card') {
+                        result = await saveNewPaymentMethod();
+                    } else if (paymentType === 'paypal') {
+                        result = await savePayPalPaymentMethod();
+                    }
+
+                    if (!result || !result.success) {
+                        console.log('Payment method save failed');
+                        return false;
+                    }
+                } else if (!validatePaymentMethod()) {
+                    console.log('Payment method validation failed');
+                    return false;
+                }
+            }
+
+            // Handle submission logic (now tab index is x.length-2 due to new payment tab)
+            if (currentTab == 2) {
                 const requestDeadline = document.getElementById("datepicker").value;
                 const currentDate = new Date();
                 const dateArr = currentDate.toLocaleDateString("en-US").split("/");
@@ -340,25 +984,25 @@ $(document).ready(function() {
                 x[currentTab].style.display = "none";
                 console.log('Hiding current tab', currentTab);
             }
-            
+
             currentTab = currentTab + n;
             console.log('New currentTab =', currentTab);
-            
+
             // Check bounds
             if (currentTab > x.length-1) {
                 console.log('Reached end of form, reloading');
                 window.location.reload();
                 return;
             }
-            
+
             if (currentTab < 0) {
                 currentTab = 0;
                 console.log('Corrected currentTab to 0');
             }
-            
+
             // Show new tab
             showTab(currentTab);
-            
+
         } catch (error) {
             console.error('Error in nextPrev function:', error);
             return false;
@@ -373,9 +1017,10 @@ $(document).ready(function() {
         
         // Check all input fields in current tab
         for (var i = 0; i < y.length; i++) {
-            if (y[i].value.trim() == "" && y[i].name != "file") {
+            if (y[i].value.trim() == "" && y[i].name != "file" && y[i].type != "hidden") {
                 y[i].className += " invalid";
                 valid = false;
+                console.log('Validation failed for input:', y[i].name);
             }
         }
         
@@ -384,6 +1029,7 @@ $(document).ready(function() {
         if (z && (z.value.trim() == "" || z.value.length < 20)){
             z.className += " invalid";
             valid = false;
+            console.log('Description validation failed');
         }
 
         // Check category selection
@@ -392,6 +1038,7 @@ $(document).ready(function() {
         if(category && (!categoryValue || categoryValue.trim() === '')){
             category.classList.add("invalid");
             valid = false;
+            console.log('Category validation failed');
         }
         
         return valid;
@@ -425,7 +1072,13 @@ $(document).ready(function() {
         const requestBudget = document.getElementById("requestBudget").value;
         const requestBudgetType = document.getElementById("budgetType").value;
         const budgetCurrency = document.getElementById("budgetCurrency").value;
-        
+        const paymentMethodId = document.getElementById("selectedPaymentMethodId").value;
+
+        console.log('=== Service Request Submission ===');
+        console.log('Payment Method ID:', paymentMethodId);
+        console.log('Request Title:', requestTitle);
+        console.log('Category:', requestCategory);
+
         const formData = new FormData();
         formData.append("requestTitle", requestTitle);
         formData.append("requestDescription", requestDescription);
@@ -436,22 +1089,33 @@ $(document).ready(function() {
         formData.append("requestBudget", requestBudget);
         formData.append("requestBudgetType", requestBudgetType);
         formData.append("budgetCurrency", budgetCurrency);
+        formData.append("paymentMethodId", paymentMethodId);
 
         try {
+            console.log('Submitting form to /postServiceRequest...');
             const response = await fetch("/postServiceRequest", {
                 method: "POST",
                 body: formData,
             });
-            
-            if (!response.ok) {
-                throw new Error("Network response was not ok");
-            }
-            
+
+            console.log('Response status:', response.status);
+            console.log('Response ok:', response.ok);
+
             const data = await response.json();
+            console.log('Response data:', data);
+
+            if (!response.ok || data.status !== 200) {
+                // Show error message to user
+                console.log('<%= t("ErrorSubmittingRequest") || "Error submitting request" %>: ' + (data.message || 'Unknown error'));
+                throw new Error(data.message || "Server returned an error");
+            }
+
             console.log("Form submitted successfully", data);
-            
+            // Success - the form should advance to next tab
+
         } catch (error) {
             console.error("Form submission error:", error);
+            console.log('<%= t("ErrorSubmittingRequest") || "Error submitting request" %>: ' + error.message);
         }
     }
 

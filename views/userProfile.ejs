@@ -39,7 +39,7 @@
                                 <a href="#notification" data-toggle="tab" class="nav-item nav-link has-icon nav-link-faded ">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-bell mr-2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg><%= t('Notification') %>
                                 </a>
-                                <a href="#billing" data-toggle="tab" class="nav-item nav-link has-icon nav-link-faded">
+                                <a href="#billing" onclick="loadUserPaymentData()" data-toggle="tab" class="nav-item nav-link has-icon nav-link-faded">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-credit-card mr-2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg><%= t('Billing') %>
                                 </a>
                             </nav>
@@ -402,12 +402,48 @@
 
 <script>
 // Load payment methods when billing tab is shown
-async function loadUserPaymentMethods() {
+let paymentMethodsRetryCount = 0;
+const MAX_PAYMENT_METHODS_RETRIES = 3;
+let cachedPaymentMethods = null;
+loadUserPaymentMethods();
+
+async function loadUserPaymentMethods(isRetry = false) {
     const container = document.getElementById('userProfilePaymentMethods');
+    // Show loading skeleton
+    if (!isRetry) {
+        container.innerHTML = `
+            <div class="payment-methods-skeleton">
+                ${[1, 2].map(() => `
+                    <div class="list-group-item mb-2">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div style="flex: 1;">
+                                <div class="skeleton-line" style="width: 200px; height: 18px; margin-bottom: 8px;"></div>
+                                <div class="skeleton-line" style="width: 120px; height: 14px;"></div>
+                            </div>
+                            <div class="skeleton-line" style="width: 80px; height: 32px;"></div>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+    }
 
     try {
-        const response = await fetch('/api/payment/payment-methods');
+        const response = await fetch('/payment-methods', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            
+
         const data = await response.json();
+
+        // Cache successful data
+        if (data.success) {
+            cachedPaymentMethods = data;
+            paymentMethodsRetryCount = 0; // Reset retry count on success
+        }
 
         if (data.success && data.paymentMethods.length > 0) {
             let html = '<div class="list-group">';
@@ -425,7 +461,7 @@ async function loadUserPaymentMethods() {
                     <div class="list-group-item">
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
-                                <b class="fa ${icon} mr-2"> </b>
+                                <b class="fa ${icon} mr-2"></b>
                                 <strong>${method.displayName}</strong>
                                 ${defaultBadge}
                                 ${expiredBadge}
@@ -438,7 +474,7 @@ async function loadUserPaymentMethods() {
                                     </button>
                                 ` : ''}
                                 <button class="btn btn-sm btn-outline-danger" onclick="deleteUserPaymentMethod('${method.id}')">
-                                    <b class="fa fa-trash"> </b>
+                                    <b class="fa fa-trash"></b>
                                 </button>
                             </div>
                         </div>
@@ -450,28 +486,206 @@ async function loadUserPaymentMethods() {
             container.innerHTML = html;
         } else {
             container.innerHTML = `
-                <div class=" alert-info text-center">
-                    class="fa fa-info-circle"></b> <%= t('YouHaveNotAddedPaymentMethod') %>
+                <div class="alert-info text-center">
+                    <b class="fa fa-info-circle"></b> <%= t('YouHaveNotAddedPaymentMethod') %>
                 </div>
             `;
         }
     } catch (error) {
         console.error('Error loading payment methods:', error);
-        container.innerHTML = `
-            <div class=" alert-danger">
-                class="fa fa-exclamation-triangle"></b> <%= t('ErrorLoadingPaymentMethods') %>
-            </div>
-        `;
+
+        // Handle authentication errors specifically
+        if (error.message === 'AUTHENTICATION_ERROR') {
+            container.innerHTML = `
+                <div class="alert alert-warning">
+                    <div class="d-flex align-items-center mb-2">
+                        <i class="fa fa-lock me-2"></i>
+                        <strong><%= t('SessionExpired') %></strong>
+                    </div>
+                    <p class="mb-2 small"><%= t('PleaseLoginAgain') %></p>
+                    <a href="/login" class="btn btn-sm btn-primary">
+                        <i class="fa fa-sign-in"></i> <%= t('Login') %>
+                    </a>
+                </div>
+            `;
+            return;
+        }
+
+        // Handle invalid response format (HTML instead of JSON)
+        if (error.message === 'INVALID_RESPONSE_FORMAT') {
+            container.innerHTML = `
+                <div class="alert alert-danger">
+                    <div class="d-flex align-items-center mb-2">
+                        <i class="fa fa-exclamation-triangle me-2"></i>
+                        <strong><%= t('InvalidResponse') %></strong>
+                    </div>
+                    <p class="mb-2 small"><%= t('ServerReturnedUnexpectedFormat') %></p>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-sm btn-outline-danger" onclick="paymentMethodsRetryCount = 0; loadUserPaymentMethods();">
+                            <i class="fa fa-refresh"></i> <%= t('TryAgain') %>
+                        </button>
+                        <button class="btn btn-sm btn-secondary" onclick="location.reload();">
+                            <i class="fa fa-repeat"></i> <%= t('ReloadPage') %>
+                        </button>
+                    </div>
+                </div>
+            `;
+            return;
+        }
+
+        // Show cached data if available
+        if (cachedPaymentMethods && cachedPaymentMethods.paymentMethods.length > 0) {
+            let html = '<div class="alert alert-warning mb-3"><i class="fa fa-exclamation-triangle"></i> <%= t("ShowingCachedData") %></div>';
+            html += '<div class="list-group">';
+
+            cachedPaymentMethods.paymentMethods.forEach(method => {
+                const icon = method.provider === 'stripe' ? 'fa-credit-card' : 'fa-paypal';
+                const defaultBadge = method.isDefault
+                    ? '<span class="badge badge-primary ml-2"><%= t("Default") %></span>'
+                    : '';
+                const expiredBadge = method.isExpired
+                    ? '<span class="badge badge-danger ml-2"><%= t("Expired") %></span>'
+                    : '';
+
+                html += `
+                    <div class="list-group-item">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <i class="fa ${icon} mr-2"></i>
+                                <strong>${method.displayName}</strong>
+                                ${defaultBadge}
+                                ${expiredBadge}
+                                ${method.lastUsedAt ? `<div class="small text-muted mt-1"><%= t("LastUsed") %>: ${new Date(method.lastUsedAt).toLocaleDateString()}</div>` : ''}
+                            </div>
+                            <div class="text-muted small"><%= t('Cached') %></div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += '</div>';
+            container.innerHTML = html;
+        } else {
+            // Retry with exponential backoff
+            if (paymentMethodsRetryCount < MAX_PAYMENT_METHODS_RETRIES) {
+                const retryDelay = Math.pow(2, paymentMethodsRetryCount) * 1000;
+                paymentMethodsRetryCount++;
+
+                container.innerHTML = `
+                    <div class="alert alert-warning text-center">
+                        <i class="fa fa-exclamation-triangle"></i> <%= t('ErrorLoadingPaymentMethods') %>
+                        <div class="mt-2">
+                            <small><%= t('RetryingIn') %> ${retryDelay / 1000}s... (<%= t('Attempt') %> ${paymentMethodsRetryCount}/${MAX_PAYMENT_METHODS_RETRIES})</small>
+                        </div>
+                        <div class="spinner-border spinner-border-sm mt-2" role="status"></div>
+                    </div>
+                `;
+
+                setTimeout(() => loadUserPaymentMethods(true), retryDelay);
+            } else {
+                // Max retries reached
+                container.innerHTML = `
+                    <div class="alert alert-danger">
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="fa fa-exclamation-triangle me-2"></i>
+                            <strong><%= t('ErrorLoadingPaymentMethods') %></strong>
+                        </div>
+                        <p class="mb-2 small"><%= t('PersistentErrorLoadingData') %></p>
+                        <div class="d-flex gap-2 flex-wrap">
+                            <button class="btn btn-sm btn-outline-danger" onclick="paymentMethodsRetryCount = 0; loadUserPaymentMethods();">
+                                <i class="fa fa-refresh"></i> <%= t('TryAgain') %>
+                            </button>
+                            <a href="/contact" class="btn btn-sm btn-primary">
+                                <i class="fa fa-headphones"></i> <%= t('ContactSupport') %>
+                            </a>
+                        </div>
+                        <details class="mt-3">
+                            <summary class="small text-muted" style="cursor: pointer;"><%= t('TechnicalDetails') %></summary>
+                            <pre class="small mt-2 text-muted">${error.message || error}</pre>
+                        </details>
+                    </div>
+                `;
+            }
+        }
     }
 }
 
-// Load payment history
-async function loadPaymentHistory() {
+// Load payment history with retry mechanism
+let paymentHistoryRetryCount = 0;
+const MAX_RETRIES = 3;
+let cachedPaymentHistory = null;
+
+async function loadPaymentHistory(isRetry = false) {
     const container = document.getElementById('userProfilePaymentHistory');
 
+    // Show loading skeleton UI
+    if (!isRetry) {
+        container.innerHTML = `
+            <div class="payment-history-skeleton">
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th><%= t("Date") %></th>
+                                <th><%= t("Description") %></th>
+                                <th><%= t("Amount") %></th>
+                                <th><%= t("Status") %></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${[1, 2, 3].map(() => `
+                                <tr>
+                                    <td><div class="skeleton-line" style="width: 80px; height: 16px;"></div></td>
+                                    <td><div class="skeleton-line" style="width: 150px; height: 16px;"></div></td>
+                                    <td><div class="skeleton-line" style="width: 60px; height: 16px;"></div></td>
+                                    <td><div class="skeleton-line" style="width: 70px; height: 16px;"></div></td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <style>
+                .skeleton-line {
+                    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+                    background-size: 200% 100%;
+                    animation: loading 1.5s infinite;
+                    border-radius: 4px;
+                }
+                @keyframes loading {
+                    0% { background-position: 200% 0; }
+                    100% { background-position: -200% 0; }
+                }
+            </style>
+        `;
+    }
+
     try {
-        const response = await fetch('/api/payment/transactions?limit=10');
+        const response = await fetch('/transactions?limit=10');
+
+        // Check if response is ok
+        if (!response.ok) {
+            // Check if it's an authentication error (401/403)
+            if (response.status === 401 || response.status === 403) {
+                throw new Error('AUTHENTICATION_ERROR');
+            }
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+
+        // Check content type before parsing
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+            // Server returned HTML instead of JSON (likely error page or redirect)
+            throw new Error('INVALID_RESPONSE_FORMAT');
+        }
+
         const data = await response.json();
+
+        // Cache successful data
+        if (data.success) {
+            cachedPaymentHistory = data;
+            paymentHistoryRetryCount = 0; // Reset retry count on success
+        }
 
         if (data.success && data.transactions.length > 0) {
             let html = '<div class="table-responsive"><table class="table table-sm">';
@@ -515,29 +729,142 @@ async function loadPaymentHistory() {
             container.innerHTML = html;
         } else {
             container.innerHTML = `
-                <div class=" alert-info text-center">
-                    class="fa fa-info-circle"></b> <%= t('YouHaveNotMadeAnyPayment') %>
+                <div class="alert alert-info text-center">
+                    <i class="fa fa-info-circle"></i> <%= t('YouHaveNotMadeAnyPayment') %>
                 </div>
             `;
         }
     } catch (error) {
         console.error('Error loading payment history:', error);
-        container.innerHTML = `
-            <div class=" alert-danger">
-                class="fa fa-exclamation-triangle"></b> <%= t('ErrorLoadingPaymentHistory') %>
-            </div>
-        `;
+
+        // Handle authentication errors specifically
+        if (error.message === 'AUTHENTICATION_ERROR') {
+            container.innerHTML = `
+                <div class="alert alert-warning">
+                    <div class="d-flex align-items-center mb-2">
+                        <i class="fa fa-lock me-2"></i>
+                        <strong><%= t('SessionExpired') %></strong>
+                    </div>
+                    <p class="mb-2 small"><%= t('PleaseLoginAgain') %></p>
+                    <a href="/login" class="btn btn-sm btn-primary">
+                        <i class="fa fa-sign-in"></i> <%= t('Login') %>
+                    </a>
+                </div>
+            `;
+            return;
+        }
+
+        // Handle invalid response format (HTML instead of JSON)
+        if (error.message === 'INVALID_RESPONSE_FORMAT') {
+            container.innerHTML = `
+                <div class="alert alert-danger">
+                    <div class="d-flex align-items-center mb-2">
+                        <i class="fa fa-exclamation-triangle me-2"></i>
+                        <strong><%= t('InvalidResponse') %></strong>
+                    </div>
+                    <p class="mb-2 small"><%= t('ServerReturnedUnexpectedFormat') %></p>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-sm btn-outline-danger" onclick="paymentHistoryRetryCount = 0; loadPaymentHistory();">
+                            <i class="fa fa-refresh"></i> <%= t('TryAgain') %>
+                        </button>
+                        <button class="btn btn-sm btn-secondary" onclick="location.reload();">
+                            <i class="fa fa-repeat"></i> <%= t('ReloadPage') %>
+                        </button>
+                    </div>
+                </div>
+            `;
+            return;
+        }
+
+        // Show partial data if available from cache
+        if (cachedPaymentHistory && cachedPaymentHistory.transactions.length > 0) {
+            let html = '<div class="alert alert-warning mb-3"><i class="fa fa-exclamation-triangle"></i> <%= t("ShowingCachedData") %></div>';
+            html += '<div class="table-responsive"><table class="table table-sm">';
+            html += '<thead><tr><th><%= t("Date") %></th><th><%= t("Description") %></th><th><%= t("Amount") %></th><th><%= t("Status") %></th></tr></thead><tbody>';
+
+            cachedPaymentHistory.transactions.forEach(tx => {
+                const statusBadge = {
+                    'pending': 'badge-warning',
+                    'held': 'badge-info',
+                    'released': 'badge-success',
+                    'refunded': 'badge-secondary',
+                    'failed': 'badge-danger'
+                }[tx.status] || 'badge-secondary';
+
+                const statusText = {
+                    'pending': '<%= t("Pending") %>',
+                    'held': '<%= t("Held") %>',
+                    'released': '<%= t("Released") %>',
+                    'refunded': '<%= t("Refunded") %>',
+                    'failed': '<%= t("Failed") %>'
+                }[tx.status] || tx.status;
+
+                html += `
+                    <tr>
+                        <td>${new Date(tx.createdAt).toLocaleDateString()}</td>
+                        <td>${tx.description}</td>
+                        <td>${tx.amount}</td>
+                        <td><span class="badge ${statusBadge}">${statusText}</span></td>
+                    </tr>
+                `;
+            });
+
+            html += '</tbody></table></div>';
+            container.innerHTML = html;
+        } else {
+            // Retry with exponential backoff
+            if (paymentHistoryRetryCount < MAX_RETRIES) {
+                const retryDelay = Math.pow(2, paymentHistoryRetryCount) * 1000; // 1s, 2s, 4s
+                paymentHistoryRetryCount++;
+
+                container.innerHTML = `
+                    <div class="alert alert-warning text-center">
+                        <i class="fa fa-exclamation-triangle"></i> <%= t('ErrorLoadingPaymentHistory') %>
+                        <div class="mt-2">
+                            <small><%= t('RetryingIn') %> ${retryDelay / 1000}s... (<%= t('Attempt') %> ${paymentHistoryRetryCount}/${MAX_RETRIES})</small>
+                        </div>
+                        <div class="spinner-border spinner-border-sm mt-2" role="status"></div>
+                    </div>
+                `;
+
+                setTimeout(() => loadPaymentHistory(true), retryDelay);
+            } else {
+                // Max retries reached - show error with support button
+                container.innerHTML = `
+                    <div class="alert alert-danger">
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="fa fa-exclamation-triangle me-2"></i>
+                            <strong><%= t('ErrorLoadingPaymentHistory') %></strong>
+                        </div>
+                        <p class="mb-2 small"><%= t('PaymentHistoryPersistentError') %></p>
+                        <div class="d-flex gap-2 flex-wrap">
+                            <button class="btn btn-sm btn-outline-danger" onclick="paymentHistoryRetryCount = 0; loadPaymentHistory();">
+                                <i class="fa fa-refresh"></i> <%= t('TryAgain') %>
+                            </button>
+                            <a href="/contact" class="btn btn-sm btn-primary">
+                                <i class="fa fa-headphones"></i> <%= t('ContactSupport') %>
+                            </a>
+                        </div>
+                        <details class="mt-3">
+                            <summary class="small text-muted" style="cursor: pointer;"><%= t('TechnicalDetails') %></summary>
+                            <pre class="small mt-2 text-muted">${error.message || error}</pre>
+                        </details>
+                    </div>
+                `;
+            }
+        }
     }
 }
 
 // Delete payment method
 async function deleteUserPaymentMethod(paymentMethodId) {
-    if (!confirm('<%= t("AreYouSureDeletePaymentMethod") %>')) {
-        return;
-    }
+
+    // if (!confirm('<%= t("AreYouSureDeletePaymentMethod") %>')) {
+    //     return;
+    // } // ADD CONFIRMATION DIALOG INSTEAD OF BROWSER DEFAULT
 
     try {
-        const response = await fetch(`/api/payment/payment-method/${paymentMethodId}`, {
+        const response = await fetch(`/payment-method/${paymentMethodId}`, {
             method: 'DELETE',
             headers: { 'Content-Type': 'application/json' }
         });
@@ -545,27 +872,22 @@ async function deleteUserPaymentMethod(paymentMethodId) {
         const data = await response.json();
 
         if (data.success) {
-            alert('<%= t("PaymentMethodDeleted") %>');
+            console.log('<%= t("PaymentMethodDeleted") %>');
             await loadUserPaymentMethods();
         } else {
             throw new Error(data.error);
         }
     } catch (error) {
-        alert('<%= t("ErrorDeletingPaymentMethod") %>: ' + error.message);
+        console.log('<%= t("ErrorDeletingPaymentMethod") %>: ' + error.message);
     }
 }
 
 // Load data when billing tab is clicked
-$('a[href="#billing"]').on('shown.bs.tab', function() {
-    loadUserPaymentMethods();
-    loadPaymentHistory();
-});
-
-// Load immediately if billing tab is active
-if (window.location.hash === '#billing' || $('a[href="#billing"]').hasClass('active')) {
+async function loadUserPaymentData() {
     loadUserPaymentMethods();
     loadPaymentHistory();
 }
+
 </script>
                         </div>
                     </div>

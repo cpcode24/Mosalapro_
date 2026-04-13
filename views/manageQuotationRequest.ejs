@@ -108,7 +108,7 @@
                                 </div>
                                 <% if(qr.status == "new" || qr.status == "rejected" ) {%>
                                     <div class="d-flex justify-content-center mt-2">
-                                        <button onClick ="showConfModal('#confSendingQuoteModalCta')" class="btn-job btn-primary-job-inv" id="send-quote-btn"><%= t('SendQuote') %></button>
+                                        <button onClick ="showConfModal('#confSendingQuoteModalCta', '<%=lang%>')" class="btn-job btn-primary-job-inv" id="send-quote-btn"><%= t('SendQuote') %></button>
                                         <button onClick="showRejModal('#confDeclineQuotationRequestModalCta')" type="reset" class="btn-job btn-primary-job-inv-blue ml-3" id="decline-req-btn"><%= t('DeclineRequest') %></button>
                                         
                                     </div>

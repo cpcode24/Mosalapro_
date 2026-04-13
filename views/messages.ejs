@@ -271,100 +271,11 @@ location.replace('files/'+filename);
 const chatContent = document.getElementById('chat-content');
   chatContent.scrollTop = chatContent.scrollHeight;
 
-const messageInput = document.getElementById("messageInput");
+// Note: Removed duplicate sendChatMessage() function and event listener
+// The function and event listener are now in handleMessages.js to prevent duplicates
 
-messageInput.addEventListener("keydown", logKey);
-
-function logKey(e) {
-  if(e.code == 'Enter' && !e.shiftKey){
-    sendChatMessage();
-  }
-}
-
-async function sendChatMessage() {
-    let params = new URLSearchParams(document.location.search);
-    let proId = params.get("id");
-    if(messageInput.value.trim() == "") return;
-    var messageContent = document.getElementById("messageInput").value.trim().replace(/\n/g, "<br/>");;
-    
-    // const data = {
-    //     proId: proId,
-    //     messageTitle: "",   
-    //     content:messageContent,
-    //     isChatMessage: true,
-    // };
-
-    const body = new FormData();
-    body.append("proId", proId);
-    body.append("messageTitle", "");
-    body.append("content", messageContent);
-    body.append("isChatMessage", true);
-
-    for(let i = 0; i < selectedAttachments.length; i++) {
-        body.append("files", selectedAttachments[i], selectedAttachments[i].fileName);
-    }
-
-    // _postData(, body);
-    await fetch('/send-message', {
-        method: 'POST',
-        mode: 'cors',
-        cache: 'no-cache',
-        credentials: 'same-origin',
-        redirect: 'follow',
-        referrerPolicy: 'no-referrer',
-        
-        body: body
-    });
-
-    socket.emit("pushNotification", { 
-                    "title": "You have a new message",
-                    "content": "Someone has sent you a message.\n",
-                    "userId": params.get("id"),
-                    "notifType": "msg"
-    });
-
-    document.getElementById("messageInput").value = "";
-    const chatContent = document.getElementById('chat-content');
-
-    const lastMessage = await fetch(`/messages/${proId}/last`)
-        .then(res => res.json())
-
-    let attachmentsEls = "";
-    lastMessage.attachments.forEach(attch => {
-        attachmentsEls +=`<div class="mr-4" onclick="downloadFile('${attch}')">
-                <b class="fa fa-file-text-o mb-1 file-icon" aria-hidden="true"></b>
-                <span class="pr-2">${attch}</span>
-            </div>`;
-    });
-    
-    chatContent.innerHTML += `<div class="chat-message-right pb-4">
-        <div>
-            <img src="<%= usr.photo%>" class="rounded-circle mr-1" style="height: 45px !important; width: 45px !important;" alt="" width="40" height="40">
-        </div>
-        <div class="flex-shrink-1 round-border py-2 sender-chat px-3 mr-3">
-            <div class="font-weight-bold mb-1">You</div>
-            ${ lastMessage.content }
-            <div class="text-petit text-light-g text-wrap mt-2">${new Date(lastMessage.createdAt).toLocaleDateString('us-EN', { month: 'short', day: 'numeric', year: 'numeric' }) +' at '+ new Date(lastMessage.createdAt).toLocaleTimeString('us-EN')}</div>
-            <div>
-                ${ attachmentsEls }
-            </div>
-        </div>
-    </div>`;
-
-    chatContent.scrollTop = chatContent.scrollHeight;
-
-    
-    selectedAttachments = [];
-    document.getElementById("attachmentInput").value = "";
-    renderAttachments();
-    // getMessages(proId);
-}   
-
-    socket.on("connect", function () {
-        socket.emit("createUser", {userId: '<%=usr._id%>'});
-
-        
-     });
+    // Note: Removed duplicate socket.on("connect") listener
+    // Already handled in header.ejs to prevent duplicate 'createUser' emissions
 
      socket.on("messageQuotationToClient", function(data) {
         const params = new URLSearchParams(document.location.search);

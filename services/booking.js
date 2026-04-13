@@ -128,6 +128,9 @@ const BookingService =  {
           const booking = await BookingModel.findById(req.body.bookingId).exec();
 
           if(booking){
+
+            booking.paymentRequired = false; // default to false for now, can be set to true for specific categories or based on provider preferences in the future
+
           // Trigger payment hold (escrow) when provider confirms booking
           try {
             if (booking.paymentRequired && booking.paymentStatus === 'pending') {

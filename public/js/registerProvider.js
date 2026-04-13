@@ -5,7 +5,7 @@ $(document).ready(function() {
       $(':input', this).val('');
     });
 });
-const lang_reg_p = document.getElementById("lang_r").getAttribute("value");
+
 
 // reCAPTCHA callback function - defined here to be available globally  
 function enableProRegBtn(){
@@ -50,7 +50,7 @@ function isValidPhone(phone) {
   return /^\+?[1-9]\d{6,14}$/.test(cleaned);
 }
 
-function validateAndRegisterP(){
+function validateAndRegisterP(lang_reg_p){
   const pass = document.getElementById("password-input");
   const passConf = document.getElementById("password-input-conf");
   const regMessage = document.getElementById("rMessagePro");
@@ -281,23 +281,35 @@ function validateAndRegisterP(){
               document.theForm.submit();
             }
         }
-        else{
+        else if(response.status == 409 || response.status == 408){
           const contactType = requestData.registrationType === 'phone' ? 'phone number' : 'email';
+          const contactTypeFr = requestData.registrationType === 'phone' ? 'numéro de téléphone' : "adresse e-mail";
           if(lang_reg_p == 'fr'){
-            regMessage.innerHTML  = `Un compte avec le ${contactType} donné existe, <a class="text-primary" href="#logModalCta" data-toggle="modal" data-dismiss="modal" data-caption-animate="fadeInUp">connectez-vous.</a>`;
+            regMessage.innerHTML  = `Un compte avec le ${contactTypeFr} donné existe, <a class="text-primary" href="#logModalCta" data-toggle="modal" data-dismiss="modal" data-caption-animate="fadeInUp">connectez-vous.</a>`;
           }else{
             regMessage.innerHTML  = `An account with the given ${contactType} exists, <a class="text-primary" href="#logModalCta" data-toggle="modal" data-dismiss="modal" data-caption-animate="fadeInUp">login.</a>`;
+          }
+        }else if(response.status == 411){
+          if(lang_reg_p == 'fr'){
+            regMessage.innerHTML  = `Une erreur s'est produite lors de l'envoi du code de vérification. Veuillez verifier que vous avez entré le bon numéro de téléphone ou email et réessayer.`;
+          }else{
+            regMessage.innerHTML  = `An error occurred while sending the verification code. Please check that you entered the correct phone number or email and try again.`;
+          }
+        }else{
+          if(lang_reg_p == 'fr'){
+            regMessage.innerHTML  = `Une erreur s'est produite lors de l'inscription. Veuillez réessayer.`;
+          }else{
+            regMessage.innerHTML  = `An error occurred during registration. Please try again.`;
           }
         }
         
       }).catch(err => {
         console.log(err) // Handle errors
-        const contactType = requestData.registrationType === 'phone' ? 'phone number' : 'email';
         if(lang_reg_p == 'fr'){
-          regMessage.innerHTML = `Un compte avec le ${contactType} donné existe, <a class="text-primary" href="#logModalCta" data-toggle="modal" data-dismiss="modal" data-caption-animate="fadeInUp">connectez-vous.</a>`;
-        }else{
-          regMessage.innerHTML = `An account with the given ${contactType} exists, <a class="text-primary" href="#logModalCta" data-toggle="modal" data-dismiss="modal" data-caption-animate="fadeInUp">login.</a>`;
-        }
+            regMessage.innerHTML  = `Une erreur s'est produite lors de l'inscription. Veuillez réessayer.`;
+          }else{
+            regMessage.innerHTML  = `An error occurred during registration. Please try again.`;
+          }
       });
 
 }

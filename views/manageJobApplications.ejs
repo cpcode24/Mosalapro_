@@ -198,15 +198,15 @@
     <div class="container pad-4">
       <nav aria-label="breadcrumb" class="main-breadcrumb">
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="/">Home</a></li>
-            <li class="breadcrumb-item"><a href="/p-profile">User</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Job applications</li>
+            <li class="breadcrumb-item"><a href="/"><%=t('Home')%></a></li>
+            <li class="breadcrumb-item"><a href="/p-profile"><%=t('User')%></a></li>
+            <li class="breadcrumb-item active" aria-current="page"><%=t('JobApplications')%></li>
         </ol>
       </nav>
 
       <!-- Enhanced Header -->
       <div class="requests-header">
-          <h1 class="requests-title"><%= t('MyJobApplications') || 'My Job Applications' %></h1>
+          <h1 class="requests-title"><%= t('MyJobApplications') %></h1>
       </div>
 
       <div class="page-content container container-profile note-has-grid">
@@ -218,13 +218,13 @@
             </a>
           </li>
           <li class="nav-item" onClick="getApplications('hired', 'wide-scr')">
-          <a href="javascript:void(0)" class="nav-link rounded-pill note-link d-flex align-items-center px-2 px-md-3 mr-0 mr-md-2" id="hired-ja"> <i class="icon-briefcase mr-1"></i><span class="d-none d-md-block">Hired</span></a>
+          <a href="javascript:void(0)" class="nav-link rounded-pill note-link d-flex align-items-center px-2 px-md-3 mr-0 mr-md-2" id="hired-ja"> <i class="icon-briefcase mr-1"></i><span class="d-none d-md-block"><%= t('Hired') %></span></a>
           </li>
           <li class="nav-item" onClick="getApplications('cancelled', 'wide-scr')">
-          <a href="javascript:void(0)" class="nav-link rounded-pill note-link d-flex align-items-center px-2 px-md-3 mr-0 mr-md-2" id="cancelled-ja"> <i class="icon-share-alt mr-1"></i><span class="d-none d-md-block">Cancelled</span></a>
+          <a href="javascript:void(0)" class="nav-link rounded-pill note-link d-flex align-items-center px-2 px-md-3 mr-0 mr-md-2" id="cancelled-ja"> <i class="icon-share-alt mr-1"></i><span class="d-none d-md-block"><%= t('Cancelled') %></span></a>
           </li>
           <li class="nav-item" onClick="getApplications('all', 'wide-scr')">
-          <a href="javascript:void(0)" class="nav-link rounded-pill note-link d-flex align-items-center px-2 px-md-3 mr-0 mr-md-2" id="all-ja"> <i class="icon-tag mr-1"></i><span class="d-none d-md-block">All</span></a>
+          <a href="javascript:void(0)" class="nav-link rounded-pill note-link d-flex align-items-center px-2 px-md-3 mr-0 mr-md-2" id="all-ja"> <i class="icon-tag mr-1"></i><span class="d-none d-md-block"><%= t('All') %></span></a>
           </li>
           
           </ul>
@@ -281,10 +281,10 @@
                     <div class="no-requests-icon">
                         <b class="fa fa-briefcase"></b>
                     </div>
-                    <h5><%= t('NoApplicationsFound') || 'No applications found' %></h5>
-                    <p><%= t('NoApplicationsMessage') || 'You haven\'t applied to any jobs yet. Start exploring opportunities!' %></p>
+                    <h5><%= t('NoApplicationsFound') %></h5>
+                    <p><%= t('NoApplicationsMessage')  %></p>
                     <a href="/services" class="btn-job btn-primary-job-inv mt-3">
-                        <b class="fa fa-search mr-2"></b><%= t('ExploreJobs') || 'Explore Jobs' %>
+                        <b class="fa fa-search mr-2"></b><%= t('ExploreJobs') %>
                     </a>
                 </div>
             </div>

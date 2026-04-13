@@ -394,12 +394,12 @@ function syncFacebookFriends() {
     if (data.success) {
       location.reload(); // Reload to show synced friends
     } else {
-      alert('Error syncing friends: ' + data.error);
+      console.log('Error syncing friends: ' + data.error);
     }
   })
   .catch(error => {
     console.error('Error syncing friends:', error);
-    alert('Error syncing friends');
+    console.log('Error syncing friends');
   })
   .finally(() => {
     button.disabled = false;
@@ -438,7 +438,7 @@ function reportReview(reviewId) {
     .then(response => response.json())
     .then(data => {
       if (data.success) {
-        alert('<% if (locale === "fr") { %>Avis signalé avec succès<% } else { %>Review reported successfully<% } %>');
+        console.log('<% if (locale === "fr") { %>Avis signalé avec succès<% } else { %>Review reported successfully<% } %>');
       }
     })
     .catch(error => {

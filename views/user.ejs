@@ -7,9 +7,9 @@
 <div class=" padt-4">
     <nav aria-label="breadcrumb" class="main-breadcrumb">
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="/">Home</a></li>
-            <li class="breadcrumb-item"><a href="#">Provider</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Profile</li>
+            <li class="breadcrumb-item"><a href="/"><%=t('Home') %></a></li>
+            <li class="breadcrumb-item"><a href="#"><%=t('Provider') %></a></li>
+            <li class="breadcrumb-item active" aria-current="page"><%=t('Profile') %></li>
         </ol>
     </nav>
   <div class=" text-secondary px-2"> 
@@ -31,8 +31,8 @@
               <span id="mess__"></span>
               <div class="d-flex justify-content-between w-100 mt-2" id="topInfo">
                 <!--div class="col-6 "--><h5 class="mt-2"><%=usr.firstName %> <%=usr.lastName %> </h5> <!--/div-->
-                <!--div class="col-6 "--> <a href="/user-edit" class=" simple-btn sm-scr ">Edit Profile</a><!--/div-->
-                <a href="/user-edit" class="sm-scr-show"><button type="button" class=" simple-btn ">Edit Profile </button> </a>
+                <!--div class="col-6 "--> <a href="/user-edit" class=" simple-btn sm-scr "><%=t("EditProfile") %></a><!--/div-->
+                <a href="/user-edit" class="sm-scr-show"><button type="button" class=" simple-btn "><%=t("EditProfile") %></button> </a>
               </div>
               <p class="mt-2"><%=usr.role %></p>
               <div> 
@@ -47,16 +47,26 @@
                 <% i++; } %>
               </div>
               <div class="d-flex w-100">
-
+                <% let catName = ''; 
+                          if(usr.category) {
+                            if(lang === 'fr') {
+                              const cat = cats.find(c => c.name === usr.category);
+                              catName = cat ? cat.translations.fr.name : usr.category;
+                            } else {
+                              catName = usr.category;
+                            }
+                          }
+                        %>
                 <div class="row">
                     <!--div class="col-lg-6 col-md-6 col-sm-12 col-12"-->
                       <div class="col ml-1">
-                        <p class="mt-1 mb-1"><span class="n-a "><%=jobsCompleted%></span> Jobs Completed</p>
-                        <p class="mt-1 mb-1">$<%=usr.rate %> / USD / hour</p>
+                        <p class="mt-1 mb-1"><b class="fa fa-briefcase mr-2"></b><b> <%=catName%></b></p>
+                        <p class="mt-1 mb-1"><span class="n-a "><%=jobsCompleted%></span> <%=t('JobsCompleted') %></p>
+                        <p class="mt-1 mb-1"><%=usr.rate %> / <%=usr.currency %></p>
                         <p class="mt-1 mb-1"><%=usr.city %>, <span class="profile-country"><%=usr.country %></span></p>
-                        <p class="mt-1 mb-1">Local time zone: <span class="text-muted"> <%=tz %> </span>
-                        <p class="mt-1 mb-1">Joined <%= new Date(usr.createdAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) %></p>
-                       
+                        <p class="mt-1 mb-1"><%=t('LocalTimeZone') %>: <span class="text-muted"> <%=tz %> </span></p>
+                        <p class="mt-1 mb-1"><%=t('Joined') %> <%= new Date(usr.createdAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) %></p>
+
 
                         
                     </div>
@@ -90,7 +100,7 @@
         <div class="container shadow-sm mb-5 bg-white rounded ">
           <div class="row">
             <div class="p-3 w-100 d-flex justify-content-between border-bottom border-dark">
-              <h5>Portfolio Items</h5>
+              <h5><%= t('PortfolioItems') %></h5>
             </div>
           </div>
         </div>
@@ -99,22 +109,22 @@
         <div class="container shadow-sm mb-5 pb-1 bg-white rounded ">
           <div class="row">
             <div class="w-100 d-flex justify-content-between align-items-center border-bottom border-dark p-3">
-              <h6>Verification</h6>
+              <h6><%= t('Verification') %></h6>
             </div>
           </div>
             
             <div class="d-flex justify-content-between align-items-center my-3">
-              <span>Identity Verification</span>
-              <span class="text-primary">Verified</span>
+              <span><%=t('IdentityVerification') %></span>
+              <span class="text-primary"><%=t('Verified') %></span>
             </div>
            
             <div class="d-flex justify-content-between align-items-center my-3">
-              <span>Email Address</span>
-              <span class="text-primary">Verified</span>
+              <span><%=t('EmailAddress') %></span>
+              <span class="text-primary"><%=t('Verified') %></span>
             </div>
             <div class="d-flex justify-content-between align-items-center my-3">
-              <span>LinkedIn Profile</span>
-              <span class="text-primary">Verified</span>
+              <span><%=t('LinkedInProfile') %></span>
+              <span class="text-primary"><%=t('Verified') %></span>
             </div>
 
             
@@ -123,7 +133,7 @@
         <div class="container shadow-sm mb-5 pb-3 bg-white rounded ">
           <div class="row">
             <div class="w-100 d-flex justify-content-between align-items-center border-bottom border-dark p-3">
-              <h6>Subscription</h6>
+              <h6><%= t('Subscription') %></h6>
             </div>
           </div>
           
@@ -134,7 +144,7 @@
         <div class="container shadow-sm mb-5 pb-3 bg-white rounded ">
           <div class="row">
             <div class="w-100 d-flex justify-content-between align-items-center border-bottom border-dark p-3">
-              <h6>Skills</h6>
+              <h6><%= t('Skills') %></h6>
             </div>
           </div>
           <div class="mt-2">

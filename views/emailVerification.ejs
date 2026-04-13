@@ -22,6 +22,7 @@
       </p>
       <div  class="d-flex flex-column justify-content-center align-items-center"> 
         <span name="e_message" id="e_message" class="error_message "> </span>
+        <span name="lang" id="lang" value="<%=lang%>" hidden></span>
       </div>
       <!--form action="/verify-email" method="post"-->
         <div class="row mt-4-ver pt-2">
@@ -51,7 +52,7 @@
               oninput="this.className = 'form-control form-control-ver form-control-lg-ver text-center py-4'"maxlength="1" required>
             </div>
           </div>
-          <input type="submit" class="btn button-primary btn-lg w-100 hover-lift-light mt-4-ver"  onClick="verifyCode('<%=redirect_link%>', '<%=userId%>')" value="<%= t('EmailVerificationVerifyAccount') %>" required>
+          <input type="submit" class="btn button-primary btn-lg w-100 hover-lift-light mt-4-ver"  onClick="verifyCode('<%=redirect_link%>', '<%=userId%>', '<%=lang%>ß')" value="<%= t('EmailVerificationVerifyAccount') %>" required>
       <!--/form-->
         
      
@@ -60,7 +61,7 @@
       
       <p class="text-center text-muted mt-4-ver">
       <%= t('EmailVerificationNotReceived') %>
-        <span id="resend_code" class="fake_link" onClick="resendCode('<%=redirect_link%>', '<%=userId%>')">
+        <span id="resend_code" class="fake_link" onClick="resendCode('<%=redirect_link%>', '<%=userId%>', '<%=lang%>')">
       <%= t('EmailVerificationResendCode') %>
       </span>
       </p>

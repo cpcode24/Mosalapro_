@@ -220,7 +220,7 @@ async function postData(url = '', data = {}) {
         redirect: 'follow',
         referrerPolicy: 'no-referrer',
         headers: {
-            "Access-Control-Allow-Origin" : "*", 
+            "Access-Control-Allow-Origin" : "*",
             "Access-Control-Allow-Credentials" : true,
             "Content-type": "application/json; charset=UTF-8"
         },
@@ -230,6 +230,11 @@ async function postData(url = '', data = {}) {
     if (contentType && contentType.indexOf("application/json") !== -1) {
       return response.json();
     }else{ return response;}
+}
+
+// Alias for consistency with other files
+async function _postData(url = '', data = {}) {
+    return postData(url, data);
 }
 
 let selectedAttachments = [];
@@ -304,14 +309,14 @@ async function acceptQuotation(quotationId) {
     const body = {
       quotationId: quotationId
     };
-  
+
     _postData('messages/quotation/reject-quotation', body)
     .then(async json => {
       if(json.status == 200){
         await new Promise(r => setTimeout(r, 1000));
         $('#w-chat-content').load(location.href+' #w-chat-content');
         chatContent.scrollTop = chatContent.scrollHeight;
-  
+
       }
       else if(json.status == 402){
         $('#w-chat-content').load(location.href+' #w-chat-content');
@@ -322,3 +327,97 @@ async function acceptQuotation(quotationId) {
       }
     })
   }
+
+  // Send chat message from messages page
+  async function sendChatMessage() {
+    const messageInput = document.getElementById('messageInput');
+    const messageContent = messageInput.value.trim();
+
+    if(!messageContent || messageContent.length < 1) {
+      console.log('Please enter a message');
+      return;
+    }
+
+    // Get recipient ID from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const recipientId = urlParams.get('id');
+
+    if(!recipientId) {
+      console.log('No recipient selected');
+      return;
+    }
+
+    const requestData = {
+      proId: recipientId,
+      messageTitle: 'Chat Message',
+      content: messageContent,
+      isChatMessage: true
+    };
+
+    try {
+      // Disable input while sending
+      messageInput.disabled = true;
+
+      const response = await _postData('/send-message', requestData);
+
+      if(response.status === 200) {
+        // Clear input
+        messageInput.value = '';
+
+        // Append message to chat immediately (sender's view)
+        appendSentMessage(messageContent);
+
+        // Backend already handles Socket.io emission to recipient
+        // No need to emit from client side
+      } else {
+        console.log('Failed to send message');
+      }
+    } catch(error) {
+      console.error('Error sending message:', error);
+      console.log('Error sending message. Please try again.');
+    } finally {
+      // Re-enable input
+      messageInput.disabled = false;
+      messageInput.focus();
+    }
+  }
+
+  // Append sent message to chat
+  function appendSentMessage(content) {
+    const chatContent = document.getElementById('chat-content');
+    if(!chatContent) return;
+
+    const now = new Date();
+    const messageTime = now.toLocaleDateString('us-EN', {
+      month: 'short', day: 'numeric', year: 'numeric'
+    }) + ' at ' + now.toLocaleTimeString('us-EN');
+
+    const messageHTML = `
+      <div class="chat-message-right pb-4">
+        <div class="d-none d-lg-block d-md-block">
+          <img src="${window.currentUserPhoto || '/photo/default.png'}" class="rounded-circle mr-1" style="height: 45px !important; width: 45px !important;" alt="You">
+        </div>
+        <div class="flex-shrink-1 sender-chat text-wrap py-2 round-border px-3 mr-3">
+          <div class="font-weight-bold mb-1">You</div>
+          ${content}
+          <div class="small text-wrap mt-2 text-petit text-light-g">${messageTime}</div>
+        </div>
+      </div>
+    `;
+
+    chatContent.innerHTML += messageHTML;
+    chatContent.scrollTop = chatContent.scrollHeight;
+  }
+
+  // Allow Enter key to send message (Shift+Enter for new line)
+  document.addEventListener('DOMContentLoaded', function() {
+    const messageInput = document.getElementById('messageInput');
+    if(messageInput) {
+      messageInput.addEventListener('keydown', function(e) {
+        if(e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          sendChatMessage();
+        }
+      });
+    }
+  });

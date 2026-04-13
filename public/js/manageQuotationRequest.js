@@ -1,4 +1,4 @@
-const sendQuote = async(id, userId)=> {
+const sendQuote = async(id, userId, lang)=> {
   
     const quoteBudget_ = document.getElementById("qrBudget").value;
     const quoteType_ = document.getElementById("qrBudgetType").value;
@@ -9,8 +9,8 @@ const sendQuote = async(id, userId)=> {
     message.innerHTML = "";
   
     if(isNaN(quoteBudget_) || quoteBudget_ < 1){
-        
-        message.innerHTML = "Enter valid budget.";
+        if(lang == "en") message.innerHTML = "Enter valid budget.";
+        else if(lang == "fr") message.innerHTML = "Entrez un budget valide.";
         return;
         
     }
@@ -28,17 +28,25 @@ const sendQuote = async(id, userId)=> {
         if(json.status == 200){
 
             message.classList.add('success_message');
-            message.innerHTML = "Quotation sent successfully! The client has been notified.";
+            if(lang == "en") message.innerHTML = "Quotation sent successfully! The client has been notified.";
+            else if(lang == "fr") message.innerHTML = "Devis envoyé avec succès ! Le client a été informé.";
             await new Promise(r => setTimeout(r, 2000));
             hideConfModal('#confSendingQuoteModalCta');
             
             // var lnk = location.href.split("/");
             // var baseLnk = lnk[0]+"//"+lnk[2];
             // var socket = io(baseLnk, { transports: ['websocket', 'polling', 'flashsocket'], 'force new connection': true });
-            
+            if(lang == "en"){
+                var notifTitle = "New quote from provider.";
+                var notifContent = "Service provider has provided a quote \nto your quotation request.";
+            }
+            else if(lang == "fr"){
+                var notifTitle = "Nouveau devis du fournisseur.";
+                var notifContent = "Le fournisseur de services a fourni un devis \npour votre demande de devis.";
+            }
             socket.emit("pushNotification", {
-                    "title": "New quote from provider.",
-                    "content": "Service provider has provided a quote \nto your quotation request.",
+                    "title": notifTitle,
+                    "content": notifContent,
                     "userId": userId,
                     "notifType": "user"
                 });
@@ -48,22 +56,26 @@ const sendQuote = async(id, userId)=> {
         else if(json.status == 402){
             message.classList.remove('success_message');
             message.classList.add('error_message');
-            message.innerHTML = "An error occured while sending quotation. Please try again. ";
+            if(lang == "en")  message.innerHTML = "An error occured while sending quotation. Please try again. ";
+            else if(lang == "fr") message.innerHTML = "Une erreur s'est produite lors de l'envoi du devis. Veuillez réessayer.";
             await new Promise(r => setTimeout(r, 2000));
             hideConfModal('#confSendingQuoteModalCta');
         }
         else{
             message.classList.remove('success_message');
             message.classList.add('error_message');
-            message.innerHTML = "An error occured while ending quotation. Please try again. ";
+            if(lang == "en")  message.innerHTML = "An error occured while ending quotation. Please try again. ";
+            else if(lang == "fr") message.innerHTML = "Une erreur s'est produite lors de la fin du devis. Veuillez réessayer.";
             await new Promise(r => setTimeout(r, 1800));
             hideConfModal('#confSendingQuoteModalCta');
         }
         
-      }).catch( err => {
+      }).catch( async err => {
         // console.log(err) // Handle errors
-        message.innerHTML = "An error occured while ending quotation. Please try again.";
-      
+        if(lang == "en")  message.innerHTML = "An error occured while sending quotation. Please try again. ";
+        else if(lang == "fr") message.innerHTML = "Une erreur s'est produite lors de l'envoi du devis. Veuillez réessayer.";
+        await new Promise(r => setTimeout(r, 2000));
+        hideConfModal('#confSendingQuoteModalCta');
       });
   }
 
@@ -87,7 +99,7 @@ async function _postData(url = '', data = {}) {
 }
  
 
-async function declineQuotationRequest(id, userId){
+async function declineQuotationRequest(id, userId, lang){
 
     const message = document.getElementById("confRejMessage");
     message.innerHTML = "";
@@ -102,7 +114,8 @@ async function declineQuotationRequest(id, userId){
       if(json.status == 200){
           message.classList.remove('error_message');
           message.classList.add('success_message');
-          message.innerHTML = "Your request has been cancelled successfully. Redirecting...";
+          if(lang == "en") message.innerHTML = "Your request has been cancelled successfully. Redirecting...";
+          else if(lang == "fr") message.innerHTML = "Votre demande a été annulée avec succès. Redirection...";
           hideConfModal('#confDeclineQuotationRequestModalCta');
           const sendQuoteBtn = document.getElementById("send-quote-btn");
           const declineReqBtn = document.getElementById("decline-req-btn");
@@ -117,10 +130,17 @@ async function declineQuotationRequest(id, userId){
           // var lnk = location.href.split("/");
           // var baseLnk = lnk[0]+"//"+lnk[2];
           // var socket = io(baseLnk, { transports: ['websocket', 'polling', 'flashsocket'], 'force new connection': true });
-            
+            if(lang == "en"){
+                var notifTitle = "Provider has rejected your quotation request.";
+                var notifContent = "Service provider has rejected your service request. \n Submit it as service request with minimum budget\nfor other service providers to apply.";
+            }
+            else if(lang == "fr"){
+                var notifTitle = "Le fournisseur a rejeté votre demande de devis.";
+                var notifContent = "Le fournisseur de services a rejeté votre demande de service. \n Soumettez-le en tant que demande de service avec un budget minimum\npour que d'autres fournisseurs de services puissent postuler.";
+            }
             socket.emit("pushNotification", {
-                    "title": "Provider has rejected your quotation request.",
-                    "content": "Service provider has rejected your service request. \n Submit it as service request with minimum budget\nfor other service providers to apply.",
+                    "title": notifTitle,
+                    "content": notifContent,
                     "userId": userId,
                     "notifType": "user"
                 });
@@ -130,19 +150,22 @@ async function declineQuotationRequest(id, userId){
       else if(json.status == 402){
           message.classList.remove('success_message');
           message.classList.add('error_message');
-          message.innerHTML = "An error occured while cancelling your changes. Please try again. Redirecting...";
+          if(lang == "en") message.innerHTML = "An error occured while cancelling your changes. Please try again. Redirecting...";
+          else if(lang == "fr") message.innerHTML = "Une erreur s'est produite lors de l'annulation de vos modifications. Veuillez réessayer. Redirection...";
           await new Promise(r => setTimeout(r, 1500));
           $('#whole-qr-contnr').load(location.href+" #whole-qr-contnr");
       }
       else{
         message.classList.remove('success_message');
         message.classList.add('error_message');
-        message.innerHTML = "An error occured while cancelling your changes. Please try again.";
+        if(lang == "en") message.innerHTML = "An error occured while cancelling your changes. Please try again.";
+        else if(lang == "fr") message.innerHTML = "Une erreur s'est produite lors de l'annulation de vos modifications. Veuillez réessayer.";
       }
       
     }).catch(err => {
       // console.log(err) // Handle errors
-      message.innerHTML = "An error occured while cancelling your changes. Please try again.";
+      if(lang == "en") message.innerHTML = "An error occured while cancelling your changes. Please try again.";
+      else if(lang == "fr") message.innerHTML = "Une erreur s'est produite lors de l'annulation de vos modifications. Veuillez réessayer.";
     });
 
 }
@@ -154,7 +177,7 @@ function downloadFile(filename){
 }
 
 
-function showConfModal(id){
+function showConfModal(id, lang){
 
     const quoteBudget_ = document.getElementById("qrBudget");
   
@@ -163,7 +186,10 @@ function showConfModal(id){
         return;
     }else quoteBudget_.className = "form-control";
     const mess = document.getElementById('confMessage');
-    mess.innerHTML = `Are you sure you want to send the quote with the amount of <b> $${document.getElementById("qrBudget").value} </b> - ${document.getElementById('qrBudgetType').value} ? Once you confirm this, you can no longer edit the quotation request.`;
+    const budgetType = document.getElementById('qrBudgetType').value == "Per hour" ? (lang == "en" ? "per hour" : "par heure") : (lang == "en" ? "for the whole project" : "pour l'ensemble du projet");
+
+    if(lang == "en")     mess.innerHTML = `Are you sure you want to send the quote with the amount of <b> $${document.getElementById("qrBudget").value} </b> - ${budgetType} ? Once you confirm this, you can no longer edit the quotation request.`;
+    else if(lang == "fr") mess.innerHTML = `Êtes-vous sûr de vouloir envoyer le devis avec le montant de <b> $${document.getElementById("qrBudget").value} </b> - ${budgetType} ? Une fois que vous aurez confirmé cela, vous ne pourrez plus modifier la demande de devis.`;
     $(id).modal('show');
 }
 function showRejModal(id){

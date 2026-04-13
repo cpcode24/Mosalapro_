@@ -1,11 +1,10 @@
 
-function applyForJob(userId){
+function applyForJob(userId, lang){
 
     const jobId = document.getElementById("jobId").value;
     const creatorUsername = document.getElementById("userName").value;
     const mess = document.getElementById("mess");
     const timeOfCompletion = document.getElementById("timeOfCompletion");
-
     mess.innerHTML="";
 
     requestData = {
@@ -20,7 +19,7 @@ function applyForJob(userId){
         if(json.status == 200){
             mess.classList.remove('error_message');
             mess.classList.add('success_message');
-            mess.innerHTML = "Your application has been sent successfully!";
+            mess.innerHTML = lang === 'en' ? "Your application has been sent successfully!" : "Votre candidature a été envoyée avec succès!";
             await new Promise(r => setTimeout(r, 1500));
             
 
@@ -29,8 +28,8 @@ function applyForJob(userId){
             // var socket = io(baseLnk, { transports: ['websocket', 'polling', 'flashsocket'], 'force new connection': true });
             // console.log("User Id for push: ", userId);
             await socket.emit("pushNotification", {
-                    "title": "New application for your service request.",
-                    "content": "A service provider has applied for your service request.",
+                    "title": (lang === 'en' ? "New application for your service request." : "Nouvelle candidature pour votre demande de service."),
+                    "content": (lang === 'en' ? "A service provider has applied for your service request." : "Un prestataire de services a postulé pour votre demande de service."),
                     "userId": userId,
                     "notifType": "user"
                 });
@@ -40,7 +39,7 @@ function applyForJob(userId){
             const prevBtn = document.getElementById("prev-btn");
             quoteBtn.style.display = "none";
             prevBtn.style.display = "none";
-            applyBtn.innerHTML = "Applied";
+            applyBtn.innerHTML = lang === 'en' ? "Applied" : "Demande envoyée";
             applyBtn.disabled = true;
             applyBtn.classList.remove("btn-primary-job");
             applyBtn.classList.add("btn-secondary");

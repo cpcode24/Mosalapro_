@@ -75,12 +75,139 @@ class PaymentService {
     }
 
     /**
+     * Create PayPal vault setup token for payment method tokenization
+     */
+    async createPayPalSetupToken(user) {
+        try {
+            const accessToken = await this.getPayPalAccessToken();
+
+            const response = await fetch(
+                `https://api-m${process.env.NODE_ENV === 'production' ? '' : '.sandbox'}.paypal.com/v3/vault/setup-tokens`,
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${accessToken}`
+                    },
+                    body: JSON.stringify({
+                        payment_source: {
+                            paypal: {
+                                description: `Payment method for ${user.firstName} ${user.lastName}`,
+                                usage_type: 'MERCHANT',
+                                customer_type: 'CONSUMER',
+                                permit_multiple_payment_tokens: false
+                            }
+                        }
+                    })
+                }
+            );
+
+            const result = await response.json();
+
+            if (!response.ok) {
+                throw new Error(result.message || 'Failed to create PayPal setup token');
+            }
+
+            return result;
+        } catch (error) {
+            console.error('Error creating PayPal setup token:', error);
+            throw error;
+        }
+    }
+
+    /**
+     * Save PayPal vault token after user approval
+     */
+    async savePayPalVaultToken(userId, vaultSetupToken, options = {}) {
+        try {
+            const user = await User.findById(userId);
+            if (!user) {
+                throw new Error('User not found');
+            }
+
+            // Get vault setup token details from PayPal
+            const accessToken = await this.getPayPalAccessToken();
+
+            const response = await fetch(
+                `https://api-m${process.env.NODE_ENV === 'production' ? '' : '.sandbox'}.paypal.com/v3/vault/setup-tokens/${vaultSetupToken}`,
+                {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${accessToken}`
+                    }
+                }
+            );
+
+            const setupTokenDetails = await response.json();
+
+            if (!response.ok) {
+                throw new Error(setupTokenDetails.message || 'Failed to retrieve PayPal setup token details');
+            }
+
+            // Create payment token from setup token
+            const createTokenResponse = await fetch(
+                `https://api-m${process.env.NODE_ENV === 'production' ? '' : '.sandbox'}.paypal.com/v3/vault/payment-tokens`,
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${accessToken}`
+                    },
+                    body: JSON.stringify({
+                        payment_source: {
+                            token: {
+                                id: vaultSetupToken,
+                                type: 'SETUP_TOKEN'
+                            }
+                        }
+                    })
+                }
+            );
+
+            const paymentTokenResult = await createTokenResponse.json();
+
+            if (!createTokenResponse.ok) {
+                throw new Error(paymentTokenResult.message || 'Failed to create PayPal payment token');
+            }
+
+            // Extract customer info from payment token
+            const paypalEmail = paymentTokenResult.customer?.email_address || setupTokenDetails.customer?.email_address;
+            const paypalPayerId = paymentTokenResult.customer?.id || setupTokenDetails.customer?.id;
+
+            // Create payment method record
+            const paymentMethod = new PaymentMethod({
+                userId,
+                provider: 'paypal',
+                type: 'paypal',
+                paymentMethodId: paymentTokenResult.id,
+                paypalPayerId: paypalPayerId,
+                paypalEmail: paypalEmail,
+                isDefault: true,
+                isVerified: true,
+                verifiedAt: new Date(),
+                createdIpAddress: options.ipAddress,
+                createdUserAgent: options.userAgent
+            });
+
+            await paymentMethod.save();
+
+            return paymentMethod;
+
+        } catch (error) {
+            console.error('Error saving PayPal vault token:', error);
+            throw error;
+        }
+    }
+
+    /**
      * Save payment method (Stripe or PayPal)
      */
     async savePaymentMethod(userId, paymentMethodData) {
         try {
-            const user = await User.findById(userId);
+            const user = await User.findById(userId).exec();
             if (!user) {
+                console.error('PAYMENT SERVICE:: User not found');
                 throw new Error('User not found');
             }
 
@@ -90,15 +217,46 @@ class PaymentService {
                 // Get or create Stripe customer
                 const customer = await this.getOrCreateStripeCustomer(user);
 
-                // Attach payment method to customer
-                await stripe.paymentMethods.attach(paymentMethodData.paymentMethodId, {
-                    customer: customer.id
-                });
+                // First, retrieve payment method to verify it exists
+                let stripePaymentMethod;
+                try {
 
-                // Retrieve payment method details
-                const stripePaymentMethod = await stripe.paymentMethods.retrieve(
-                    paymentMethodData.paymentMethodId
-                );
+                    stripePaymentMethod = await stripe.paymentMethods.retrieve(
+                        paymentMethodData.paymentMethodId
+                    );
+                } catch (error) {
+                    console.error('Error retrieving Stripe payment method:', error);
+                    console.error('Payment method ID:', paymentMethodData.paymentMethodId);
+                    console.error('Error code:', error.code);
+                    console.error('Error type:', error.type);
+
+                    if (error.code === 'resource_missing') {
+                        throw new Error('Payment method not found. This is likely because your Stripe publishable key and secret key are from different Stripe accounts. Please check your .env file and ensure STRIPE_PUBLISHABLE_KEY and STRIPE_SEC_KEY are from the same Stripe account.');
+                    }
+                    throw new Error(`Failed to retrieve payment method: ${error.message}`);
+                }
+
+                // // Check if payment method is already attached to this customer
+                // if (stripePaymentMethod.customer && stripePaymentMethod.customer !== customer.id) {
+                //     throw new Error('This payment method is already attached to another customer');
+                // }
+
+                // Attach payment method to customer if not already attached
+                //if (!stripePaymentMethod.customer) {
+                    try {
+                        await stripe.paymentMethods.attach(paymentMethodData.paymentMethodId, {
+                            customer: customer.id
+                        });
+
+                        // Retrieve again to get updated info with customer attached
+                        stripePaymentMethod = await stripe.paymentMethods.retrieve(
+                            paymentMethodData.paymentMethodId
+                        );
+                    } catch (error) {
+                        console.error('Error attaching payment method to customer:', error);
+                        throw new Error(`Failed to attach payment method: ${error.message}`);
+                    }
+                //}
 
                 // Create payment method record
                 paymentMethod = new PaymentMethod({
@@ -121,6 +279,14 @@ class PaymentService {
                     createdUserAgent: paymentMethodData.userAgent
                 });
 
+                if (paymentMethod.provider === 'stripe') {
+                    await stripe.customers.update(customer.id, {
+                        invoice_settings: {
+                            default_payment_method: paymentMethod.paymentMethodId
+                        }
+                    });
+                }
+
             } else if (paymentMethodData.provider === 'paypal') {
                 // Create PayPal payment method record
                 paymentMethod = new PaymentMethod({
@@ -138,21 +304,10 @@ class PaymentService {
 
             await paymentMethod.save();
 
-            // Set as default if requested
-            if (paymentMethodData.setAsDefault) {
-                if (paymentMethod.provider === 'stripe') {
-                    await stripe.customers.update(customer.id, {
-                        invoice_settings: {
-                            default_payment_method: paymentMethod.paymentMethodId
-                        }
-                    });
-                }
-            }
-
             return paymentMethod;
 
         } catch (error) {
-            console.error('Error saving payment method:', error);
+            console.error('PAYMENT SERVICE:: Error saving payment method:', error);
             throw error;
         }
     }

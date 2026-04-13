@@ -427,7 +427,7 @@
                       </div>
                       <div class="col-6">
                         <!-- Submit button -->
-                        <input type="submit" class="btn btn-block simple-btn big p-2" name="register-p" id="register-p" onClick="validateAndRegisterP()" value="<%= t('RegisterRegister') %>" disabled="disabled">
+                        <input type="submit" class="btn btn-block simple-btn big p-2" name="register-p" id="register-p" onClick="validateAndRegisterP('<%=lang%>')" value="<%= t('RegisterRegister') %>" disabled="disabled">
                       </div>
                     </div>
                   </div>
@@ -574,6 +574,7 @@
       if (nextBtn) {
         nextBtn.disabled = !isValid;
         nextBtn.style.opacity = isValid ? '1' : '0.5';
+        nextBtn.style.cursor = isValid ? 'pointer' : 'not-allowed';
       }
     }
     
@@ -606,6 +607,7 @@
       if (nextBtn) {
         nextBtn.disabled = !isValid;
         nextBtn.style.opacity = isValid ? '1' : '0.5';
+        nextBtn.style.cursor = isValid ? 'pointer' : 'not-allowed';
       }
     }
     

@@ -26,7 +26,7 @@ const confirmBooking = async(bookingId_, userId)=> {
             // var lnk = location.href.split("/");
             // var baseLnk = lnk[0]+"//"+lnk[2];
             // var socket = io(baseLnk, { transports: ['websocket', 'polling', 'flashsocket'], 'force new connection': true });
-            socket.emit("pushNotification", { 
+            socket.emit("pushNotification", {
                           "title": "Your booking has been confirmed",
                           "content": "A provider has confirmed your booking. Your request is in progress.\n",
                           "userId": userId,
@@ -39,7 +39,7 @@ const confirmBooking = async(bookingId_, userId)=> {
         else{
             message.innerHTML = "Oops. An error occured: "+json.status;
         }
-        
+
       }).catch(err => {
         // console.log(err) // Handle errors
         message.innerHTML = "Oops. An error occured. Please try again.";

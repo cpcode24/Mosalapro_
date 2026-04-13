@@ -224,7 +224,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Check if Stripe publishable key is set
     const stripeKey = '<%= process.env.STRIPE_PUBLISHABLE_KEY || "" %>';
-    if (!stripeKey || stripeKey === 'pk_test_your_key') {
+    if (!stripeKey ) {
         console.error('STRIPE_PUBLISHABLE_KEY not configured');
         return;
     }
@@ -281,7 +281,7 @@ document.addEventListener('DOMContentLoaded', function() {
 // Load saved payment methods
 async function loadPaymentMethods() {
     try {
-        const response = await fetch('/api/payment/payment-methods', {
+        const response = await fetch('/payment-methods', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
@@ -368,7 +368,7 @@ function initializeCardForm() {
         try {
         // Step 1: Create setup intent
         console.log('Creating setup intent...');
-        const setupResponse = await fetch('/api/payment/setup-intent', {
+        const setupResponse = await fetch('/setup-intent', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -404,7 +404,7 @@ function initializeCardForm() {
         }
 
         // Step 3: Save payment method to our backend
-        const saveResponse = await fetch('/api/payment/payment-method', {
+        const saveResponse = await fetch('/payment-method', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -469,7 +469,7 @@ function initializeCardForm() {
 if (window.paypal) {
     paypal.Buttons({
         createBillingAgreement: function() {
-            return fetch('/api/payment/paypal/create-billing-agreement', {
+            return fetch('/paypal/create-billing-agreement', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -482,7 +482,7 @@ if (window.paypal) {
             .then(data => data.agreementId);
         },
         onApprove: function(data) {
-            return fetch('/api/payment/payment-method', {
+            return fetch('/payment-method', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -517,7 +517,7 @@ if (window.paypal) {
 // Set default payment method
 async function setDefaultPaymentMethod(paymentMethodId) {
     try {
-        const response = await fetch(`/api/payment/payment-method/${paymentMethodId}/default`, {
+        const response = await fetch(`/payment-method/${paymentMethodId}/default`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'
@@ -544,7 +544,7 @@ async function deletePaymentMethod(paymentMethodId) {
     }
 
     try {
-        const response = await fetch(`/api/payment/payment-method/${paymentMethodId}`, {
+        const response = await fetch(`/payment-method/${paymentMethodId}`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json'
@@ -587,7 +587,7 @@ async function showPaymentSelectionForBooking(bookingId) {
     selectedPaymentMethodId = null;
 
     try {
-        const response = await fetch('/api/payment/payment-methods');
+        const response = await fetch('/payment-methods');
         const data = await response.json();
 
         if (data.success && data.paymentMethods.length > 0) {
@@ -678,7 +678,7 @@ document.getElementById('confirmBookingWithPayment').addEventListener('click', a
 
         if (response.status === 200) {
             $('#paymentSelectionModal').modal('hide');
-            alert('<%= t("BookingConfirmedPaymentProcessed") %>');
+            console.log('<%= t("BookingConfirmedPaymentProcessed") %>');
             location.reload();
         } else if (response.status === 402) {
             throw new Error(data.message || '<%= t("PaymentFailedError") %>');

@@ -3,7 +3,7 @@
     "id": "account_001",
     "category": "account_authentication",
     "language": "en",
-    "text": "To create an account on MosalaPro, visit the registration page and choose between 'Service Seeker' or 'Service Provider'. Fill in your email, password, and basic information. You'll receive a verification email to activate your account. You can also sign up using Google or Facebook OAuth.",
+    "text": "To create an account on MosalaPro, click on the sign up link on the top right corner or in the footer and choose between 'User' or 'Provider'. Fill in your email, password, and basic information. You'll receive a verification email with a code to activate your account. You can also sign up using Google or Facebook.",
     "metadata": {
       "keywords": ["register", "signup", "create account", "new user"]
     }
@@ -12,7 +12,7 @@
     "id": "account_002",
     "category": "account_authentication",
     "language": "fr",
-    "text": "Pour créer un compte sur MosalaPro, visitez la page d'inscription et choisissez entre 'Chercheur de services' ou 'Fournisseur de services'. Remplissez votre email, mot de passe et informations de base. Vous recevrez un email de vérification pour activer votre compte. Vous pouvez également vous inscrire avec Google ou Facebook OAuth.",
+    "text": "Pour créer un compte sur MosalaPro, cliquez sur le lien d'inscription en haut à droite ou dans le pied de page et choisissez entre 'Utilisateur' ou 'Fournisseur'. Remplissez votre email, mot de passe et informations de base. Vous recevrez un email de vérification avec un code pour activer votre compte. Vous pouvez également vous inscrire avec Google ou Facebook.",
     "metadata": {
       "keywords": ["inscription", "créer compte", "nouvel utilisateur"]
     }
@@ -147,7 +147,7 @@
     "id": "search_001",
     "category": "search_discovery",
     "language": "en",
-    "text": "You can search for services or providers using the search bar. Filter results by category, location, price range, ratings, and availability. Browse by popular categories including home services, professional services, events, technology, education, and more. Save your favorite providers for quick access. Set up alerts for new requests in specific categories.",
+    "text": "You can search for services or providers using the search bar. Filter results by category, country or city. Browse by popular categories including home services, professional services, events, technology, education, and more. Save your favorite providers for quick access. Set up alerts for new requests in specific categories.",
     "metadata": {
       "keywords": ["search", "find", "browse", "filter", "categories"]
     }

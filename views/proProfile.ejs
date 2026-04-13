@@ -77,13 +77,10 @@
                     <!--div class="col-lg-6 col-md-6 col-sm-12 col-12"-->
                       <div class="col ml-1">
                         <p class="mt-1 mb-1"><span class="n-a "><%=jobCompleted%></span> <%= t('JobsCompleted') %></p>
-                        <p class="mt-1 mb-1">$<%=pro.rate %> / USD / hour</p>
+                        <p class="mt-1 mb-1"><%=pro.rate %> <%=pro.currency%></p>
                         <p class="mt-1 mb-1"><%=pro.city %>, <span class="profile-country"><%=pro.country %></span></p>
                         <p class="mt-1 mb-1"><%= t('LocalTimeZone', tz) %>: <span class="text-muted"> <%=tz %> </span>
-                        <p class="mt-1 mb-1"><%= t('Joined', new Date(pro.createdAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })) %></p>
-                       
-
-                        
+                        <p class="mt-1 mb-1"><%= t('Joined') %> <%= new Date(pro.createdAt).toLocaleDateString('fr-FR', { month: 'long', day: 'numeric', year: 'numeric' }) %></p>
                     </div>
 
                     <!--div class="col-lg-6 col-md-6 col-sm-12 col-12">
@@ -101,7 +98,7 @@
                   
               </div>
 
-              <p class="mt-1 mb-1"><i>" <%=pro.description %> "</i></p>
+              <p class="mt-1 mb-1"><i> <%=pro.description %> </i></p>
 
               <div class="row gx-5 mt-4 justify-content-center">
                 
@@ -245,8 +242,32 @@
         </div>
 
         </div>
-        
-        
+
+        <!-- Provider Availability Section (Visible to everyone) -->
+        <!--div class="container shadow-sm mb-5 pb-3 bg-white rounded ">
+          <div class="row">
+            <div class="w-100 d-flex justify-content-between align-items-center border-bottom border-dark p-3">
+              <h6><i class="fas fa-calendar-check"></i> < t('ProviderAvailability') ></h6>
+            </div>
+          </div>
+          <div class="p-3">
+            <div id="providerAvailabilityDisplay">
+              <div class="text-center py-4">
+                <div class="spinner-border text-primary" role="status">
+                  <span class="visually-hidden">Loading...</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div-->
+
+        <!-- Manage Availability Section (Only visible to provider owner) -->
+        <!-- if (usr && usr._id.toString() === pro._id.toString() && usr.registeredAsPro) { >
+        <div class="container shadow-sm mb-5 pb-3 bg-white rounded ">
+          <-- include('partials/availabilityManager') >
+        </div>
+        < } -->
+
         <!-- Friend Reviews Section -->
         <div class="container shadow-sm mb-5 pb-3 bg-white rounded ">
           <div class="row">
@@ -739,6 +760,114 @@
       document.getElementById('portfolio-empty').style.display = 'block';
       document.querySelector('#portfolio-empty .empty-state h6').textContent = '<%= t("ErrorLoadingPortfolio") || "Error Loading Portfolio" %>';
       document.querySelector('#portfolio-empty .empty-state p').textContent = '<%= t("ErrorLoadingPortfolioDesc") || "Please try again later." %>';
+    }
+
+    // Load provider availability (public view)
+    async function loadProviderAvailability() {
+      const providerId = '<%= pro._id %>';
+      try {
+        const response = await fetch(`/api/availability/provider/${providerId}`);
+        const data = await response.json();
+
+        if (data.success && data.availabilities.length > 0) {
+          displayProviderAvailability(data.availabilities);
+        } else {
+          document.getElementById('providerAvailabilityDisplay').innerHTML = `
+            <div class="text-center text-muted py-4">
+              <i class="fas fa-calendar-times fa-2x mb-2"></i>
+              <p>This provider has not set their availability yet.</p>
+            </div>
+          `;
+        }
+      } catch (error) {
+        console.error('Error loading availability:', error);
+        document.getElementById('providerAvailabilityDisplay').innerHTML = `
+          <div class="alert alert-warning">
+            Could not load availability information.
+          </div>
+        `;
+      }
+    }
+
+    function displayProviderAvailability(availabilities) {
+      const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+      // Group recurring by day
+      const recurring = availabilities.filter(a => a.type === 'recurring');
+      const specific = availabilities.filter(a => a.type === 'specific');
+
+      let html = '';
+
+      // Display recurring schedule
+      if (recurring.length > 0) {
+        html += '<h6 class="mb-3">Regular Hours</h6>';
+        html += '<div class="mb-4">';
+
+        const byDay = {};
+        recurring.forEach(slot => {
+          if (!byDay[slot.dayOfWeek]) byDay[slot.dayOfWeek] = [];
+          byDay[slot.dayOfWeek].push(slot);
+        });
+
+        for (let day = 0; day <= 6; day++) {
+          if (byDay[day]) {
+            html += `
+              <div class="d-flex justify-content-between align-items-center border-bottom py-2">
+                <strong>${dayNames[day]}</strong>
+                <div>
+                  ${byDay[day].map(slot => `
+                    <span class="badge badge-success mr-1">
+                      <i class="far fa-clock"></i> ${formatTime(slot.startTime)} - ${formatTime(slot.endTime)}
+                    </span>
+                  `).join('')}
+                </div>
+              </div>
+            `;
+          }
+        }
+
+        html += '</div>';
+      }
+
+      // Display specific dates (upcoming only)
+      if (specific.length > 0) {
+        const upcoming = specific.filter(s => new Date(s.date) >= new Date());
+        if (upcoming.length > 0) {
+          html += '<h6 class="mb-3 mt-3">Special Hours</h6>';
+          html += '<div>';
+
+          upcoming.slice(0, 5).forEach(slot => {
+            const date = new Date(slot.date);
+            html += `
+              <div class="d-flex justify-content-between align-items-center border-bottom py-2">
+                <span>${date.toLocaleDateString('en-US', {weekday: 'long', month: 'long', day: 'numeric'})}</span>
+                <span class="badge badge-info">
+                  <i class="far fa-clock"></i> ${formatTime(slot.startTime)} - ${formatTime(slot.endTime)}
+                </span>
+              </div>
+            `;
+          });
+
+          html += '</div>';
+        }
+      }
+
+      document.getElementById('providerAvailabilityDisplay').innerHTML = html;
+    }
+
+    function formatTime(time24) {
+      const [hours, minutes] = time24.split(':');
+      const hour = parseInt(hours);
+      const ampm = hour >= 12 ? 'PM' : 'AM';
+      const hour12 = hour % 12 || 12;
+      return `${hour12}:${minutes} ${ampm}`;
+    }
+
+    // Load availability when page loads
+    if (document.getElementById('providerAvailabilityDisplay')) {
+      document.addEventListener('DOMContentLoaded', function() {
+        loadProviderAvailability();
+      });
     }
   </script>
 

@@ -15,15 +15,17 @@
       <%= t('RecoverYourPassword') %>
       </h3>
       <span name="recov_message" id="recov_message" class="error_message "> </span>
+      <span name="lang" id="lang" value="<%=lang%>" style="display: none;"></span>
       <p class="mt-4-ver mb-1">
-      <%= t('EnterEmailToRecover') %> 
+      <%= t('EnterEmailOrPhoneToRecover') %>
       </p>
         <div class="px-lg-5">
             <div class="row mt-2 px-4">
               <div class="col">
-                  <!-- Email input -->
+                  <!-- Email or Phone input -->
                   <div class="form-outline ">
-                      <input type="email" id="recover_email" class="form-control" placeholder="<%= t('EmailAddress') %>" name="recover_email"  required/>
+
+                      <input type="text" id="recover_email" class="form-control" placeholder="<%= t('EmailOrPhone') %>" name="recover_email"  required/>
                   </div>
               </div>
             </div>
@@ -31,7 +33,7 @@
           <div class="row mt-2 px-4">
             <div class="col">
                         <!-- Submit button -->
-                    <button type="submit" class="btn btn-block simple-btn big p-2 mb-2" name="recover-p" onClick="onPassRecoverSubmit()" ><%= t('Submit') %></button>
+                    <button type="submit" class="btn btn-block simple-btn big p-2 mb-2" name="recover-p" onClick="onPassRecoverSubmit('<%=lang%>')" ><%= t('Submit') %></button>
             </div>
           </div>
         </div>

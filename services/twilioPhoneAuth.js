@@ -15,9 +15,9 @@ class TwilioPhoneAuthService {
     
     // In-memory store for OTP codes (in production, use Redis or database)
     this.otpStore = new Map();
-    
-    // OTP expiry time (30 minutes)
-    this.OTP_EXPIRY_TIME = 30 * 60 * 1000;
+
+    // OTP expiry time (6 minutes)
+    this.OTP_EXPIRY_TIME = 6 * 60 * 1000;
   }
 
   // Generate a 6-digit OTP
@@ -159,9 +159,6 @@ class TwilioPhoneAuthService {
       // Remove duplicates
       const uniqueVariations = [...new Set(phoneVariations)];
       
-      console.log(`OTP Service: Storing OTP for phone variations:`, uniqueVariations);
-      console.log(`Original: ${phoneNumber}, Country: ${userCountryCode}, Normalized: ${normalizedPhone}`);
-      
       // Store OTP with multiple key formats for reliable lookup
       const otpData = {
         otp: otp,
@@ -177,33 +174,50 @@ class TwilioPhoneAuthService {
       // Store using all phone number variations
       uniqueVariations.forEach(variation => {
         this.otpStore.set(variation, otpData);
-        console.log(`Stored OTP with key: ${variation}`);
       });
-      console.log(`OTP for ${normalizedPhone} is ${this.otpStore.get(phoneNumber).otp} `);
       // Also store in database for persistence
-      const userId = await UserModel.findOne({ phone: phoneNumber}).select('_id').exec();
+      const userId = await UserModel.findOne({ phone: phoneNumber }).select('_id').exec()
+                      || await UserModel.findOne({ phone: phoneNumber.replace(/[^\d+]/g, '') }).select('_id').exec()
+                      || await UserModel.findOne({ phone: phoneNumber.replace(/[^\d+]/g, '').replace(/^0+/, '') }).select('_id').exec()
+                      || await UserModel.findOne({ phone: phoneNumber.substring(2) }).select('_id').exec()
+                      || await UserModel.findOne({ phone: phoneNumber.substring(3) }).select('_id').exec()
+                      || await UserModel.findOne({ phone: phoneNumber.substring(4) }).select('_id').exec();
+      console.log('User ID found for phone number:', userId._id.toString());
       if(userId) {
-        let storedTok = await new TokenModel({ userId: userId._id.toString(),  token: otp}).save();
 
-        console.log("Token from DB:", await TokenModel.findOne({ userId: userId._id.toString() }).exec());
+        await new TokenModel({ userId: userId._id.toString(),  token: otp}).save(
+          (err) => {
+            if (err) {
+              console.error('Error saving token to DB:', err);
+            } else {
+              console.log('Token saved to DB successfully');
+            }
+          }
+        );
+
+        //console.log("Token from DB:", await TokenModel.findOne({ userId: userId.toString() }).exec());
+      }
+      else{
+        console.log('No user found for phone number.');
+        return;
       }
 
       // Send SMS 
       let message;
         if(res.locals.locale === 'fr'){
           message = await this.client.messages.create({
-          body: `Votre code de vérification MosalaPro est ${otp}. Ce code expire dans 15 minutes.`,
+          body: `Votre code de vérification MosalaPro est ${otp}. Ce code expire dans 5 minutes.`,
           from: this.fromPhone,
           to: normalizedPhone // Use normalized phone for SMS sending
         });
         }else{
           message = await this.client.messages.create({
-          body: `Your MosalaPro verification code is: ${otp}. This code expires in 15 minutes.`,
+          body: `Your MosalaPro verification code is: ${otp}. This code expires in 5 minutes.`,
           from: this.fromPhone,
           to: normalizedPhone // Use normalized phone for SMS sending
         });
       }
-      console.log(`SENDOTP:: OTP Store keys:`, Array.from(this.otpStore.keys()));
+      
       return {
         success: true,
         messageSid: ' ',
@@ -245,205 +259,48 @@ class TwilioPhoneAuthService {
   // Verify OTP
   async verifyOTP(phoneNumber, enteredOTP, userInfo = {}) {
     try {
-      console.log(`OTP Store keys:`, Array.from(this.otpStore.keys()));
-      console.log(`OTP Verify: Looking up phone ${phoneNumber}`);
-
+      
       // If otpStore is empty, look for stored token in db
-      if (this.otpStore.size === 0) {
-        console.log('OTP store is empty, checking DB for stored token');
-        const userId = await UserModel.findOne({ phone: phoneNumber }).select('_id').exec();
-        if(!userId) {
+      //if (this.otpStore.size === 0) {
+        const userId = await UserModel.findOne({ phone: phoneNumber }).select('_id').exec()
+                      || await UserModel.findOne({ phone: phoneNumber.replace(/[^\d+]/g, '') }).select('_id').exec()
+                      || await UserModel.findOne({ phone: phoneNumber.replace(/[^\d+]/g, '').replace(/^0+/, '') }).select('_id').exec()
+                      || await UserModel.findOne({ phone: phoneNumber.substring(2) }).select('_id').exec()
+                      || await UserModel.findOne({ phone: phoneNumber.substring(3) }).select('_id').exec()
+                      || await UserModel.findOne({ phone: phoneNumber.substring(4) }).select('_id').exec();
+
+        
+        if(!userId){ 
           return {
             success: false,
             message: 'This phone number is not registered. Please sign up first or contact support.'
           };
-        } 
-        console.log('Found userId for phone:', userId._id.toString());
+        }
+
+        console.log('User found for phone number:', userId._id.toString());
         const tokenRecord = await TokenModel.findOne({ userId: userId._id.toString() }).exec();
+        if(tokenRecord){
+          console.log('Token record found in DB for user ID:', userId._id.toString());
+        }else{
+          console.log('No token record found in DB for user ID:', userId._id.toString());
+          return;
+        }
         if (tokenRecord && tokenRecord.token === enteredOTP) {
           // OTP matches, delete token after successful verification
           await TokenModel.deleteOne({ _id: tokenRecord._id }).exec();
-          console.log('OTP verified successfully from DB token for', phoneNumber);
           return {
             success: true,
             user: await UserModel.findById(userId).exec(),
             message: 'Phone verified successfully via DB token'
           };
         }else{
-          console.log(`No matching token found in DB for phone: ${phoneNumber} and entered OTP: ${enteredOTP}`);
           return {
             success: false,
             message: 'OTP not found or expired. Please request a new OTP.'
           };
         }
-      }
+      //}
       
-      // Try original phone number first
-      let storedData = this.otpStore.get(phoneNumber);
-      let actualStorageKey = phoneNumber;
-      
-      // If not found with original, try cleaned version
-      if (!storedData) {
-        const cleanedPhone = phoneNumber.replace(/[^\d+]/g, '');
-        storedData = this.otpStore.get(cleanedPhone);
-        if (storedData) {
-          actualStorageKey = cleanedPhone;
-          console.log(`Found OTP data with cleaned phone: ${cleanedPhone}`);
-        }
-      }
-      
-      // If still not found, try without leading zeros
-      if (!storedData) {
-        const withoutLeadingZeros = phoneNumber.replace(/[^\d+]/g, '').replace(/^0+/, '');
-        storedData = this.otpStore.get(withoutLeadingZeros);
-        if (storedData) {
-          actualStorageKey = withoutLeadingZeros;
-          console.log(`Found OTP data with phone without leading zeros: ${withoutLeadingZeros}`);
-        }
-      }
-      
-      // If still not found, try with common country codes
-      if (!storedData) {
-        const commonCountryCodes = ['+1', '+33', '+44', '+49', '+235', '+234', '+233'];
-        
-        for (const countryCode of commonCountryCodes) {
-          const normalizedPhone = this.normalizePhoneNumber(phoneNumber, countryCode);
-          storedData = this.otpStore.get(normalizedPhone);
-          if (storedData) {
-            actualStorageKey = normalizedPhone;
-            console.log(`Found OTP data with normalized phone: ${normalizedPhone} (country: ${countryCode})`);
-            break;
-          }
-        }
-      }
-      
-      if (!storedData) {
-        console.log(`OTP not found for ${phoneNumber}`);
-        return {
-          success: false,
-          message: 'OTP not found or expired. Please request a new OTP.'
-        };
-      }
-
-      // Check if OTP has expired
-      if (Date.now() > storedData.expiryTime) {
-        // Delete all stored variations
-        if (storedData.allVariations) {
-          storedData.allVariations.forEach(variation => {
-            this.otpStore.delete(variation);
-          });
-        } else {
-          this.otpStore.delete(actualStorageKey);
-        }
-        return {
-          success: false,
-          message: 'OTP has expired. Please request a new OTP.'
-        };
-      }
-
-      // Check attempts (max 4 attempts)
-      if (storedData.attempts >= 4) {
-        // Delete all stored variations
-        if (storedData.allVariations) {
-          storedData.allVariations.forEach(variation => {
-            this.otpStore.delete(variation);
-          });
-        } else {
-          this.otpStore.delete(actualStorageKey);
-        }
-        return {
-          success: false,
-          message: 'Too many failed attempts. Please request a new OTP.'
-        };
-      }
-
-      // Verify OTP
-      if (storedData.otp !== enteredOTP) {
-        storedData.attempts++;
-        return {
-          success: false,
-          message: `Invalid OTP. ${3 - storedData.attempts} attempts remaining.`
-        };
-      }
-      console.log('OTP verified successfully for', phoneNumber);
-      // OTP is valid, remove from store (delete all stored variations)
-      const userEmail = storedData.email;
-      console.log("User email associated with OTP:", userEmail);
-      let user = null;
-      
-      // Delete all stored variations
-      if (storedData.allVariations) {
-        storedData.allVariations.forEach(variation => {
-          this.otpStore.delete(variation);
-          console.log(`Deleted OTP key: ${variation}`);
-        });
-      } else {
-        this.otpStore.delete(actualStorageKey);
-      }
-      // Try to find user by email first (for phone registrations, this will be the temp email)
-      if(userEmail && userEmail !== '') {
-        user = await UserModel.findOne({ email: userEmail }).exec();
-      }
-      
-      // If not found by email, try to find by phone number using all variations
-      if (!user) {
-        console.log('User not found by email, trying phone number variations...');
-        
-        // Create all possible phone variations to search for user
-        const phoneVariations = [
-          phoneNumber,
-          phoneNumber.replace(/[^\d+]/g, ''),
-          phoneNumber.replace(/[^\d+]/g, '').replace(/^0+/, ''),
-          actualStorageKey
-        ];
-        
-        
-        // If we have the stored normalized phone, use it too
-        if (storedData && storedData.normalizedPhone) {
-          phoneVariations.push(storedData.normalizedPhone);
-        }
-        
-        // Remove duplicates
-        const uniquePhoneVariations = [...new Set(phoneVariations)];
-        console.log('Searching for user with phone variations:', uniquePhoneVariations);
-        
-        // Try each phone variation
-        for (const phoneVariation of uniquePhoneVariations) {
-          if (phoneVariation) {
-            user = await UserModel.findOne({ phone: phoneVariation }).exec();
-            if (user) {
-              console.log(`Found user with phone: ${phoneVariation}`);
-              break;
-            }
-          }
-        }
-      }
-
-      if (!user) {
-        console.log(`No user found for phone ${phoneNumber} or email ${userEmail}`);
-        return {
-          success: false,
-          message: 'This phone number is not registered. Please sign up first or contact support.'
-        };
-      }
-
-      // Delete any existing tokens for this user
-      await TokenModel.deleteMany({ userId: user._id }).exec();
-
-      // Update existing user
-      user.phoneVerified = true;
-      user.verified = true;
-      user.active = true;
-      user.verifiedContact = phoneNumber;
-      user.lastUpdate = new Date();
-    
-      await user.save();
-      
-      return {
-        success: true,
-        user,
-        message: 'Phone verified successfully'
-      };
      
     } catch (error) {
       console.error('Error verifying OTP:', error);

@@ -39,40 +39,45 @@ class Message {
                 return;
             }else{
                 console.log("Send message through socket");
+                // Send message to recipient via Socket.io (real-time delivery)
                 this.sendMessageToUserThroughSocket(req.body.proId, req.user, req.body.content, createdAt, req.files?.map(item => item.filename));
 
-                //if (!req.body.isChatMessage) {
-                
-                // If receiver is not online, send email notification.
-                //if(onlineUsersList.findIndex((u) => u.id === receiver._id.toString()) == -1){
+                // Create notification in database (for notification center)
+                const notification = new NotificationModel({
+                    causedByUserId: req.user._id,
+                    receiverId: req.body.proId,
+                    accountType: receiver.accountType || "user",
+                    icon: "fa-envelope",
+                    title: "You have a new message.",
+                    content: "A message from "+req.user.firstName+ " "+req.user.lastName+": "+
+                                            req.body.messageTitle+ " "+  req.body.content,
+                    translations: {fr: {
+                        title: "Vous avez un nouveau message.",
+                        content: req.user.firstName+ " "+req.user.lastName+" vous a envoyé un message: "+req.body.messageTitle+ " "+  req.body.content }
+                    },
 
-                    const notification = new NotificationModel({
-                        causedByUserId: req.user._id,
-                        receiverId: req.body.proId,
-                        icon: "fa-envelope",
-                        title: "You have a new message.",
-                        content: "A message from "+req.user.firstName+ " "+req.user.lastName+": "+
-                                                req.body.messageTitle+ " "+  req.body.content,
-                        translations: {fr: {
-                            title: "Vous avez un nouveau message.",
-                            content: req.user.firstName+ " "+req.user.lastName+" vous a envoyé un message: "+req.body.messageTitle+ " "+  req.body.content }
-                        },
-                                                
-                        createdAt: new Date(),
-                        lastUpdate: new Date()
-                    }).save(async function (err) {
-                        if (err) {console.log("MESSAGE:: Error occured while creating notification.");}
-                        else{console.log("MESSAGE:: message has been successfully sent.");}
-                    });
-                    const isUserOn = await OnlineUserModel.findOne({id: receiver._id.toString()});
-                    if(receiver.msgUpdateNotifs && !isUserOn ){
-                        const emailTitle = "You have a new message.";
-                        const emailContent = "You have a new message from "+req.user.firstName+ ".\n\nLogin to https://mosalapro.com/messages to view it.\n\n";
-                        if(emailSenderObj.sendNotification(emailTitle, emailContent, receiver.email, receiver.firstName))
-                            console.log("MESSAGE:: Notification's email sent to user.");
-                        else console.log("Failed to send notif's email.");
+                    createdAt: new Date(),
+                    lastUpdate: new Date()
+                }).save(async function (err) {
+                    if (err) {
+                        console.log("MESSAGE:: Error occured while creating notification.");
+                    } else {
+                        console.log("MESSAGE:: Notification saved to database.");
                     }
-                //}
+                });
+
+                // Note: We only send 'newMessage' event (via sendMessageToUserThroughSocket above)
+                // No need to send 'pushNotification' event as well - it causes duplicates
+
+                // Check if user is online, send email only if offline
+                const isUserOn = await OnlineUserModel.findOne({id: receiver._id.toString()});
+                if(receiver.msgUpdateNotifs && !isUserOn ){
+                    const emailTitle = "You have a new message.";
+                    const emailContent = "You have a new message from "+req.user.firstName+ ".\n\nLogin to https://mosalapro.com/messages to view it.\n\n";
+                    if(emailSenderObj.sendNotification(emailTitle, emailContent, receiver.email, receiver.firstName))
+                        console.log("MESSAGE:: Notification's email sent to user.");
+                    else console.log("Failed to send notif's email.");
+                }
 
                 console.log("MESSAGE:: Message has been sent successfully.");
                 res.status(200).send({message:"Message sent successfully!", status:200} );
@@ -169,7 +174,7 @@ class Message {
                     correspondant.phone = " ";
                     correspondant.isOnline = await this.checkIfUserOnline(corrId);
                     if(!unikIds.includes(corrId)){
-                        console.log("Corresp is online: ", correspondant.isOnline);
+                        // console.log("Corresp is online: ", correspondant.isOnline);
                         correspondants.push(correspondant);
                         unikIds.push(corrId);
                     }
@@ -209,14 +214,14 @@ class Message {
 
         if (isOnline ) {
             if( (Date.now() - isOnline.lastSeen) > 3 * 60 * 1000){
-                console.log("User is not online - last seen more than 3 min");
+                // console.log("User is not online - last seen more than 3 min");
                 await OnlineUserModel.findOneAndDelete({id: userId}).exec();
                 return false;
             }else{
                 return true;
             }
         }
-        console.log("User is not online - not found!");
+        // console.log("User is not online - not found!");
 
         return false;
     }
@@ -260,11 +265,32 @@ class Message {
     }
 
     async sendMessageToUserThroughSocket(userId, sender, message, createdAt, attachments) {
-        var user = onlineUserSocketsList.find(u => u.id === userId);
-        // console.log("User found: "+ user.id+" - socketId: "+user.socketId);
-        if (user) {
-            io.to(user.socketId).emit('messageToClient', { sender, message, createdAt, attachments });
+        const user = onlineUserSocketsList.find(u => u.id === userId);
+        console.log("MESSAGE:: Looking for user socket:", userId);
+        console.log("MESSAGE:: Online users count:", onlineUserSocketsList.length);
+
+        if (user && global.io) {
+            console.log("MESSAGE:: User found with socket ID:", user.socketId);
+            // Send message directly to the user's socket
+            global.io.to(user.socketId).emit('newMessage', {
+                sender: {
+                    _id: sender._id,
+                    firstName: sender.firstName,
+                    lastName: sender.lastName,
+                    photo: sender.photo
+                },
+                content: message,
+                createdAt: createdAt,
+                attachments: attachments || []
+            });
+            console.log("MESSAGE:: Message sent through socket to user:", userId);
+        } else {
+            console.log("MESSAGE:: User not found in online list or io not available");
         }
+    }
+
+    getUserSocket(userId) {
+        return onlineUserSocketsList.find(u => u.id === userId);
     }
 }
 

@@ -1,4 +1,5 @@
 test-rag.js
+monitor.js
 .gcloudignore
 # Logs
 logs
@@ -85,6 +86,7 @@ web_modules/
 
 # Omitting files specific to gcp
 app.yaml
+dispatch.yaml
 public/google1aaedaa339efea4e.html
 public/sitemap.xml
 public/robots.txt
@@ -140,9 +142,21 @@ dist
 .yarn/install-state.gz
 .pnp.*
 
+Dockerfile
+
 #app.yaml as it contains env info
 app.yaml
 web-map-http.yaml
+dispatch.yaml
+load-test-artillery.yml
+
+
+clearSessions.js
+load-test-k6.js
+scripts/add-indexes.js
+services/groqService.js
+load-test-locust.py
+create_cities.py
 
 mosalapro-com-e66126911c87.json
 mosalapro-34-firebase-adminsdk-fbsvc-ad6964edf8.json
@@ -159,7 +173,10 @@ LLAMA_PERFORMANCE_OPTIMIZATION.md
 PAYMENT_IMPLEMENTATION_SUMMARY.md
 PAYMENT_SERVICE_SETUP.md
 PAYMENT_UI_INTEGRATION.md
+OVERVIEW.md
 QUICK_START.md
+LOAD_TESTING_GUIDE.md
+claude.md
 
 # RAG System - Vector database storage
 data/vector_db.json
@@ -171,3 +188,5 @@ data/knowledge-base.json
 #scripts
 scripts/diagnose-llama-performance.sh
 scripts/optimize-llama-performance.sh
+monitor.sh
+

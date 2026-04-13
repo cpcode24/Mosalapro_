@@ -31,7 +31,7 @@ class RAGService {
         // Keep model loaded in memory to avoid reload latency (for Ollama)
         this.keepModelLoaded = true;
 
-        console.log(`🔧 RAG Service configured to use: ${this.provider.toUpperCase()}`);
+        console.log(`RAG Service configured to use: ${this.provider.toUpperCase()}`);
     }
 
     /**
@@ -49,11 +49,11 @@ class RAGService {
                 // Initialize Groq service
                 const success = await this.groqService.initialize();
                 if (success) {
-                    console.log('✅ RAG Service initialized with Groq');
+                    console.log('RAG Service initialized with Groq');
                     this.initialized = true;
                     return true;
                 } else {
-                    console.warn('⚠️ Groq initialization failed, falling back to Ollama...');
+                    console.warn(' Groq initialization failed, falling back to Ollama...');
                     this.provider = 'ollama';
                 }
             }
@@ -69,7 +69,7 @@ class RAGService {
                         return false;
                     }
 
-                    console.log('✅ RAG Service initialized with Ollama');
+                    console.log('RAG Service initialized with Ollama');
                     this.initialized = true;
 
                     // Warmup: Preload model into memory for faster first response
@@ -165,6 +165,12 @@ class RAGService {
             };
         }
 
+        // Route to appropriate provider
+        if (this.provider === 'groq') {
+            return await this.groqService.generateResponse(userMessage, conversationHistory, language);
+        }
+
+        // Ollama implementation (local Llama)
         try {
             // Retrieve relevant context
             console.log(`Retrieving context for query: "${userMessage}"`);
@@ -217,7 +223,8 @@ class RAGService {
                     total_tokens: (response.prompt_eval_count || 0) + (response.eval_count || 0)
                 },
                 retrievedDocs: count,
-                model: this.model
+                model: this.model,
+                provider: 'ollama'
             };
 
         } catch (error) {
@@ -308,6 +315,11 @@ PLATFORM CAPABILITIES:
      */
     async getStatus() {
         try {
+            if (this.provider === 'groq') {
+                return await this.groqService.getStatus();
+            }
+
+            // Ollama status
             const models = await this.ollama.list();
             const modelExists = models.models.some(m => m.name.includes(this.model.split(':')[0]));
             const stats = await this.vectorDB.getStats();
@@ -319,13 +331,13 @@ PLATFORM CAPABILITIES:
                     initialized: stats ? stats.initialized : false,
                     documentCount: stats ? stats.documentCount : 0
                 },
-                provider: 'local-llama-rag'
+                provider: 'ollama'
             };
         } catch (error) {
             return {
                 available: false,
                 error: error.message,
-                provider: 'local-llama-rag'
+                provider: this.provider
             };
         }
     }

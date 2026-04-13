@@ -42,7 +42,7 @@
                   <option value="+225">+225</option>
                 </select>
               </div>
-              <input type="tel" class="form-control" id="phoneNumber" placeholder="<%= t('PhoneNumber') || 'Phone number' %>" required>
+              <input type="number" class="form-control" id="phoneNumber" placeholder="<%= t('PhoneNumber') || 'Phone number' %>" required>
             </div>
           </div>
           
@@ -158,7 +158,7 @@ async function sendTwilioOTP() {
   // Check if user exists - only allow existing users to authenticate
   const userExists = await checkIfUserExists(fullPhoneNumber);
   if (!userExists) {
-    phoneMessage.textContent = `<%= t('PhoneNotRegistered') %>`;
+    phoneMessage.textContent = "<%= t('PhoneNotRegistered') %>";
     return;
   }
   
@@ -182,7 +182,7 @@ async function sendTwilioOTP() {
       document.getElementById('sentPhoneDisplay').textContent = fullPhoneNumber;
       showOTPStep();
     } else {
-      phoneMessage.textContent = data.message || `<%= t('FailedToSendOTP') %>`;
+      phoneMessage.textContent = `<%= t('FailedToSendOTP') %>`;
     }
   } catch (error) {
     console.error('Error sending OTP:', error);
@@ -272,11 +272,11 @@ async function resendOTP() {
         document.getElementById('otpError').className = 'text-danger';
       }, 3000);
     } else {
-      document.getElementById('otpError').textContent = data.message || '<%= t("FailedToResendOTP") || "Failed to resend OTP" %>';
+      document.getElementById('otpError').textContent = '<%= t("FailedToResendOTP") %>';
     }
   } catch (error) {
     console.error('Error resending OTP:', error);
-    document.getElementById('otpError').textContent = '<%= t("FailedToResendOTP") || "Failed to resend OTP" %>. Please try again.';
+    document.getElementById('otpError').textContent = '<%= t("FailedToResendOTP") %>';
   }
 }
 

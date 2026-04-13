@@ -5,6 +5,7 @@
   "main": "app.js",
   "dependencies": {
     "@google-cloud/recaptcha-enterprise": "^5.11.0",
+    "@google-cloud/run": "^3.2.0",
     "@google-cloud/storage": "^7.13.0",
     "@google/generative-ai": "^0.24.1",
     "@langchain/core": "^0.3.59",
@@ -29,6 +30,7 @@
     "fs": "^0.0.1-security",
     "geoip-lite": "^1.4.10",
     "gridfs-stream": "^1.1.1",
+    "groq-sdk": "^1.1.1",
     "hpp": "^0.2.3",
     "html2pdf.js": "^0.10.2",
     "http-proxy-middleware": "^3.0.2",
@@ -47,6 +49,8 @@
     "mongoose-findorcreate": "^3.0.0",
     "multer": "^1.4.5-lts.1",
     "node-cron": "^3.0.2",
+    "node-mailjet": "^6.0.11",
+    "nodemailer": "^8.0.5",
     "nodemon": "^3.1.7",
     "npm": "^10.8.2",
     "ollama": "^0.6.3",
@@ -60,19 +64,19 @@
     "sanitize": "^2.1.2",
     "sharp": "^0.33.1",
     "socket.io": "^4.7.5",
-    "stripe": "^11.17.0",
+    "stripe": "^11.18.0",
     "twilio": "^5.8.0",
     "validator": "^13.12.0"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node app.js",
-    "build": "npm install"
+    "clear-sessions": "node clearSessions.js"
   },
   "keywords": [],
   "author": "Constant Pagoui",
   "license": "ISC",
   "engines": {
-    "node": "22.16.0"
+    "node": "24.x"
   }
 }

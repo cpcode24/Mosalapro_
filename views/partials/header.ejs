@@ -163,9 +163,9 @@ function getTranslatedNotification(notification, locale, field) {
                         <!--To keep modal up even when the user clicks away, uncomment link below and use it-->
                         <!--<a href="#logModalCta" data-controls-modal="#logModalCta" data-backdrop="static" data-keyboard="false" data-toggle="modal" data-caption-animate="fadeInUp"> -->
                         <a href="#logModalCta" data-toggle="modal" data-caption-animate="fadeInUp"> 
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-lock mr-1 mb-1" viewBox="0 0 16 16">
-                          <path d="M11 5a3 3 0 1 1-6 0 3 3 0 0 1 6 0ZM8 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm0 5.996V14H3s-1 0-1-1 1-4 6-4c.564 0 1.077.038 1.544.107a4.524 4.524 0 0 0-.803.918A10.46 10.46 0 0 0 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h5ZM9 13a1 1 0 0 1 1-1v-1a2 2 0 1 1 4 0v1a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1v-2Zm3-3a1 1 0 0 0-1 1v1h2v-1a1 1 0 0 0-1-1Z"/>
-                        </svg> <%= t('Login') %></a></li>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-fill-lock" viewBox="0 0 16 16">
+  <path d="M11 5a3 3 0 1 1-6 0 3 3 0 0 1 6 0m-9 8c0 1 1 1 1 1h5v-1a2 2 0 0 1 .01-.2 4.49 4.49 0 0 1 1.534-3.693Q8.844 9.002 8 9c-5 0-6 3-6 4m7 0a1 1 0 0 1 1-1v-1a2 2 0 1 1 4 0v1a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1zm3-3a1 1 0 0 0-1 1v1h2v-1a1 1 0 0 0-1-1"/>
+</svg> <%= t('Login') %></a></li>
                       <li class="ml-2"><a href="#regModalCta" data-toggle="modal" data-caption-animate="fadeInUp">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-add mr-1 mb-1" viewBox="0 0 16 16">
                           <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Zm.5-5v1h1a.5.5 0 0 1 0 1h-1v1a.5.5 0 0 1-1 0v-1h-1a.5.5 0 0 1 0-1h1v-1a.5.5 0 0 1 1 0Zm-2-6a3 3 0 1 1-6 0 3 3 0 0 1 6 0ZM8 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"/>
@@ -185,7 +185,7 @@ function getTranslatedNotification(notification, locale, field) {
                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search mr-2 mb-1" viewBox="0 0 16 16">
                         <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
                       </svg>
-                      Find providers</a></li>
+                      <%=t('FindProviders')%></a></li>
                       <% if(usr.accountType=="provider"){  %>
                         <li class="ml-2 mb-2"><a class="" href="/service-requests">
                           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-earmark-ruled mr-2 mb-1" viewBox="0 0 16 16" >
@@ -195,13 +195,12 @@ function getTranslatedNotification(notification, locale, field) {
                         <li class="ml-2 mb-2"><a class="" href="/mybookings">
                           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-calendar2-check mr-2 mb-1" viewBox="0 0 16 16" >
                             <path d="M10.854 8.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 0 1 .708-.708L7.5 10.793l2.646-2.647a.5.5 0 0 1 .708 0"/>
-                            <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5M2 2a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1z"/>
-                            <path d="M2.5 4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5H3a.5.5 0 0 1-.5-.5z"/>
+                            <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5M2 2a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1h-1v1h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5H3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h1V2.5a.5.5 0 0 1 .5-.5z"/>
                           </svg>
                           <%= t('MyBookings') %></a></li>
                         <li class="ml-2 mb-2"><a class="" href="/quotations">
                           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-receipt mr-2 mb-1" viewBox="0 0 16 16" >
-                            <path d="M1.92.506a.5.5 0 0 1 .434.14L3 1.293l.646-.647a.5.5 0 0 1 .708 0L5 1.293l.646-.647a.5.5 0 0 1 .708 0L7 1.293l.646-.647a.5.5 0 0 1 .708 0L9 1.293l.646-.647a.5.5 0 0 1 .708 0l.646.647.646-.647a.5.5 0 0 1 .708 0l.646.647.646-.647a.5.5 0 0 1 .801.13l.5 1A.5.5 0 0 1 15 2v12a.5.5 0 0 1-.053.224l-.5 1a.5.5 0 0 1-.8.13L13 14.707l-.646.647a.5.5 0 0 1-.708 0L11 14.707l-.646.647a.5.5 0 0 1-.708 0L9 14.707l-.646.647a.5.5 0 0 1-.708 0L7 14.707l-.646.647a.5.5 0 0 1-.708 0L5 14.707l-.646.647a.5.5 0 0 1-.708 0L3 14.707l-.646.647a.5.5 0 0 1-.801-.13l-.5-1A.5.5 0 0 1 1 14V2a.5.5 0 0 1 .053-.224l.5-1a.5.5 0 0 1 .367-.27m.217 1.338L2 2.118v11.764l.137.274.51-.51a.5.5 0 0 1 .707 0l.646.647.646-.646a.5.5 0 0 1 .708 0l.646.646.646-.646a.5.5 0 0 1 .708 0l.646.646.646-.646a.5.5 0 0 1 .708 0l.646.646.646-.646a.5.5 0 0 1 .708 0l.646.646.646-.646a.5.5 0 0 1 .708 0l.509.509.137-.274V2.118l-.137-.274-.51.51a.5.5 0 0 1-.707 0L12 1.707l-.646.647a.5.5 0 0 1-.708 0L10 1.707l-.646.647a.5.5 0 0 1-.708 0L8 1.707l-.646.647a.5.5 0 0 1-.708 0L6 1.707l-.646.647a.5.5 0 0 1-.708 0L4 1.707l-.646.647a.5.5 0 0 1-.708 0z"/>
+                            <path d="M1.92.506a.5.5 0 0 1 .434.14L3 1.293l.646-.647a.5.5 0 0 1 .708 0L5 1.293l.646-.647a.5.5 0 0 1 .708 0L7 1.293l.646-.647a.5.5 0 0 1 .708 0L9 1.293l.646-.647a.5.5 0 0 1 .708 0l.646.647.646-.647a.5.5 0 0 1 .708 0l.646.647.646-.647a.5.5 0 0 1 .801.13l.5 1A.5.5 0 0 1 15 2v12a.5.5 0 0 1-.053.224l-.5 1a.5.5 0 0 1-.8.13L13 14.707l-.646.647a.5.5 0 0 1-.708 0L11 14.707l-.646.647a.5.5 0 0 1-.708 0L9 14.707l-.646.647a.5.5 0 0 1-.708 0L7 14.707l-.646.647a.5.5 0 0 1-.708 0L5 14.707l-.646.647a.5.5 0 0 1-.708 0L3 14.707l-.646.647a.5.5 0 0 1-.801-.13l-.5-1A.5.5 0 0 1 1 14V2a.5.5 0 0 1 .053-.224l.5-1a.5.5 0 0 1 .367-.27m.217 1.338L2 2.118v11.764l.137.274.51-.51a.5.5 0 0 1 .707 0l.646.647.646-.646a.5.5 0 0 1 .708 0l.646.646.646-.646a.5.5 0 0 1 .708 0l.646.646.646-.646a.5.5 0 0 1 .708 0l.646.646.646-.646a.5.5 0 0 1 .708 0l.509.509.137-.274V2.118l-.137-.274-.51.51a.5.5 0 0 1-.707 0L12 1.707l-.646.647a.5.5 0 0 1-.708 0L10 1.707l-.646.647a.5.5 0 0 1-.708 0L8 1.707l-.646.647a.5.5 0 0 1-.708 0L6 1.707l-.646.647a.5.5 0 0 1-.708 0L4 1.707l-.646.647a.5.5 0 0 1-.708 0z"/>
                             <path d="M3 4.5a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5m8-6a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5"/>
                           </svg>
                           <%= t('Quotations') %></a></li>
@@ -262,18 +261,18 @@ function getTranslatedNotification(notification, locale, field) {
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-shield-exclamation mr-2 mb-1" viewBox="0 0 16 16">
                           <path d="M5.338 1.59a61 61 0 0 0-2.837.856.48.48 0 0 0-.328.39c-.554 4.157.726 7.19 2.253 9.188a10.7 10.7 0 0 0 2.287 2.233c.346.244.652.42.893.533q.18.085.293.118a1 1 0 0 0 .101.025 1 1 0 0 0 .1-.025q.114-.034.294-.118c.24-.113.547-.29.893-.533a10.7 10.7 0 0 0 2.287-2.233c1.527-1.997 2.807-5.031 2.253-9.188a.48.48 0 0 0-.328-.39c-.651-.213-1.75-.56-2.837-.855C9.552 1.29 8.531 1.067 8 1.067c-.53 0-1.552.223-2.662.524zM5.072.56C6.157.265 7.31 0 8 0s1.843.265 2.928.56c1.11.3 2.229.655 2.887.87a1.54 1.54 0 0 1 1.044 1.262c.596 4.477-.787 7.795-2.465 9.99a11.8 11.8 0 0 1-2.517 2.453 7 7 0 0 1-1.048.625c-.28.132-.581.24-.829.24s-.548-.108-.829-.24a7 7 0 0 1-1.048-.625 11.8 11.8 0 0 1-2.517-2.453C1.928 10.487.545 7.169 1.141 2.692A1.54 1.54 0 0 1 2.185 1.43 63 63 0 0 1 5.072.56"/>
                           <path d="M7.001 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0M7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.553.553 0 0 1-1.1 0z"/>
-                        </svg>Terms of use</a></li>
+                        </svg><%=t('TermsOfUse')%></a></li>
                       <li class="ml-2 mb-2"><a href="/privacy-policy">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-lock mr-2 mb-1" viewBox="0 0 16 16">
                           <path d="M8 5a1 1 0 0 1 1 1v1H7V6a1 1 0 0 1 1-1m2 2.076V6a2 2 0 1 0-4 0v1.076c-.54.166-1 .597-1 1.224v2.4c0 .816.781 1.3 1.5 1.3h3c.719 0 1.5-.484 1.5-1.3V8.3c0-.627-.46-1.058-1-1.224M6.105 8.125A.64.64 0 0 1 6.5 8h3a.64.64 0 0 1 .395.125c.085.068.105.133.105.175v2.4c0 .042-.02.107-.105.175A.64.64 0 0 1 9.5 11h-3a.64.64 0 0 1-.395-.125C6.02 10.807 6 10.742 6 10.7V8.3c0-.042.02-.107.105-.175"/>
                           <path d="M4 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm0 1h8a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1"/>
-                        </svg>Privacy policy</a></li>
+                        </svg><%=t('PrivacyPolicy')%></a></li>
                       <li class="ml-2 mb-2"><a href="/do-not-sell">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-database-fill-lock mr-2 mb-1" viewBox="0 0 16 16">
                           <path d="M8 1c-1.573 0-3.022.289-4.096.777C2.875 2.245 2 2.993 2 4s.875 1.755 1.904 2.223C4.978 6.711 6.427 7 8 7s3.022-.289 4.096-.777C13.125 5.755 14 5.007 14 4s-.875-1.755-1.904-2.223C11.022 1.289 9.573 1 8 1"/>
                           <path d="M3.904 9.223C2.875 8.755 2 8.007 2 7v-.839c.457.432 1.004.751 1.49.972C4.722 7.693 6.318 8 8 8s3.278-.307 4.51-.867c.486-.22 1.033-.54 1.49-.972V7c0 .424-.155.802-.411 1.133a4.5 4.5 0 0 0-1.364-.125 3 3 0 0 0-2.197.731 4.5 4.5 0 0 0-1.254 1.237A12 12 0 0 1 8 10c-1.573 0-3.022-.289-4.096-.777M8 14c-1.682 0-3.278-.307-4.51-.867-.486-.22-1.033-.54-1.49-.972V13c0 1.007.875 1.755 1.904 2.223C4.978 15.711 6.427 16 8 16q.134 0 .266-.003A2 2 0 0 1 8 15zm0-1.5q0 .15.01.3A2 2 0 0 0 8 13c-1.573 0-3.022-.289-4.096-.777C2.875 11.755 2 11.007 2 10v-.839c.457.432 1.004.751 1.49.972C4.722 10.693 6.318 11 8 11q.13 0 .257-.002A4.5 4.5 0 0 0 8 12.5"/>
-                          <path d="M9 13a1 1 0 0 1 1-1v-1a2 2 0 1 1 4 0v1a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1zm3-3a1 1 0 0 0-1 1v1h2v-1a1 1 0 0 0-1-1"/>
-                        </svg>Do not sell</a></li>
+                          </path>
+                        </svg><%=t('DoNotSell')%></a></li>
                   </ul>
 
               </div>
@@ -921,7 +920,7 @@ function getTranslatedNotification(notification, locale, field) {
                                   
                                   <a class="btn" data-toggle="dropdown" href="#">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-fill-lock" viewBox="0 0 16 16">
-                                      <path d="M11 5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm-9 8c0 1 1 1 1 1h5v-1a1.9 1.9 0 0 1 .01-.2 4.49 4.49 0 0 1 1.534-3.693C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4Zm7 0a1 1 0 0 1 1-1v-1a2 2 0 1 1 4 0v1a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1v-2Zm3-3a1 1 0 0 0-1 1v1h2v-1a1 1 0 0 0-1-1Z"/>
+                                      <path d="M11 5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm-9 8c0 1 1 1 1 1h5v-1a1.9 1.9 0 0 1 .01-.2 4.49 4.49 0 0 1 1.534-3.693C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4s1 1 1 1h5.256Z"/>
                                     </svg>
                                     <span class="fa fa-caret-down ml-1" title="Toggle dropdown menu"></span></a>
                                     <ul class="dropdown-menu ul-none">
@@ -960,8 +959,239 @@ function getTranslatedNotification(notification, locale, field) {
   <script>
     var lnk = location.href.split("/");
     var baseLnk = lnk[0]+"//"+lnk[2];
-    const socket = io.connect(baseLnk, {transports: ['websocket', 'polling', 'flashsocket'], 'force new connection': true });
+    // Use same-origin Socket.IO connection so it works behind GCP load balancers / proxies.
+    // This avoids hardcoding the appspot domain and will use the current host/protocol.
+    const socket = io(window.location.origin, {
+      path: '/socket.io',
+      transports: ['websocket'],
+      withCredentials: true
+    });
+
+    
+
+    // Register user with socket
+    socket.on('connect', function() {
+      console.log('Socket connected:', socket.id);
+      socket.emit('createUser', { userId: '<%=usr._id%>' });
+    });
+
+    // Listen for incoming messages
+    socket.on('newMessage', function(data) {
+      console.log('New message received:', data);
+
+      // Show notification toast
+      showMessageNotification(data);
+
+      // If on messages page, refresh the conversation
+      if(window.location.pathname === '/messages') {
+        // Optionally reload or dynamically append the message
+        const currentUrl = new URL(window.location.href);
+        const currentChatUserId = currentUrl.searchParams.get('id');
+
+        if(currentChatUserId === data.sender._id) {
+          // User is viewing this conversation, append message dynamically
+          appendMessageToChat(data);
+        }
+      }
+    });
+
+    // Listen for push notifications (non-message types only)
+    socket.on('pushNotification<%=usr._id%>', function(data) {
+      console.log('Push notification received:', data);
+
+      // Only show notification for non-message types
+      // Message notifications are handled by 'newMessage' event
+      if(data.notifType !== 'msg') {
+        // Show general notification
+        showGeneralNotification(data);
+      }
+
+      // Update notification badge
+      updateNotificationBadge();
+    });
+
+    // Show message notification with visual and audio feedback
+    function showMessageNotification(data) {
+      const senderName = data.sender?.firstName && data.sender?.lastName
+        ? data.sender.firstName + ' ' + data.sender.lastName
+        : data.senderName;
+
+      // Get current language
+      const currentLang = '<%=lang%>' || 'en';
+
+      // Bilingual text
+      const text = {
+        en: {
+          title: 'MosalaPro - New Message',
+          message: `${senderName} sent you a message`,
+          viewMessage: 'View Message →'
+        },
+        fr: {
+          title: 'MosalaPro - Nouveau Message',
+          message: `${senderName} vous a envoyé un message`,
+          viewMessage: 'Voir le message →'
+        }
+      };
+
+      const t = text[currentLang] || text.en;
+
+      // Create notification toast with green color (#5A9E2F)
+      const notificationHTML = `
+        <div class="toast-notification message-notification" style="position: fixed; top: 80px; right: 20px; z-index: 9999; background: white; border-left: 4px solid #5A9E2F; box-shadow: 0 4px 12px rgba(0,0,0,0.15); border-radius: 8px; padding: 16px 20px; min-width: 300px; max-width: 400px; animation: slideIn 0.3s ease-out;">
+          <div style="display: flex; align-items: start; gap: 12px;">
+            <div style="flex-shrink: 0;">
+              <b class="fa fa-envelope" style="font-size: 24px; color: #5A9E2F;"></b>
+            </div>
+            <div style="flex-grow: 1;">
+              <div style="font-weight: 600; color: #333; margin-bottom: 4px;">${t.title}</div>
+              <div style="color: #666; font-size: 14px; margin-bottom: 8px;">${t.message}</div>
+              <a href="/messages?id=${data.sender?._id || ''}" style="color: #5A9E2F; text-decoration: none; font-size: 13px; font-weight: 500;">${t.viewMessage}</a>
+            </div>
+            <button onclick="this.closest('.toast-notification').remove()" style="border: none; background: none; cursor: pointer; color: #999; font-size: 20px; padding: 0; margin-left: 8px;">&times;</button>
+          </div>
+        </div>
+      `;
+
+      // Add to page
+      const notifElement = document.createElement('div');
+      notifElement.innerHTML = notificationHTML;
+      document.body.appendChild(notifElement);
+
+      // Play notification sound (optional)
+      playNotificationSound();
+
+      // Auto remove after 5 seconds
+      setTimeout(() => {
+        notifElement.querySelector('.toast-notification')?.remove();
+      }, 5000);
+    }
+
+    // Show general notification
+    function showGeneralNotification(data) {
+      // Get current language
+      const currentLang = '<%=lang%>' || 'en';
+
+      // Get bilingual title and content
+      const title = (data.translations && data.translations[currentLang])
+        ? data.translations[currentLang].title
+        : data.title || 'Notification';
+
+      const content = (data.translations && data.translations[currentLang])
+        ? data.translations[currentLang].content
+        : data.content || '';
+
+      const notificationHTML = `
+        <div class="toast-notification" style="position: fixed; top: 80px; right: 20px; z-index: 9999; background: white; border-left: 4px solid #5A9E2F; box-shadow: 0 4px 12px rgba(0,0,0,0.15); border-radius: 8px; padding: 16px 20px; min-width: 300px; max-width: 400px; animation: slideIn 0.3s ease-out;">
+          <div style="display: flex; align-items: start; gap: 12px;">
+            <div style="flex-shrink: 0;">
+              <b class="${data.icon || 'fa fa-bell'}" style="font-size: 24px; color: #5A9E2F;"></b>
+            </div>
+            <div style="flex-grow: 1;">
+              <div style="font-weight: 600; color: #333; margin-bottom: 4px;">${title}</div>
+              <div style="color: #666; font-size: 14px;">${content}</div>
+            </div>
+            <button onclick="this.closest('.toast-notification').remove()" style="border: none; background: none; cursor: pointer; color: #999; font-size: 20px; padding: 0; margin-left: 8px;">&times;</button>
+          </div>
+        </div>
+      `;
+
+      const notifElement = document.createElement('div');
+      notifElement.innerHTML = notificationHTML;
+      document.body.appendChild(notifElement);
+
+      // Play notification sound
+      playNotificationSound();
+
+      // Auto remove after 5 seconds
+      setTimeout(() => {
+        notifElement.querySelector('.toast-notification')?.remove();
+      }, 5000);
+    }
+
+    // Play notification sound
+    function playNotificationSound() {
+      try {
+        // Create a simple notification sound using Web Audio API
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+
+        oscillator.frequency.value = 800;
+        oscillator.type = 'sine';
+
+        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + 0.5);
+      } catch (e) {
+        console.log('Audio notification not available');
+      }
+    }
+
+    // Update notification badge count
+    function updateNotificationBadge() {
+      // Fetch updated notification count
+      fetch('/api/notifications/count')
+        .then(response => response.json())
+        .then(data => {
+          const badge = document.querySelector('.notification-badge');
+          if(badge && data.count > 0) {
+            badge.textContent = data.count;
+            badge.style.display = 'inline-block';
+          }
+        })
+        .catch(err => console.log('Failed to update notification badge'));
+    }
+
+    // Append message to chat (if viewing conversation)
+    function appendMessageToChat(data) {
+      const chatContent = document.getElementById('chat-content');
+      if(!chatContent) return;
+
+      const senderPhoto = data.sender.photo && data.sender.photo.includes('https://')
+        ? data.sender.photo
+        : '/photo/' + (data.sender.photo || 'default.png');
+
+      const messageTime = new Date(data.createdAt).toLocaleDateString('us-EN', {
+        month: 'short', day: 'numeric', year: 'numeric'
+      }) + ' at ' + new Date(data.createdAt).toLocaleTimeString('us-EN');
+
+      const messageHTML = `
+        <div class="chat-message-left pb-4">
+          <div class="d-none d-lg-block d-md-block">
+            <img src="${senderPhoto}" class="rounded-circle mr-1" style="height: 45px !important; width: 45px !important;" alt="${data.sender.firstName} ${data.sender.lastName}" width="40" height="40">
+          </div>
+          <div class="flex-shrink-1 bg-light-user text-primary text-wrap round-border py-2 px-3 ml-3">
+            <div class="font-weight-bold mb-1">${data.sender.firstName} ${data.sender.lastName}</div>
+            ${data.content}
+            <div class="text-muted text-petit text-wrap mt-2">${messageTime}</div>
+          </div>
+        </div>
+      `;
+
+      chatContent.innerHTML += messageHTML;
+      chatContent.scrollTop = chatContent.scrollHeight;
+    }
+
+    // Add CSS animation for slide-in effect
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes slideIn {
+        from {
+          transform: translateX(400px);
+          opacity: 0;
+        }
+        to {
+          transform: translateX(0);
+          opacity: 1;
+        }
+      }
+    `;
+    document.head.appendChild(style);
   </script>
 <% } %>
 
-        

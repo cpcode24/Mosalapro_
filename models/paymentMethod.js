@@ -308,8 +308,7 @@ paymentMethodSchema.statics.getDefaultForUser = function(userId) {
 paymentMethodSchema.statics.getActiveForUser = function(userId) {
     return this.find({
         userId,
-        isActive: true,
-        deletedAt: null
+        isActive: true
     }).sort({ isDefault: -1, createdAt: -1 });
 };
 

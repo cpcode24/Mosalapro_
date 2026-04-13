@@ -39,7 +39,7 @@ const savePaymentMethod = async()=> {
     }
     
     // Initialize Stripe
-    const stripe = Stripe('pk_test_51OJIb3GmUxtE5zwryxhgATv4mrH7w0B3MqTyySZxdnoXCeRwjJIPcHHMJbGjROae2xhEnakS2Rg8hcZuVAPQ4nrx00OepCml8z');
+    const stripe = Stripe('stripe_public_key_here'); 
     
     try {
         // Create token using Stripe

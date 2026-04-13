@@ -18,10 +18,10 @@ const updateSkills = () => {
   _postData('/update-skills', requestData )
       .then(async response => {
       if(response.status == 200){
-        console.log("Skills updated! msg: ", response.msg);
+        console.log("Skills updated! ");
       }
       else{
-        console.log("Error occured! msg: ", response.msg);
+        console.log("Error occured!  ");
       }
     });
 } 

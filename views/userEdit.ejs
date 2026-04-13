@@ -65,13 +65,13 @@
                           <div class="col-md-6 col-12">
                               <!-- Email input -->
                               <div class="form-outline">
-                                  <input id="facebookProfileLink" class="form-control has-success" placeholder="<%=usr.facebookProfileLink%>" value="<%=usr.facebookProfileLink%>" type="url" name="facebook_link" />
+                                  <input id="facebookProfileLink" class="form-control has-success" placeholder="<%= usr.facebookProfileLink || t('FacebookProfileLink') %>" value="<%=usr.facebookProfileLink%>" type="url" name="facebook_link" />
                               </div>
                           </div>
                           <div class="col-md-6 col-12">
                               <!-- Phone input -->
                               <div class="form-outline">
-                                <input id="linkedinProfileLink" class="form-control" placeholder="<%=usr.linkedinProfileLink%>" value="<%=usr.linkedinProfileLink%>" name="linkedinProfileLink" type="url"/>
+                                <input id="linkedinProfileLink" class="form-control" placeholder="<%= usr.linkedinProfileLink || t('LinkedInProfileLink') %>" value="<%=usr.linkedinProfileLink%>" name="linkedinProfileLink" type="url"/>
                               </div>
                           </div>
                       </div>
@@ -83,11 +83,23 @@
                                 </div>
                             </div>
                         </div>
+                        <% let catName = ''; 
+                          if(usr.category) {
+                            if(lang === 'fr') {
+                              const cat = cats.find(c => c.name === usr.category);
+                              catName = cat ? cat.translations.fr.name : usr.category;
+                            } else {
+                              catName = usr.category;
+                            }
+                          }
+                        %>
+
                         <% if(usr.category && !usr.google_id && !usr.facebook_id)  {%>
                           <div class="row mt-2">
                             <div class="col">
                                 <div class="form-outline">
-                                  <input type="text" id="categoryId" class="form-control" placeholder="<%= t('Category') %>" name="category" value="<%=usr.category %>" readonly/>
+                                  
+                                  <input type="text" id="categoryId" class="form-control" placeholder="<%= t('Category') %>" name="category" value="<%=catName %>" readonly/>
                                 </div>
                             </div>
                           </div>
@@ -96,7 +108,7 @@
                         <div class="row mt-2">
                           <div class="col">
                               <select class="form-control" aria-label="Select Category" name="category" id="user-category" style="display: inline;">
-                                  <option selected><%= t('SelectCategory') %></option>
+                                  <option selected><%= catName || t('SelectCategory') %></option>
           
                                   <% if(cats){ cats.forEach(cat=>{ %>
                                     <% if (lang === 'fr') { %>
@@ -205,7 +217,7 @@
               </div>
                 <div class="d-flex justify-content-between align-items-center my-3">
                   <span><%=t('LoggedInAs')%>: </span>
-                  <span class="text-white badge badge-green"><%=usr.accountType%></span>
+                  <span class="text-white badge badge-green"><%=typeof accountTypeDisplay !== 'undefined' ? accountTypeDisplay : usr.accountType%></span>
                 </div> 
                 <div class="d-flex justify-content-between align-items-center my-3">
                   <span><%= t('SessionLocation') %>: </span>
@@ -213,7 +225,7 @@
                 </div>
                 <div class="d-flex justify-content-between align-items-center my-3">
                   <% if(usr.strictlyPro) { %>
-                    <span><%= t('SwitchAccount') %></span>
+                    <span><%= t('JonAsUser') %></span>
                     <!--span class="text-primary"><a class="text-decoration-underline" href="#defaultPayModalCta" data-toggle="modal" data-caption-animate="fadeInUp">Verify</a></span-->
                     <button type="submit" class="btn-primary-job-inv cursor" onclick="window.open('/join-as-user')" style="border-radius: 5px;"><%= t('JoinAsUser') %></button>
                   <% } else { %>
@@ -266,7 +278,7 @@
                           <% }else { %>
                               <input type="checkbox" class="custom-control-input" id="emailNotifsForProMsgs" unchecked>
                           <% } %>
-                          <label class="custom-control-label text-muted" for="emailNotifsForProMsgs"><%= t('ReceiveAlertsSMS') %></label>
+                          <label class="custom-control-label text-muted" for="emailNotifsForProMsgs"><%= t('ReceiveAlertsEmails') %></label>
                     </div>
                   </div>
                   <div class="form-group">
@@ -293,45 +305,6 @@
 
                 </div>
               </div>
-            <div class="container shadow-sm mb-5 pb-3 bg-white rounded " >
-              <div class="row">
-                <div class="w-100 d-flex justify-content-between align-items-center border-bottom border-dark p-3">
-                  <h6>Subscription</h6>
-                </div>
-              </div>
-              <br />
-              <div class="d-flex justify-content-between">
-                <b><%=subName %></b>
-                <a id="changeSubscriptionBtn" style="cursor: pointer; color: #5A9E2F;" onclick="editSubscription()"><%= t('Change') %></a>
-              </div>
-              <div id="subscriptionsBox">
-                <br />
-                <div class="d-flex justify-content-between">
-                  <p><b><%= t('Free') %> </b> $0 / 30 days</p>
-                  <% if(subName != 'Free'){ %>
-                    <a class="text-decoration-underline" onclick="changeSubscription('free')">Select</a>
-                  <% } %>
-                </div>
-                <div class="d-flex justify-content-between">
-                  <p><b>Bronze</b> $50 / 90 days</p>
-                  <% if(subName != 'Bronze'){ %>
-                    <a class="text-decoration-underline" onclick="changeSubscription('bronze')">Select</a>
-                  <% } %>
-                </div>
-                <div class="d-flex justify-content-between">
-                  <p><b>Gold</b> $100 / 180 days</p>
-                  <% if(subName != 'Gold'){ %>
-                    <a class="text-decoration-underline" onclick="changeSubscription('gold')">Select</a>
-                  <% } %>
-                </div>
-                <div class="d-flex justify-content-between">
-                  <p><b>Bronze</b> $250 / 365 days</p>
-                  <% if(subName != 'Platinum'){ %>
-                  <a class="text-decoration-underline" onclick="changeSubscription('gold')">Select</a>
-                  <% } %>
-                </div>
-              </div>
-            </div>
 
             <div class="container shadow-sm mb-5 pb-3 bg-white rounded ">
               <div class="row">
@@ -355,11 +328,46 @@
                 <div class="input-group">
                   <input type="text" id="inputSkill" class="form-control" placeholder="<%=t('Skill') %>"  name="skill"/>
                   <div class="input-group-append">
-                    <button type="button" class="profile-btn simple-btn" style="border-radius: 0 3px 3px 0;" onClick="addNewSkill()"><%= t('Submit')%></button>
+                    <button type="button" class="profile-btn simple-btn" style="border-radius: 0 3px 3px 0;" onClick="addNewSkill()"><%= t('Add')%></button>
                   </div>
                 </div>
               </div>
           </div>
+
+
+            <div class="container shadow-sm mb-5 pb-3 bg-white rounded " >
+              <div class="row">
+                <div class="w-100 d-flex justify-content-between align-items-center border-bottom border-dark p-3">
+                  <h6><%= t('PaymentInformation') %></h6>
+                  
+                </div>
+              </div>
+              <div class="row">
+                <div class="col d-flex justify-content-center align-items-center">
+                  <button class="btn btn-sm simple-btn" type="button" data-toggle="modal" data-target="#paymentInfoModalCta">
+                    <b class="fa fa-plus"></b> <%= t('AddPaymentMethod') %>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Payment Methods List -->
+              <div id="userEditPaymentMethods" class="mt-3">
+                <div class="text-center py-4">
+                  <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                  <div class="small text-muted mt-2"><%= t('LoadingPaymentMethods') %>...</div>
+                </div>
+              </div>
+            </div>
+
+            
+
+          <!-- Availability Manager (Only for providers) -->
+          <!-- if (usr.registeredAsPro) {  >
+          <div class="mt-4">
+            <- include('partials/availabilityManager') >
+          </div>
+          < } -->
+
           </div>
         </div>
       </div>
@@ -437,8 +445,167 @@ notifsSMSOppChbx.addEventListener('change', (event) => {
         });
     //}
 });
+
+// Load payment methods on page load
+loadUserEditPaymentMethods();
+
+async function loadUserEditPaymentMethods(isRetry = false) {
+    const container = document.getElementById('userEditPaymentMethods');
+
+    if (!isRetry) {
+        container.innerHTML = `
+            <div class="payment-methods-skeleton px-3">
+                ${[1, 2].map(() => `
+                    <div class="list-group-item mb-2">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div style="flex: 1;">
+                                <div class="skeleton-line" style="width: 200px; height: 18px; margin-bottom: 8px;"></div>
+                                <div class="skeleton-line" style="width: 120px; height: 14px;"></div>
+                            </div>
+                            <div class="skeleton-line" style="width: 80px; height: 32px;"></div>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+    }
+
+    try {
+        const response = await fetch('/payment-methods', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        const data = await response.json();
+
+        if (data.success && data.paymentMethods) {
+            const methods = data.paymentMethods;
+
+            if (methods.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-4 px-3">
+                        <b class="fa fa-credit-card fa-3x text-muted mb-3"></b>
+                        <p class="text-muted"><%= t('NoPaymentMethodsYet') %></p>
+                        <p class="small text-muted"><%= t('AddPaymentMethodToGetStarted') %></p>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '<div class="list-group px-3">';
+
+            methods.forEach(method => {
+                const isExpired = method.isExpired;
+                const expiryClass = isExpired ? 'text-danger' : 'text-muted';
+                const defaultBadge = method.isDefault ? '<span class="badge badge-success ml-2"><%= t("Default") %></span>' : '';
+                const expiredBadge = isExpired ? '<span class="badge badge-danger ml-2"><%= t("Expired") %></span>' : '';
+
+                let cardIcon = 'fa-credit-card';
+                if (method.cardBrand) {
+                    const brand = method.cardBrand.toLowerCase();
+                    if (brand === 'visa') cardIcon = 'fa-cc-visa';
+                    else if (brand === 'mastercard') cardIcon = 'fa-cc-mastercard';
+                    else if (brand === 'amex') cardIcon = 'fa-cc-amex';
+                    else if (brand === 'discover') cardIcon = 'fa-cc-discover';
+                }
+
+                const providerIcon = method.provider === 'paypal' ? 'fa-cc-paypal' : cardIcon;
+
+                html += `
+                    <div class="list-group-item d-flex justify-content-between align-items-center mb-2">
+                        <div class="d-flex align-items-center" style="flex: 1;">
+                            <b class="fa ${providerIcon} fa-2x text-primary mr-3"></b>
+                            <div>
+                                <div class="font-weight-bold">
+                                    ${method.displayName}
+                                    ${defaultBadge}
+                                    ${expiredBadge}
+                                </div>
+                                <div class="small ${expiryClass}">
+                                    ${method.type === 'card' && method.cardExpiryMonth && method.cardExpiryYear
+                                        ? '<%= t("Expires") %>: ' + String(method.cardExpiryMonth).padStart(2, '0') + '/' + method.cardExpiryYear
+                                        : '<%= t("Added") %>: ' + new Date(method.createdAt).toLocaleDateString()
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        <div class="btn-group">
+                            
+                            <button class="btn btn-sm btn-outline-danger" onclick="deletePaymentMethod('${method.id}')">
+                                <b class="fa fa-trash"></b>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += '</div>';
+            container.innerHTML = html;
+        } else {
+            throw new Error(data.message || 'Failed to load payment methods');
+        }
+    } catch (error) {
+        console.error('Error loading payment methods:', error);
+        container.innerHTML = `
+            <div class="alert alert-danger mx-3">
+                <b class="fa fa-exclamation-circle"></b> <%= t('ErrorLoadingPaymentMethods') %>
+                <button class="btn btn-sm btn-link" onclick="loadUserEditPaymentMethods(true)"><%= t('TryAgain') %></button>
+            </div>
+        `;
+    }
+}
+
+async function setDefaultPaymentMethod(methodId) {
+    try {
+        const response = await fetch(`/set-default-payment-method/${methodId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            loadUserEditPaymentMethods(true);
+        } else {
+            alert(data.message || '<%= t("ErrorSettingDefaultPaymentMethod") %>');
+        }
+    } catch (error) {
+        console.error('Error setting default payment method:', error);
+        alert('<%= t("ErrorSettingDefaultPaymentMethod") %>');
+    }
+}
+
+async function deletePaymentMethod(methodId) {
+    if (!confirm('<%= t("ConfirmDeletePaymentMethod") %>')) {
+        return;
+    }
+
+    try {
+        const response = await fetch(`/delete-payment-method/${methodId}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            loadUserEditPaymentMethods(true);
+        } else {
+            alert(data.message || '<%= t("ErrorDeletingPaymentMethod") %>');
+        }
+    } catch (error) {
+        console.error('Error deleting payment method:', error);
+        alert('<%= t("ErrorDeletingPaymentMethod") %>');
+    }
+}
   </script>
-  
+
 
   <script src="js/userEdit.js"></script>
 

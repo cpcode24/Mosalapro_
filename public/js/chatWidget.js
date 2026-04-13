@@ -55,6 +55,9 @@
     let isTyping = false;
     let chatAvailable = false;
 
+    // Local storage key for chat persistence
+    const CHAT_STORAGE_KEY = 'mosalapro_chat_state_v1';
+
     /**
      * Get translated text
      */
@@ -63,9 +66,88 @@
     }
 
     /**
+     * Save chat state (conversation + open/minimized) to localStorage
+     */
+    function saveChatState() {
+        try {
+            const payload = {
+                conversationHistory,
+                isChatOpen,
+                // optional: could add scroll position, input draft, etc.
+                savedAt: Date.now()
+            };
+            localStorage.setItem(CHAT_STORAGE_KEY, JSON.stringify(payload));
+        } catch (err) {
+            console.warn('Unable to save chat state:', err);
+        }
+    }
+
+    /**
+     * Load chat state from localStorage
+     */
+    function loadChatState() {
+        try {
+            const raw = localStorage.getItem(CHAT_STORAGE_KEY);
+            if (!raw) return;
+            const parsed = JSON.parse(raw);
+            if (parsed && Array.isArray(parsed.conversationHistory)) {
+                conversationHistory = parsed.conversationHistory;
+            }
+            if (typeof parsed.isChatOpen === 'boolean') {
+                isChatOpen = parsed.isChatOpen;
+            }
+        } catch (err) {
+            console.warn('Unable to load chat state:', err);
+        }
+    }
+
+    /**
+     * Render conversationHistory into the chat messages container
+     */
+    function renderConversation() {
+        if (!conversationHistory || conversationHistory.length === 0) return;
+        // Clear existing messages except the welcome/suggested questions nodes
+        // Keep the initial welcome message (assumed to be first bot message in markup)
+        // Remove all dynamically added messages
+        const dynamicMessages = elements.chatMessages.querySelectorAll('.message.dynamic');
+        dynamicMessages.forEach(n => n.remove());
+
+        conversationHistory.forEach(item => {
+            const sender = item.role === 'user' ? 'user' : 'bot';
+            // Use addMessage to format and append, but mark as dynamic so we can clear later
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}-message dynamic`;
+
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'message-content';
+            contentDiv.innerHTML = formatMessage(item.content || '');
+
+            messageDiv.appendChild(contentDiv);
+            elements.chatMessages.appendChild(messageDiv);
+        });
+
+        scrollToBottom();
+    }
+
+    /**
      * Initialize chat widget
      */
     async function init() {
+        // Restore any saved chat state first so UI reflects previous session
+        loadChatState();
+
+        // Apply restored open/minimized state
+        isChatOpen = !!isChatOpen; // ensure boolean
+        elements.chatToggleBtn.classList.toggle('active', isChatOpen);
+        elements.chatWindow.style.display = isChatOpen ? 'flex' : 'none';
+        if (isChatOpen) {
+            // focus after DOM ready
+            setTimeout(() => elements.chatInput.focus(), 100);
+        }
+
+        // If we have saved conversation, render it
+        renderConversation();
+
         // Check chat availability
         await checkChatStatus();
 
@@ -78,6 +160,9 @@
         elements.chatForm.addEventListener('submit', handleSubmit);
         elements.chatInput.addEventListener('input', handleInputChange);
         elements.chatInput.addEventListener('keydown', handleKeyDown);
+
+        // Save before unload as a last-resort
+        window.addEventListener('beforeunload', saveChatState);
     }
 
     /**
@@ -147,6 +232,9 @@
             elements.chatInput.focus();
             scrollToBottom();
         }
+
+        // Persist the open/minimized state
+        saveChatState();
     }
 
     /**
@@ -216,6 +304,9 @@
                 if (conversationHistory.length > 10) {
                     conversationHistory = conversationHistory.slice(-10);
                 }
+
+                // Persist conversation
+                saveChatState();
             } else {
                 addMessage(data.error || t('errorGeneric'), 'bot', true);
             }

@@ -67,7 +67,6 @@ class JobApplication {
     }
 
     async applyWithQuotation(req, res){ 
-        console.log("Req info:  "+req.body.jobId);
         const job = await PostRequestModel.findById(req.body.jobId).exec();
         const endUser = await UserModel.findOne({username:job.username}).exec();
         if(endUser && job){

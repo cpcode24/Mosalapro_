@@ -13,27 +13,27 @@ class QuotationRequestsManager {
 
     // Detect current language from various sources
     detectLanguage() {
-        console.log('🌍 Detecting language for quotation requests...');
+        console.log(' Detecting language for quotation requests...');
         
         // Try to get language from URL first
         const urlParams = new URLSearchParams(window.location.search);
         const urlLang = urlParams.get('lang');
         console.log('URL lang parameter:', urlLang);
         if (urlLang && ['en', 'fr'].includes(urlLang)) {
-            console.log('✅ Language detected from URL:', urlLang);
+            console.log(' Language detected from URL:', urlLang);
             return urlLang;
         }
 
         // Check if there's a language in the URL path (like /lang/fr)
         const pathMatch = window.location.pathname.match(/\/lang\/([a-z]{2})/);
         if (pathMatch && ['en', 'fr'].includes(pathMatch[1])) {
-            console.log('✅ Language detected from path:', pathMatch[1]);
+            console.log(' Language detected from path:', pathMatch[1]);
             return pathMatch[1];
         }
 
         // Try to get from server-side language variable
         if (typeof window.serverLanguage !== 'undefined' && ['en', 'fr'].includes(window.serverLanguage)) {
-            console.log('✅ Language detected from server:', window.serverLanguage);
+            console.log(' Language detected from server:', window.serverLanguage);
             return window.serverLanguage;
         }
 
@@ -41,7 +41,7 @@ class QuotationRequestsManager {
         const storedLang = localStorage.getItem('language');
         console.log('Stored language in localStorage:', storedLang);
         if (storedLang && ['en', 'fr'].includes(storedLang)) {
-            console.log('✅ Language detected from localStorage:', storedLang);
+            console.log(' Language detected from localStorage:', storedLang);
             return storedLang;
         }
 
@@ -49,7 +49,7 @@ class QuotationRequestsManager {
         const htmlLang = document.documentElement.lang;
         console.log('HTML lang attribute:', htmlLang);
         if (htmlLang && ['en', 'fr'].includes(htmlLang)) {
-            console.log('✅ Language detected from HTML:', htmlLang);
+            console.log(' Language detected from HTML:', htmlLang);
             return htmlLang;
         }
 
@@ -61,7 +61,7 @@ class QuotationRequestsManager {
                 const linkLang = parentLink.href.match(/\/lang\/([a-z]{2})/)?.[1];
                 console.log('Active language from DOM:', linkLang);
                 if (linkLang && ['en', 'fr'].includes(linkLang)) {
-                    console.log('✅ Language detected from active DOM element:', linkLang);
+                    console.log(' Language detected from active DOM element:', linkLang);
                     return linkLang;
                 }
             }
@@ -71,12 +71,12 @@ class QuotationRequestsManager {
         const browserLang = navigator.language.slice(0, 2);
         console.log('Browser language:', browserLang);
         if (['en', 'fr'].includes(browserLang)) {
-            console.log('✅ Language detected from browser:', browserLang);
+            console.log(' Language detected from browser:', browserLang);
             return browserLang;
         }
 
         // Default to English
-        console.log('⚠️ No language detected, defaulting to English');
+        console.log('No language detected, defaulting to English');
         return 'en';
     }
 
@@ -149,13 +149,13 @@ class QuotationRequestsManager {
         if (['en', 'fr'].includes(language)) {
             this.currentLanguage = language;
             localStorage.setItem('language', language);
-            console.log('🔄 Quotation requests language updated to:', language);
+            console.log(' Quotation requests language updated to:', language);
         }
     }
 
     // Debug function to show all language detection sources
     debugLanguageDetection() {
-        console.log('🔍 Quotation Requests Language Detection Debug:');
+        console.log(' Quotation Requests Language Detection Debug:');
         console.log('Current detected language:', this.currentLanguage);
         console.log('URL parameters:', new URLSearchParams(window.location.search).get('lang'));
         console.log('URL path match:', window.location.pathname.match(/\/lang\/([a-z]{2})/)?.[1]);
@@ -169,7 +169,7 @@ class QuotationRequestsManager {
 
     // Update active tab styling
     updateActiveTab(type, screen) {
-        console.log('🎯 Updating active tab:', type, 'screen:', screen);
+        console.log(' Updating active tab:', type, 'screen:', screen);
         if (screen === 'wide-scr') {
             const tabs = ['new', 'completed', 'rejected', 'accepted', 'all'];
             tabs.forEach(tab => {
@@ -177,9 +177,9 @@ class QuotationRequestsManager {
                 const element = document.getElementById(elementId);
                 if (element) {
                     element.classList.remove("active");
-                    console.log('🔴 Removed active from:', elementId);
+                    console.log(' Removed active from:', elementId);
                 } else {
-                    console.log('❌ Element not found:', elementId);
+                    console.log(' Element not found:', elementId);
                 }
             });
             
@@ -187,9 +187,9 @@ class QuotationRequestsManager {
             const activeElement = document.getElementById(activeElementId);
             if (activeElement) {
                 activeElement.classList.add("active");
-                console.log('🟢 Added active to:', activeElementId);
+                console.log(' Added active to:', activeElementId);
             } else {
-                console.log('❌ Active element not found:', activeElementId);
+                console.log(' Active element not found:', activeElementId);
             }
         }
         
@@ -357,7 +357,6 @@ class QuotationRequestsManager {
             }
             
             const data = await response.json();
-            console.log('API Response:', data);
 
             const requestsBox = document.getElementById("requests-container");
             

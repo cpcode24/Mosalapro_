@@ -79,6 +79,32 @@ const PostRequestService =  {
       
         //       // Everything went fine
         //       logger.info("PR:: Everything went fine");
+
+              // Validate payment method
+              const paymentMethodId = req.body.paymentMethodId;
+              if (!paymentMethodId || paymentMethodId.trim() === '') {
+                return res.status(400).json({
+                  status: 400,
+                  message: "Payment method is required to post a service request"
+                });
+              }
+
+              // Verify payment method belongs to user
+              const PaymentMethodModel = require("../models/paymentMethod");
+              const paymentMethod = await PaymentMethodModel.findOne({
+                _id: paymentMethodId,
+                userId: req.user._id,
+                isActive: true,
+                deletedAt: null
+              }).exec();
+
+              if (!paymentMethod) {
+                return res.status(400).json({
+                  status: 400,
+                  message: "Invalid or inactive payment method"
+                });
+              }
+
               const cat = await CategoryModel.findOne({name: req.body.requestCategory}).exec();
               //Storing in db
               const newRequest = new PostRequestModel({
@@ -92,15 +118,17 @@ const PostRequestService =  {
                 currency: req.body.budgetCurrency,
                 deadline: req.body.requestDeadline,
                 status: "active",
+                paymentMethodId: paymentMethodId, // Store payment method reference
                 createdAt: new Date(),
                 lastUpdate: new Date(),
                 //files: req.files.map((file) => file.filename),
                 files: req.file? [req.file?.filename]: [],
               }).save().then(success =>{
-                  console.log("PR:: Posted successfully!");
-                  res.redirect("/");
+                  console.log("PR:: Posted successfully with payment method!");
+                  res.json({status: 200, message: "Service request posted successfully"});
               }).catch(err => {
                 console.log("Error occured while saving into the db: "+err);
+                res.status(500).json({status: 500, message: "Error saving service request"});
               });
              
           } catch (e) {
@@ -365,7 +393,7 @@ const PostRequestService =  {
                 const countryCod = await CountryModel.findOne({name: pro.country}).select('phone_code').exec();
                 const messageSent = await smsSenderObj.sendSMS(phoneNumber, countryCod.phone_code, messageBody);
                 if(messageSent.success) console.log("Delivery acceptance notification SMS sent successfully!");
-                else{console.log("Error occured while sending SMS: "+messageSent.message);}
+                else{console.log("Error occured while sending SMS: ");}
               }
             }else{ console.log('No pro found to send SMS notif.'); }
             return;
@@ -455,7 +483,7 @@ const PostRequestService =  {
                   const countryCod = await CountryModel.findOne({name: pro.country}).select('phone_code').exec();
                   const messageSent = await smsSenderObj.sendSMS(phoneNumber, countryCod.phone_code, messageBody);
                   if(messageSent.success) console.log("Deadline acceptance notification SMS sent successfully!");
-                  else{console.log("Error occured while sending SMS: "+messageSent.message);}
+                  else{console.log("Error occured while sending.");}
                 }
               }else{ console.log('No pro found to send SMS notif.'); }
               return;

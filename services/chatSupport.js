@@ -14,16 +14,16 @@ const logger = log4js.getLogger();
 
 class ChatSupport {
     constructor() {
-        // Initialize RAG service with local Llama
+        // Initialize RAG service (supports Groq and Ollama)
         this.ragService = new RAGService();
-        this.provider = 'local-llama-rag';
+        this.provider = process.env.LLM_PROVIDER || 'groq';
 
-        logger.info('CHAT SUPPORT:: Using Local Llama with RAG');
+        logger.info(`CHAT SUPPORT:: Using ${this.provider.toUpperCase()} with RAG`);
 
         // Initialize RAG service asynchronously
         this.initPromise = this.ragService.initialize().then(success => {
             if (success) {
-                logger.info('CHAT SUPPORT:: RAG Service initialized successfully');
+                logger.info(`CHAT SUPPORT:: RAG Service initialized successfully with ${this.provider.toUpperCase()}`);
             } else {
                 logger.warn('CHAT SUPPORT:: RAG Service initialization failed');
             }
@@ -110,7 +110,7 @@ class ChatSupport {
     }
 
     /**
-     * Validate API key is configured (for RAG, we check if Ollama is available)
+     * Validate API key/service is configured
      * @returns {Boolean}
      */
     async isConfigured() {
@@ -127,7 +127,7 @@ class ChatSupport {
      * @returns {String}
      */
     getProvider() {
-        return this.provider;
+        return this.ragService.provider || this.provider;
     }
 
     /**

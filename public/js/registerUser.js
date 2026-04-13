@@ -246,25 +246,35 @@ function validateAndRegisterU(){
               document.theForm.submit();
             }
         }
-        else{
-          const contactTypeEn = requestData.registrationType === 'phone' ? 'phone number' : 'email';
+        else if(response.status == 409 || response.status == 408){
+          const contactType = requestData.registrationType === 'phone' ? 'phone number' : 'email';
           const contactTypeFr = requestData.registrationType === 'phone' ? 'numéro de téléphone' : "adresse e-mail";
           if(lang_reg_u == 'fr'){
             regMessage.innerHTML  = `Un compte avec le ${contactTypeFr} donné existe, <a class="text-primary" href="#logModalCta" data-toggle="modal" data-dismiss="modal" data-caption-animate="fadeInUp">connectez-vous.</a>`;
           }else{
-            regMessage.innerHTML  = `An account with the given ${contactTypeEn} exists, <a class="text-primary" href="#logModalCta" data-toggle="modal" data-dismiss="modal" data-caption-animate="fadeInUp">login.</a>`;
+            regMessage.innerHTML  = `An account with the given ${contactType} exists, <a class="text-primary" href="#logModalCta" data-toggle="modal" data-dismiss="modal" data-caption-animate="fadeInUp">login.</a>`;
+          }
+        }else if(response.status == 411){
+          if(lang_reg_u == 'fr'){
+            regMessage.innerHTML  = `Une erreur s'est produite lors de l'envoi du code de vérification. Veuillez verifier que vous avez entré le bon numéro de téléphone ou email et réessayer.`;
+          }else{
+            regMessage.innerHTML  = `An error occurred while sending the verification code. Please check that you entered the correct phone number or email and try again.`;
+          }
+        }else{
+          if(lang_reg_u == 'fr'){
+            regMessage.innerHTML  = `Une erreur s'est produite lors de l'inscription. Veuillez réessayer.`;
+          }else{
+            regMessage.innerHTML  = `An error occurred during registration. Please try again.`;
           }
         }
         
       }).catch(err => {
         console.log(err) // Handle errors
-        const contactTypeEn = requestData.registrationType === 'phone' ? 'phone number' : 'email';
-        const contactTypeFr = requestData.registrationType === 'phone' ? 'numéro de téléphone' : "adresse e-mail";
-        if(lang_reg_u == 'fr'){
-          regMessage.innerHTML = `Un compte avec le ${contactTypeFr} donné existe, <a class="text-primary" href="#logModalCta" data-toggle="modal" data-dismiss="modal" data-caption-animate="fadeInUp">connectez-vous.</a>`;
-        }else{
-          regMessage.innerHTML = `An account with the given ${contactTypeEn} exists, <a class="text-primary" href="#logModalCta" data-toggle="modal" data-dismiss="modal" data-caption-animate="fadeInUp">login.</a>`;
-        }
+        if(lang_reg_p == 'fr'){
+            regMessage.innerHTML  = `Une erreur s'est produite lors de l'inscription. Veuillez réessayer.`;
+          }else{
+            regMessage.innerHTML  = `An error occurred during registration. Please try again.`;
+          }
       });
 
 }

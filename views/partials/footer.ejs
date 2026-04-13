@@ -204,10 +204,12 @@
 
       <% if(firstCor == 'none') { %>
         <!--script src="https://cdn.socket.io/4.7.5/socket.io.min.js" integrity="sha384-2huaZvOR9iDzHqslqwpR87isEmrfxqyWOF7hr7BY6KG0+hVKLoEXMPUJw3ynWuhO" crossorigin="anonymous"></script-->
-      <script src="js/notify.js"></script>
+      <!--script src="js/notify.js"></script-->
 
-      <script type="text/javascript">
-          
+      <!-- OLD jQuery Notify notification system - DISABLED to prevent duplicate notifications -->
+      <!-- The new Toast notification system in header.ejs handles all notifications -->
+      <!--script type="text/javascript">
+
           if(typeof socket === "undefined" ){
               // var lnk = location.href.split("/");
               // var baseLnk = lnk[0]+"//"+lnk[2];
@@ -215,17 +217,17 @@
               const usrId = '<%=usr._id%>';
               const accType = '<%=usr.accountType%>';
               socket.on(`pushNotification${usrId}`, async function(data){
-                  
+
                   await $.notify(data.title+"\n"+data.content, {
                       autoHide: true,
                       className: "success",
                   });
-                  
-                 
+
+
                   $('#notifMsg').load(location.href+" #notifMsg");
                   $('#unreadNotifsContent').load(location.href+" #unreadNotifsContent");
               });
-          
+
               $(window).on('beforeunload', function(){
               socket.close();
               });
@@ -233,45 +235,45 @@
             const usrId = '<%=usr._id%>';
               const accType = '<%=usr.accountType%>';
               socket.on(`pushNotification${usrId}`, async function(data){
-                  
+
                   await $.notify(data.title+"\n"+data.content, {
                       autoHide: true,
                       className: "success",
                   });
-                  
-                  
+
+
                   $('#unreadNotifsContent').load(location.href+" #unreadNotifsContent");
                   $('#notifMsg').load(location.href+" #notifMsg");
             });
             $(window).on('beforeunload', function(){
                 socket.close();
             });
-              
+
           }
-      </script>
-  
+      </script-->
+
   <% } else { %>
-    
-    <script src="js/notify.js"></script>
-    <script  type="text/javascript">
-      
+
+    <!--script src="js/notify.js"></script-->
+    <!--script  type="text/javascript">
+
               const usrId = '<%=usr._id%>';
               const accType = '<%=usr.accountType%>';
               socket.on(`pushNotification${usrId}`, async function(data){
-                  
+
                   await $.notify(data.title+"\n"+data.content, {
                       autoHide: true,
                       className: "success",
                   });
-                  
-                 
+
+
                   $('#unreadNotifsContent').load(location.href+" #unreadNotifsContent");
                   $('notifMsg').load(location.href+" #notifMsg");
             });
             $(window).on('beforeunload', function(){
                 socket.close();
             });
-    </script> 
+    </script-->
 
   <% } %>
 

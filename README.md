@@ -99,13 +99,6 @@ The project is live at [https://mosalapro.com](https://mosalapro.com)
 
 For a complete list of endpoints, see the route modules in [api-routes/](api-routes/)
 
-## Troubleshooting
-
-### Payment Processing Issues
-
-
-#### PayPal Integration
-
 ## Contributing
 
 Contributions are welcome! Please follow these steps:
@@ -134,6 +127,4 @@ For questions or support, please contact us through the application's contact pa
 
 
 ---
-
-**Made with love for connecting people with skilled professionals**
 
